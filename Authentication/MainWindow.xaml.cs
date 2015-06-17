@@ -8,15 +8,12 @@
   using System.Windows;
   using System.Windows.Media.Imaging;
 
-  /// <summary>
-  /// Interaction logic for MainWindow.xaml
-  /// </summary>
   public partial class MainWindow : Window {
+    // MainWindow Variables
     private Capture capture = null;
     private bool tryUseCuda = false;
     private bool tryUseOpenCL = true;
     private BitmapImage bitmapImage;
-    //private long detectionTime;
     private bool initialized = false;
     private List<System.Drawing.Rectangle> faces = new List<System.Drawing.Rectangle>();
     private List<System.Drawing.Rectangle> eyes = new List<System.Drawing.Rectangle>();
@@ -26,13 +23,16 @@
     private long detectionTime;
     private double resize = 1.0;
 
+    // Constructors
     public MainWindow() {
       InitializeComponent();
       bitmapImage = new BitmapImage();
       this.Closing += MainWindow_Closing;
+
+      // start capturing images from the web camera
       try {
         capture = new Capture();
-      } catch (NullReferenceException excpt) {   //show errors if there is any
+      } catch (NullReferenceException excpt) {
         MessageBox.Show(excpt.Message);
       }
       if (capture != null) {
@@ -40,43 +40,51 @@
         capture.Start();
       }
     }
-    private void ProcessFrame(object sender, EventArgs e) {
-      //Mat image = new Mat("lena.jpg", LoadImageType.Color); //Read the files as an 8-bit Bgr image
-      //Mat image = new Mat("kirk.jpg", LoadImageType.Color); //Read the files as an 8-bit Bgr image
 
-      
+
+
+    // Event Handlers
+    private void ProcessFrame(object sender, EventArgs e) {
+      // pull the image captured from the web camera
       try {
         capture.Retrieve(image);
-        //capture.Stop();
       } catch (Exception ex) {
         MessageBox.Show(ex.Message);
         return;
       }
-      Image<Emgu.CV.Structure.Bgr, Byte> img = new Image<Emgu.CV.Structure.Bgr, Byte>(640, 480);
-      img.ConvertFrom(image);
-      img = img.Resize(resize, Emgu.CV.CvEnum.Inter.Linear);
-      //image = img.Mat;
 
+      // only look for a face if the frameNumber equals 0
       if (frameNumber == 0) {
+        // create a smaller image for the face detection
+        Image<Emgu.CV.Structure.Bgr, Byte> img = new Image<Emgu.CV.Structure.Bgr, Byte>(640, 480);
+        img.ConvertFrom(image);
+        img = img.Resize(resize, Emgu.CV.CvEnum.Inter.Linear);
+        // uncomment this line to overwrite the image variable to see the scaled image in our form
+        //   instead of the full image.
+        //image = img.Mat;
+
         faces.Clear();
         eyes.Clear();
-        //The cuda cascade classifier doesn't seem to be able to load "haarcascade_frontalface_default.xml" file in this release
-        //disabling CUDA module for now
+        // The cuda cascade classifier doesn't seem to be able to load "haarcascade_frontalface_default.xml"
+        //   file in this release disabling CUDA module for now
 
         //* DetectFace.Detect is a very expensive process. We might need to consider not doing this on every frame
-        Dispatcher.Invoke((Action)(() => {
-          DetectFace.Detect(
-            img.Mat,
-            "haarcascade_frontalface_default.xml", "haarcascade_eye.xml",
-            faces, eyes,
-            tryUseCuda,
-            tryUseOpenCL,
-            out detectionTime);
-        }));
-      //*/
+        DetectFace.Detect(
+          img.Mat,
+          "haarcascade_frontalface_default.xml", "haarcascade_eye.xml",
+          faces, eyes,
+          tryUseCuda,
+          tryUseOpenCL,
+          out detectionTime);
+        //*/
       }
+      // increment frameNumber till we get to 10 and then reset it (faster
+      //   logic than requiring an additional if since we're inside a loop like
+      //   situation.
       frameNumber = ++frameNumber % 10;
       foreach (System.Drawing.Rectangle face in faces) {
+        // math here is used to create a properly sized rectangle proportionate to the larger image
+        //   since the face detection was performed on a smaller scaled image.
         rec.Width = Convert.ToInt32(face.Width * (1 / resize));
         rec.Height = Convert.ToInt32(face.Height * (1 / resize));
         rec.X = Convert.ToInt32(face.X * (1 / resize));
@@ -84,6 +92,8 @@
         CvInvoke.Rectangle(image, rec, new Bgr(System.Drawing.Color.Red).MCvScalar, 2);
       }
       foreach (System.Drawing.Rectangle eye in eyes) {
+        // math here is used to create a properly sized rectangle proportionate to the larger image
+        //   since the face detection was performed on a smaller scaled image.
         rec.Width = Convert.ToInt32(eye.Width * (1 / resize));
         rec.Height = Convert.ToInt32(eye.Height * (1 / resize));
         rec.X = Convert.ToInt32(eye.X * (1 / resize));
@@ -92,6 +102,7 @@
       }
 
       using (MemoryStream memory = new MemoryStream()) {
+        // thread safe image processing that updates the MainWindow's ImageViewer's source
         image.Bitmap.Save(memory, ImageFormat.Png);
         memory.Position = 0;
         bitmapImage.Dispatcher.Invoke((Action)(() => {
@@ -115,5 +126,6 @@
       }
 
     }
+
   }
 }

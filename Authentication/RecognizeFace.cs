@@ -34,8 +34,9 @@
             return Eigen_label; //the threshold set in training controls unknowns
         }
       }
+      return "";
     }
-    */
+    //*/
 
   }
 }
