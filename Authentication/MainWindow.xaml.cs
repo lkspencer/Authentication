@@ -24,6 +24,11 @@
     private Mat image = new Mat();
     private long detectionTime;
     private double resize = 1.0;
+    private System.Drawing.Rectangle trainingRectangle = new System.Drawing.Rectangle();
+    private bool trainingRectangleSet = false;
+    private bool training = false;
+    private int trainingCount = 0;
+    private List<Image<Emgu.CV.Structure.Bgr, Byte>> trainingFaces = new List<Image<Bgr, byte>>();
 
     // Constructors
     public MainWindow() {
@@ -79,6 +84,21 @@
           tryUseOpenCL,
           out detectionTime);
         //*/
+        if (training && !trainingRectangleSet && faces != null && faces.Count > 0) {
+          trainingRectangleSet = true;
+          trainingRectangle = faces[0];
+        }
+      }
+      if (training) {
+        if (trainingRectangleSet) {
+          var img = new Image<Emgu.CV.Structure.Bgr, Byte>(640, 480);
+          img.ConvertFrom(image);
+          trainingFaces.Add(img.GetSubRect(trainingRectangle));
+          trainingCount++;
+        }
+        if (trainingCount == 10) {
+          StopTraining();
+        }
       }
       // increment frameNumber till we get to 10 and then reset it (faster
       //   logic than requiring an additional if since we're inside a loop like
@@ -129,5 +149,27 @@
 
     }
 
+    private void Train_Click(object sender, RoutedEventArgs e) {
+      trainingFaces.Clear();
+      training = true;
+      frameNumber = 0;
+      trainingCount = 0;
+    }
+
+
+
+    // Methods
+    private void StopTraining() {
+      training = false;
+      trainingRectangleSet = false;
+      var rf = new Trainer.RecognizeFace("EMGU.CV.EigenFaceRecognizer");
+      Image<Emgu.CV.Structure.Bgr, Byte>[] images = null;
+      int[] labels = new int[10];
+      Dispatcher.Invoke((Action)(() => {
+        images = trainingFaces.ToArray();
+        //labels = (Name.Text + trainingCount).ToIntArray();
+      }));
+      rf.Train(images, labels);
+    }
   }
 }

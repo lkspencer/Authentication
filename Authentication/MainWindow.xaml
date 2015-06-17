@@ -1,9 +1,10 @@
 ﻿<Window x:Class="Trainer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="556" Width="534">
+        Title="MainWindow" Height="556" Width="811">
   <Grid>
     <Image HorizontalAlignment="Left" Height="505" Margin="10,10,0,0" VerticalAlignment="Top" Width="506" Name="ImageViewer"/>
+    <Button x:Name="Train" Content="Train" HorizontalAlignment="Left" Margin="521,10,0,0" VerticalAlignment="Top" Width="75" Click="Train_Click"/>
 
   </Grid>
 </Window>

@@ -3,10 +3,7 @@
   using Emgu.CV.Face;
   using Emgu.CV.Structure;
   using System;
-  using System.Collections.Generic;
-  using System.Linq;
-  using System.Text;
-  using System.Threading.Tasks;
+  using System.Windows;
 
   public class RecognizeFace {
 
@@ -19,9 +16,19 @@
     private int Eigen_threshold = 80;
     private string Eigen_label = "EigenMatch";
 
-    //*
+    public void Train<TColor, TDepth>(Image<TColor, TDepth>[] images, int[] labels) where TColor : struct, IColor where TDepth : new() {
+      FaceRecognizer recognizer = new EigenFaceRecognizer(80, double.PositiveInfinity);
+      try {
+        recognizer.Train(images, labels);
+        recognizer.Save(@"data\database.xml");
+      } catch (Exception ex) {
+        MessageBox.Show(ex.Message);
+      }
+    }
+
     public string Recognise(Image<Gray, Byte> Input_image, int Eigen_Thresh = -1) {
       FaceRecognizer recognizer = new EigenFaceRecognizer(80, double.PositiveInfinity);
+      recognizer.Load(@"data\database.xml");
       if (_IsTrained) {
         FaceRecognizer.PredictionResult predictionResult = recognizer.Predict(Input_image);
         //Only use the post threshold rule if we are using an Eigen Recognizer 
@@ -38,7 +45,6 @@
       }
       return "";
     }
-    //*/
 
   }
 }
