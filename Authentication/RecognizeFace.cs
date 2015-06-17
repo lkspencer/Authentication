@@ -17,7 +17,7 @@
     private bool _IsTrained = false;
     private string recognizerType;
 
-    /*
+    //*
     public string Recognise(Image<Gray, Byte> Input_image, int Eigen_Thresh = -1) {
       FaceRecognizer recognizer = new EigenFaceRecognizer(80, double.PositiveInfinity);
       if (_IsTrained) {
