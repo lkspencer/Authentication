@@ -40,17 +40,6 @@
         capture.Start();
       }
     }
-    private System.Drawing.Bitmap ResizeImage(System.Drawing.Bitmap imgToResize, System.Drawing.Size size) {
-      try {
-        System.Drawing.Bitmap b = new System.Drawing.Bitmap(size.Width, size.Height);
-        using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage((System.Drawing.Image)b)) {
-          g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-          g.DrawImage(imgToResize, 0, 0, size.Width, size.Height);
-        }
-        return b;
-      } catch { }
-      return imgToResize;
-    }
     private void ProcessFrame(object sender, EventArgs e) {
       //Mat image = new Mat("lena.jpg", LoadImageType.Color); //Read the files as an 8-bit Bgr image
       //Mat image = new Mat("kirk.jpg", LoadImageType.Color); //Read the files as an 8-bit Bgr image
