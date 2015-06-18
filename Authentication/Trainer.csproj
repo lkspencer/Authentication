@@ -139,6 +139,18 @@
     <Content Include="data\database.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="EMGU_Dlls\Emgu.CV.Contrib.dll" />
+    <Content Include="EMGU_Dlls\Emgu.CV.Cuda.dll" />
+    <Content Include="EMGU_Dlls\Emgu.CV.dll" />
+    <Content Include="EMGU_Dlls\Emgu.CV.ML.dll" />
+    <Content Include="EMGU_Dlls\Emgu.CV.OCR.dll" />
+    <Content Include="EMGU_Dlls\Emgu.CV.Shape.dll" />
+    <Content Include="EMGU_Dlls\Emgu.CV.Stitching.dll" />
+    <Content Include="EMGU_Dlls\Emgu.CV.Superres.dll" />
+    <Content Include="EMGU_Dlls\Emgu.CV.UI.dll" />
+    <Content Include="EMGU_Dlls\Emgu.CV.UI.GL.dll" />
+    <Content Include="EMGU_Dlls\Emgu.CV.VideoStab.dll" />
+    <Content Include="EMGU_Dlls\Emgu.Util.dll" />
     <Content Include="haarcascade_eye.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
