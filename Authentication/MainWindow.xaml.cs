@@ -38,19 +38,9 @@
       InitializeComponent();
       bitmapImage = new BitmapImage();
       this.Closing += MainWindow_Closing;
-
       InitializeDeviceList();
-
-      // start capturing images from the web camera
-      try {
-        capture = new Capture(DeviceList.SelectedIndex);
-      } catch (NullReferenceException excpt) {
-        MessageBox.Show(excpt.Message);
-      }
-      if (capture != null) {
-        capture.ImageGrabbed += ProcessFrame;
-        capture.Start();
-      }
+      // This will cause the change event to fire and it will start the capture process
+      DeviceList.SelectedIndex = 0;
     }
 
 
@@ -176,6 +166,7 @@
         MessageBox.Show(excpt.Message);
       }
       if (capture != null) {
+        capture.ImageGrabbed -= ProcessFrame;
         capture.ImageGrabbed += ProcessFrame;
         capture.Start();
       }
@@ -197,7 +188,6 @@
       DeviceList.ItemsSource = ListCamerasData;
       DeviceList.DisplayMemberPath = "Value";
       DeviceList.SelectedValuePath = "Key";
-      DeviceList.SelectedIndex = 0;
     }
 
     private void StopTraining() {
