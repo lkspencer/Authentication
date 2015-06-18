@@ -36,6 +36,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DirectShowLib-2005, Version=2.1.0.0, Culture=neutral, PublicKeyToken=67e7b740cdfc2d3f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\DirectShowLib-2005.dll</HintPath>
+    </Reference>
     <Reference Include="Emgu.CV">
       <HintPath>C:\Emgu\emgucv-windows-universal 3.0.0.2132\bin\Emgu.CV.dll</HintPath>
     </Reference>
@@ -55,6 +59,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -119,18 +124,19 @@
     <Content Include="data\database.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="EMGU_Dlls\Emgu.CV.Contrib.dll" />
-    <Content Include="EMGU_Dlls\Emgu.CV.Cuda.dll" />
-    <Content Include="EMGU_Dlls\Emgu.CV.dll" />
-    <Content Include="EMGU_Dlls\Emgu.CV.ML.dll" />
-    <Content Include="EMGU_Dlls\Emgu.CV.OCR.dll" />
-    <Content Include="EMGU_Dlls\Emgu.CV.Shape.dll" />
-    <Content Include="EMGU_Dlls\Emgu.CV.Stitching.dll" />
-    <Content Include="EMGU_Dlls\Emgu.CV.Superres.dll" />
-    <Content Include="EMGU_Dlls\Emgu.CV.UI.dll" />
-    <Content Include="EMGU_Dlls\Emgu.CV.UI.GL.dll" />
-    <Content Include="EMGU_Dlls\Emgu.CV.VideoStab.dll" />
-    <Content Include="EMGU_Dlls\Emgu.Util.dll" />
+    <Content Include="libs\DirectShowLib-2005.dll" />
+    <Content Include="libs\Emgu.CV.Contrib.dll" />
+    <Content Include="libs\Emgu.CV.Cuda.dll" />
+    <Content Include="libs\Emgu.CV.dll" />
+    <Content Include="libs\Emgu.CV.ML.dll" />
+    <Content Include="libs\Emgu.CV.OCR.dll" />
+    <Content Include="libs\Emgu.CV.Shape.dll" />
+    <Content Include="libs\Emgu.CV.Stitching.dll" />
+    <Content Include="libs\Emgu.CV.Superres.dll" />
+    <Content Include="libs\Emgu.CV.UI.dll" />
+    <Content Include="libs\Emgu.CV.UI.GL.dll" />
+    <Content Include="libs\Emgu.CV.VideoStab.dll" />
+    <Content Include="libs\Emgu.Util.dll" />
     <Content Include="haarcascade_eye.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

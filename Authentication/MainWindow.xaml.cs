@@ -1,10 +1,12 @@
 ﻿namespace Trainer {
+  using DirectShowLib;
   using Emgu.CV;
   using Emgu.CV.Structure;
   using System;
   using System.Collections.Generic;
   using System.Drawing.Imaging;
   using System.IO;
+  using System.Management;
   using System.Windows;
   using System.Windows.Media.Imaging;
 
@@ -36,9 +38,23 @@
       bitmapImage = new BitmapImage();
       this.Closing += MainWindow_Closing;
 
+      List<KeyValuePair<int, string>> ListCamerasData = new List<KeyValuePair<int, string>>();
+      //-> Find systems cameras with DirectShow.Net dll 
+      DsDevice[] systemCamereas = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
+      int deviceIndex = 0;
+      foreach (DsDevice camera in systemCamereas) {
+        ListCamerasData.Add(new KeyValuePair<int, string>(deviceIndex, camera.Name));
+        deviceIndex++;
+      }
+      DeviceList.Items.Clear();
+      DeviceList.ItemsSource = ListCamerasData;
+      DeviceList.DisplayMemberPath = "Value";
+      DeviceList.SelectedValuePath = "Key";
+      DeviceList.SelectedIndex = 0;
+
       // start capturing images from the web camera
       try {
-        capture = new Capture();
+        capture = new Capture(DeviceList.SelectedIndex);
       } catch (NullReferenceException excpt) {
         MessageBox.Show(excpt.Message);
       }
@@ -170,6 +186,25 @@
         //labels = (Name.Text + trainingCount).ToIntArray();
       }));
       rf.Train(images, labels);
+    }
+
+    private void DeviceList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
+      try {
+        if (capture != null) capture.Stop();
+      } catch (Exception ex) {
+        MessageBox.Show(ex.Message);
+        return;
+      }
+      // start capturing images from the web camera
+      try {
+        capture = new Capture(DeviceList.SelectedIndex);
+      } catch (NullReferenceException excpt) {
+        MessageBox.Show(excpt.Message);
+      }
+      if (capture != null) {
+        capture.ImageGrabbed += ProcessFrame;
+        capture.Start();
+      }
     }
   }
 }

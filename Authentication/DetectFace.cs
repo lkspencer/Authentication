@@ -87,6 +87,7 @@ namespace Trainer {
 
             faces.AddRange(facesDetected);
 
+            /*
             foreach (Rectangle f in facesDetected) {
               //Get the region of interest on the faces
               using (UMat faceRegion = new UMat(ugray, f)) {
@@ -103,6 +104,7 @@ namespace Trainer {
                 }
               }
             }
+            //*/
           }
           watch.Stop();
         }
