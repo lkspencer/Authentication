@@ -24,7 +24,7 @@
     private System.Drawing.Rectangle rec = new System.Drawing.Rectangle();
     private Mat image = new Mat();
     private long detectionTime;
-    private double resize = 1.0;
+    private double resize = 0.5;
     private System.Drawing.Rectangle trainingRectangle = new System.Drawing.Rectangle();
     private bool trainingRectangleSet = false;
     private bool training = false;
@@ -92,7 +92,7 @@
           trainingFaces.Add(img.GetSubRect(trainingRectangle));
           trainingCount++;
         }
-        if (trainingCount == 10) {
+        if (trainingCount == 5) {
           StopTraining();
         }
       }
