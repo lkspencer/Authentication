@@ -6,7 +6,6 @@
   using System.Collections.Generic;
   using System.Drawing.Imaging;
   using System.IO;
-  using System.Management;
   using System.Windows;
   using System.Windows.Media.Imaging;
 
@@ -30,7 +29,9 @@
     private bool trainingRectangleSet = false;
     private bool training = false;
     private int trainingCount = 0;
-    private List<Image<Emgu.CV.Structure.Bgr, Byte>> trainingFaces = new List<Image<Bgr, byte>>();
+    private List<Image<Bgr, Byte>> trainingFaces = new List<Image<Bgr, byte>>();
+
+
 
     // Constructors
     public MainWindow() {
@@ -38,19 +39,7 @@
       bitmapImage = new BitmapImage();
       this.Closing += MainWindow_Closing;
 
-      List<KeyValuePair<int, string>> ListCamerasData = new List<KeyValuePair<int, string>>();
-      //-> Find systems cameras with DirectShow.Net dll 
-      DsDevice[] systemCamereas = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
-      int deviceIndex = 0;
-      foreach (DsDevice camera in systemCamereas) {
-        ListCamerasData.Add(new KeyValuePair<int, string>(deviceIndex, camera.Name));
-        deviceIndex++;
-      }
-      DeviceList.Items.Clear();
-      DeviceList.ItemsSource = ListCamerasData;
-      DeviceList.DisplayMemberPath = "Value";
-      DeviceList.SelectedValuePath = "Key";
-      DeviceList.SelectedIndex = 0;
+      InitializeDeviceList();
 
       // start capturing images from the web camera
       try {
@@ -63,6 +52,7 @@
         capture.Start();
       }
     }
+
 
 
 
@@ -79,7 +69,7 @@
       // only look for a face if the frameNumber equals 0
       if (frameNumber == 0) {
         // create a smaller image for the face detection
-        Image<Emgu.CV.Structure.Bgr, Byte> img = new Image<Emgu.CV.Structure.Bgr, Byte>(640, 480);
+        Image<Bgr, Byte> img = new Image<Bgr, Byte>(640, 480);
         img.ConvertFrom(image);
         img = img.Resize(resize, Emgu.CV.CvEnum.Inter.Linear);
         // uncomment this line to overwrite the image variable to see the scaled image in our form
@@ -107,7 +97,7 @@
       }
       if (training) {
         if (trainingRectangleSet) {
-          var img = new Image<Emgu.CV.Structure.Bgr, Byte>(640, 480);
+          var img = new Image<Bgr, Byte>(640, 480);
           img.ConvertFrom(image);
           trainingFaces.Add(img.GetSubRect(trainingRectangle));
           trainingCount++;
@@ -172,22 +162,6 @@
       trainingCount = 0;
     }
 
-
-
-    // Methods
-    private void StopTraining() {
-      training = false;
-      trainingRectangleSet = false;
-      var rf = new Trainer.RecognizeFace("EMGU.CV.EigenFaceRecognizer");
-      Image<Emgu.CV.Structure.Bgr, Byte>[] images = null;
-      int[] labels = new int[10];
-      Dispatcher.Invoke((Action)(() => {
-        images = trainingFaces.ToArray();
-        //labels = (Name.Text + trainingCount).ToIntArray();
-      }));
-      rf.Train(images, labels);
-    }
-
     private void DeviceList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
       try {
         if (capture != null) capture.Stop();
@@ -206,5 +180,38 @@
         capture.Start();
       }
     }
+
+
+
+    // Methods
+    private void InitializeDeviceList() {
+      List<KeyValuePair<int, string>> ListCamerasData = new List<KeyValuePair<int, string>>();
+      //-> Find systems cameras with DirectShow.Net dll 
+      DsDevice[] systemCamereas = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
+      int deviceIndex = 0;
+      foreach (DsDevice camera in systemCamereas) {
+        ListCamerasData.Add(new KeyValuePair<int, string>(deviceIndex, camera.Name));
+        deviceIndex++;
+      }
+      DeviceList.Items.Clear();
+      DeviceList.ItemsSource = ListCamerasData;
+      DeviceList.DisplayMemberPath = "Value";
+      DeviceList.SelectedValuePath = "Key";
+      DeviceList.SelectedIndex = 0;
+    }
+
+    private void StopTraining() {
+      training = false;
+      trainingRectangleSet = false;
+      var rf = new Trainer.RecognizeFace("EMGU.CV.EigenFaceRecognizer");
+      Image<Emgu.CV.Structure.Bgr, Byte>[] images = null;
+      int[] labels = new int[10];
+      Dispatcher.Invoke((Action)(() => {
+        images = trainingFaces.ToArray();
+        //labels = (Name.Text + trainingCount).ToIntArray();
+      }));
+      rf.Train(images, labels);
+    }
+
   }
 }
