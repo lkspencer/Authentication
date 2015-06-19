@@ -25,10 +25,14 @@
     private Mat image = new Mat();
     private long detectionTime;
     private double resize = 0.5;
-    private System.Drawing.Rectangle trainingRectangle = new System.Drawing.Rectangle();
+    private RecognizeFace recognizeFace;
+
     private bool training = false;
     private int trainingCount = 0;
-    private List<Image<Bgr, Byte>> trainingFaces = new List<Image<Bgr, byte>>();
+    private System.Drawing.Rectangle trainingRectangle = new System.Drawing.Rectangle();
+    private List<Image<Gray, Byte>> trainingFaces = new List<Image<Gray, byte>>();
+
+    private bool predicting = false;
 
 
 
@@ -37,6 +41,10 @@
       InitializeComponent();
       bitmapImage = new BitmapImage();
       this.Closing += MainWindow_Closing;
+      //recognizeFace = new RecognizeFace("EMGU.CV.EigenFaceRecognizer");
+      recognizeFace = new RecognizeFace("EMGU.CV.LBPHFaceRecognizer");
+      //recognizeFace = new RecognizeFace("EMGU.CV.FisherFaceRecognizer");
+
       InitializeDeviceList();
       // This will cause the change event to fire and it will start the capture process
       DeviceList.SelectedIndex = 0;
@@ -86,15 +94,28 @@
           trainingRectangle.Height = Convert.ToInt32(faces[0].Height * (1 / resize));
           trainingRectangle.X = Convert.ToInt32(faces[0].X * (1 / resize));
           trainingRectangle.Y = Convert.ToInt32(faces[0].Y * (1 / resize));
-          img = new Image<Bgr, Byte>(640, 480);
-          img.ConvertFrom(image);
-          img.ROI = trainingRectangle;
-          img = img.Resize(64, 64, Emgu.CV.CvEnum.Inter.Cubic);
-          trainingFaces.Add(img);
+          var face = new Image<Gray, Byte>(640, 480);
+          face.ConvertFrom(image);
+          face.ROI = trainingRectangle;
+          face = face.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+          trainingFaces.Add(face);
           trainingCount++;
           if (trainingCount == 10) {
             StopTraining();
           }
+        } else if (predicting && faces != null && faces.Count > 0) {
+          predicting = false;
+          trainingRectangle = faces[0];
+          trainingRectangle.Width = Convert.ToInt32(faces[0].Width * (1 / resize));
+          trainingRectangle.Height = Convert.ToInt32(faces[0].Height * (1 / resize));
+          trainingRectangle.X = Convert.ToInt32(faces[0].X * (1 / resize));
+          trainingRectangle.Y = Convert.ToInt32(faces[0].Y * (1 / resize));
+          img = new Image<Bgr, Byte>(640, 480);
+          img.ConvertFrom(image);
+          img.ROI = trainingRectangle;
+          img = img.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+          var gray = img.Convert<Gray, Byte>();
+          MessageBox.Show(recognizeFace.Recognise(gray, 70));
         }
       }
       // increment frameNumber till we get to 10 and then reset it (faster
@@ -173,6 +194,10 @@
       }
     }
 
+    private void Predict_Click(object sender, RoutedEventArgs e) {
+      predicting = true;
+    }
+
 
 
     // Methods
@@ -193,8 +218,7 @@
 
     private void StopTraining() {
       training = false;
-      var rf = new RecognizeFace("EMGU.CV.EigenFaceRecognizer");
-      Image<Bgr, Byte>[] images = null;
+      Image<Gray, Byte>[] images = null;
       int[] labels = new int[10];
       Dispatcher.Invoke((Action)(() => {
         images = trainingFaces.ToArray();
@@ -209,7 +233,7 @@
           i++;
         }
       }));
-      rf.Train(images, labels);
+      recognizeFace.Train(images, labels);
     }
 
   }
