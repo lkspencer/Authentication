@@ -4,8 +4,9 @@
         Title="Authentication" Height="556" Width="811" ResizeMode="CanMinimize" ScrollViewer.CanContentScroll="True">
   <Grid>
     <Image HorizontalAlignment="Left" Height="505" Margin="10,10,0,0" VerticalAlignment="Top" Width="506" Name="ImageViewer"/>
-    <Button x:Name="Train" Content="Train" HorizontalAlignment="Left" Margin="521,37,0,0" VerticalAlignment="Top" Width="75" Click="Train_Click"/>
+    <Button x:Name="Train" Content="Train" HorizontalAlignment="Left" Margin="521,65,0,0" VerticalAlignment="Top" Width="75" Click="Train_Click"/>
     <ComboBox x:Name="DeviceList" HorizontalAlignment="Left" Margin="521,10,0,0" VerticalAlignment="Top" Width="157" SelectionChanged="DeviceList_SelectionChanged"/>
+    <TextBox x:Name="NameTextBox" HorizontalAlignment="Left" Height="23" Margin="521,37,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
 
   </Grid>
 </Window>

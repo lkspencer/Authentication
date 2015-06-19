@@ -26,7 +26,6 @@
     private long detectionTime;
     private double resize = 0.5;
     private System.Drawing.Rectangle trainingRectangle = new System.Drawing.Rectangle();
-    private bool trainingRectangleSet = false;
     private bool training = false;
     private int trainingCount = 0;
     private List<Image<Bgr, Byte>> trainingFaces = new List<Image<Bgr, byte>>();
@@ -80,20 +79,22 @@
           tryUseOpenCL,
           out detectionTime);
         //*/
-        if (training && !trainingRectangleSet && faces != null && faces.Count > 0) {
-          trainingRectangleSet = true;
+
+        if (training && faces != null && faces.Count > 0) {
           trainingRectangle = faces[0];
-        }
-      }
-      if (training) {
-        if (trainingRectangleSet) {
-          var img = new Image<Bgr, Byte>(640, 480);
+          trainingRectangle.Width = Convert.ToInt32(faces[0].Width * (1 / resize));
+          trainingRectangle.Height = Convert.ToInt32(faces[0].Height * (1 / resize));
+          trainingRectangle.X = Convert.ToInt32(faces[0].X * (1 / resize));
+          trainingRectangle.Y = Convert.ToInt32(faces[0].Y * (1 / resize));
+          img = new Image<Bgr, Byte>(640, 480);
           img.ConvertFrom(image);
-          trainingFaces.Add(img.GetSubRect(trainingRectangle));
+          img.ROI = trainingRectangle;
+          img = img.Resize(64, 64, Emgu.CV.CvEnum.Inter.Cubic);
+          trainingFaces.Add(img);
           trainingCount++;
-        }
-        if (trainingCount == 5) {
-          StopTraining();
+          if (trainingCount == 10) {
+            StopTraining();
+          }
         }
       }
       // increment frameNumber till we get to 10 and then reset it (faster
@@ -192,13 +193,21 @@
 
     private void StopTraining() {
       training = false;
-      trainingRectangleSet = false;
-      var rf = new Trainer.RecognizeFace("EMGU.CV.EigenFaceRecognizer");
-      Image<Emgu.CV.Structure.Bgr, Byte>[] images = null;
+      var rf = new RecognizeFace("EMGU.CV.EigenFaceRecognizer");
+      Image<Bgr, Byte>[] images = null;
       int[] labels = new int[10];
       Dispatcher.Invoke((Action)(() => {
         images = trainingFaces.ToArray();
-        //labels = (Name.Text + trainingCount).ToIntArray();
+        int i = 0;
+        foreach (var face in trainingFaces) {
+          if (i < 10) {
+            face.Save(@"data\" + NameTextBox.Text + "0" + i + ".bmp");
+          } else {
+            face.Save(@"data\" + NameTextBox.Text + i + ".bmp");
+          }
+          labels[i] = i;
+          i++;
+        }
       }));
       rf.Train(images, labels);
     }
