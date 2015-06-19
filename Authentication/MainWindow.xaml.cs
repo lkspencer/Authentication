@@ -115,7 +115,9 @@
           img.ROI = trainingRectangle;
           img = img.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
           var gray = img.Convert<Gray, Byte>();
-          MessageBox.Show(recognizeFace.Recognise(gray, 70));
+          Dispatcher.Invoke((Action)(() => {
+            PredictMessage.Content = recognizeFace.Recognise(gray, 70);
+          }));
         }
       }
       // increment frameNumber till we get to 10 and then reset it (faster
@@ -168,6 +170,9 @@
     }
 
     private void Train_Click(object sender, RoutedEventArgs e) {
+      Dispatcher.Invoke((Action)(() => {
+        TrainMessage.Content = "Training Started";
+      }));
       trainingFaces.Clear();
       training = true;
       frameNumber = 0;
@@ -234,6 +239,9 @@
         }
       }));
       recognizeFace.Train(images, labels);
+      Dispatcher.Invoke((Action)(() => {
+        TrainMessage.Content = "Done Training";
+      }));
     }
 
   }
