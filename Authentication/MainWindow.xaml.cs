@@ -2,246 +2,308 @@
   using DirectShowLib;
   using Emgu.CV;
   using Emgu.CV.Structure;
+  using Microsoft.Kinect;
+  using Microsoft.Kinect.Face;
   using System;
   using System.Collections.Generic;
   using System.Drawing.Imaging;
   using System.IO;
+  using System.Linq;
   using System.Windows;
+  using System.Windows.Media;
   using System.Windows.Media.Imaging;
-
 
   // EMGU documentation link for our reference: http://www.emgu.com/wiki/files/3.0.0-alpha/document/html/b72c032d-59ae-c36f-5e00-12f8d621dfb8.htm
   public partial class MainWindow : Window {
     // MainWindow Variables
-    private Capture capture = null;
-    private bool tryUseCuda = false;
-    private bool tryUseOpenCL = true;
-    private BitmapImage bitmapImage;
-    private bool initialized = false;
-    private List<System.Drawing.Rectangle> faces = new List<System.Drawing.Rectangle>();
-    private List<System.Drawing.Rectangle> eyes = new List<System.Drawing.Rectangle>();
-    private int frameNumber = 0;
-    private System.Drawing.Rectangle rec = new System.Drawing.Rectangle();
-    private Mat image = new Mat();
-    private long detectionTime;
-    private double resize = 0.5;
     private RecognizeFace recognizeFace;
-
     private bool training = false;
     private int trainingCount = 0;
-    private System.Drawing.Rectangle trainingRectangle = new System.Drawing.Rectangle();
+    private System.Drawing.Rectangle face = new System.Drawing.Rectangle();
     private List<Image<Gray, Byte>> trainingFaces = new List<Image<Gray, byte>>();
-
     private bool predicting = false;
+    /// <summary>
+    /// Active Kinect sensor
+    /// </summary>
+    private KinectSensor kinectSensor = null;
+    /// <summary>
+    /// Reader for color frames
+    /// </summary>
+    private ColorFrameReader colorFrameReader = null;
+    /// <summary>
+    /// Bitmap to display
+    /// </summary>
+    private WriteableBitmap colorBitmap = null;
+    /// <summary>
+    /// The face frame source
+    /// </summary>
+    FaceFrameSource faceFrameSource = null;
+    /// <summary>
+    /// Reader for faces
+    /// </summary>
+    private FaceFrameReader faceFrameReader = null;
+    /// <summary>
+    /// The body frame reader is used to identify the bodies
+    /// </summary>
+    BodyFrameReader bodyFrameReader = null;
+    /// <summary>
+    /// The list of bodies identified by the sensor
+    /// </summary>
+    IList<Body> bodies = null;
+    /// <summary>
+    /// Gets the bitmap to display
+    /// </summary>
+    public ImageSource ImageSource {
+      get {
+        return this.colorBitmap;
+      }
+    }
 
 
 
     // Constructors
     public MainWindow() {
-      InitializeComponent();
-      bitmapImage = new BitmapImage();
-      this.Closing += MainWindow_Closing;
+      // get the kinectSensor object
+      this.kinectSensor = KinectSensor.GetDefault();
+
+      // create the colorFrameDescription from the ColorFrameSource using Bgra format
+      FrameDescription colorFrameDescription = this.kinectSensor.ColorFrameSource.CreateFrameDescription(ColorImageFormat.Bgra);
+
+      // create the writeable bitmap to display our frames
+      this.colorBitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+
+      // create our bodies array to track human bodies in the field of view
+      this.bodies = new Body[this.kinectSensor.BodyFrameSource.BodyCount];
+
+      // specify which facial features we're interested in capturing
+      this.faceFrameSource = new FaceFrameSource(this.kinectSensor, 0,
+        FaceFrameFeatures.BoundingBoxInColorSpace |
+        FaceFrameFeatures.FaceEngagement |
+        FaceFrameFeatures.Glasses |
+        FaceFrameFeatures.Happy |
+        FaceFrameFeatures.LeftEyeClosed |
+        FaceFrameFeatures.MouthOpen |
+        FaceFrameFeatures.PointsInColorSpace |
+        FaceFrameFeatures.RightEyeClosed);
+
+      // open the reader for the face frames
+      this.colorFrameReader = this.kinectSensor.ColorFrameSource.OpenReader();
+      this.bodyFrameReader = this.kinectSensor.BodyFrameSource.OpenReader();
+      this.faceFrameReader = this.faceFrameSource.OpenReader();
+
+      // wire handlers for frame arrivals
+      this.colorFrameReader.FrameArrived += this.Reader_ColorFrameArrived;
+      this.bodyFrameReader.FrameArrived += this.BodyFrameReader_FrameArrived;
+      this.faceFrameReader.FrameArrived += this.FaceFrameReader_FrameArrived;
+
+      // open the sensor
+      this.kinectSensor.Open();
+
+      // specify which opencv recognizer to use for facial recognition
       //recognizeFace = new RecognizeFace("EMGU.CV.EigenFaceRecognizer");
       recognizeFace = new RecognizeFace("EMGU.CV.LBPHFaceRecognizer");
       //recognizeFace = new RecognizeFace("EMGU.CV.FisherFaceRecognizer");
 
-      InitializeDeviceList();
-      // This will cause the change event to fire and it will start the capture process
-      DeviceList.SelectedIndex = 0;
+      // use the window object as the view model in this simple example
+      this.DataContext = this;
+
+      LoadTrainedFaces();
+
+      InitializeComponent();
     }
 
+    private void BodyFrameReader_FrameArrived(object sender, BodyFrameArrivedEventArgs e) {
+      using (var frame = e.FrameReference.AcquireFrame()) {
+        if (frame != null) {
+          frame.GetAndRefreshBodyData(bodies);
+
+          Body body = bodies.Where(b => b.IsTracked).FirstOrDefault();
+
+          if (!faceFrameSource.IsTrackingIdValid) {
+            if (body != null) {
+              // Assign a tracking ID to the face source
+              faceFrameSource.TrackingId = body.TrackingId;
+            }
+          }
+        }
+      }
+    }
+
+    private void FaceFrameReader_FrameArrived(object sender, FaceFrameArrivedEventArgs e) {
+      var frame = e.FrameReference.AcquireFrame();
+      if (frame != null && frame.FaceFrameResult != null && frame.FaceFrameResult.FaceBoundingBoxInColorSpace != null) {
+        var box = frame.FaceFrameResult.FaceBoundingBoxInColorSpace;
+        face.Width = box.Right - box.Left;
+        face.Height = box.Bottom - box.Top;
+        face.X = box.Left;
+        face.Y = box.Top;
+
+        try {
+          DrawSquare(face.Width, face.Height, box.Left, box.Top);
+        } catch (Exception ex) { }
+      }
+    }
+
+    private void Reader_ColorFrameArrived(object sender, ColorFrameArrivedEventArgs e) {
+      // ColorFrame is IDisposable
+      using (ColorFrame colorFrame = e.FrameReference.AcquireFrame()) {
+        if (colorFrame != null) {
+          FrameDescription colorFrameDescription = colorFrame.FrameDescription;
+
+          using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer()) {
+            this.colorBitmap.Lock();
+
+            // verify data and write the new color frame data to the display bitmap
+            if ((colorFrameDescription.Width == this.colorBitmap.PixelWidth) && (colorFrameDescription.Height == this.colorBitmap.PixelHeight)) {
+              colorFrame.CopyConvertedFrameDataToIntPtr(
+                  this.colorBitmap.BackBuffer,
+                  (uint)(colorFrameDescription.Width * colorFrameDescription.Height * 4),
+                  ColorImageFormat.Bgra);
+
+              this.colorBitmap.AddDirtyRect(new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight));
+            }
+
+            this.colorBitmap.Unlock();
+          }
+          //*
+          if (training && face.Width > 0 && face.Height > 0) {
+            // grab the bytes for the image inside of the frame
+            byte[] pixels = new byte[face.Width * face.Height * 4];
+            this.colorBitmap.CopyPixels(
+              new Int32Rect(face.X, face.Y, face.Width, face.Height),
+              pixels, face.Width * 4, 0);
+
+            // load the image into a format emgu opencv understands
+            var faceImage = new Image<Bgra, Byte>(face.Width, face.Height);
+            faceImage.Bytes = pixels;
+            // resize so we always have the same size of images to work with
+            faceImage = faceImage.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+            // convert to grayscale for emgu opencv facial recognition
+            var grayFace = new Image<Gray, Byte>(100, 100);
+            grayFace.ConvertFrom<Bgra, Byte>(faceImage);
+
+            trainingFaces.Add(grayFace);
+            trainingCount++;
+            if (trainingCount == 10) {
+              StopTraining();
+            }
+          } else if (predicting && face.Width > 0 && face.Height > 0) {
+            //predicting = false;
+            // grab the bytes for the image inside of the frame
+            byte[] pixels = new byte[face.Width * face.Height * 4];
+            this.colorBitmap.CopyPixels(
+              new Int32Rect(face.X, face.Y, face.Width, face.Height),
+              pixels, face.Width * 4, 0);
+
+            // load the image into a format emgu opencv understands
+            var faceImage = new Image<Bgra, Byte>(face.Width, face.Height);
+            faceImage.Bytes = pixels;
+            // resize so we always have the same size of images to work with
+            faceImage = faceImage.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+            // convert to grayscale for emgu opencv facial recognition
+            var grayFace = new Image<Gray, Byte>(100, 100);
+            grayFace.ConvertFrom<Bgra, Byte>(faceImage);
+
+            PredictMessage.Content = recognizeFace.Recognise(grayFace, 75);
+          }
+        }
+      }
+    }
 
 
 
     // Event Handlers
-    private void ProcessFrame(object sender, EventArgs e) {
-      // pull the image captured from the web camera
-      try {
-        capture.Retrieve(image);
-      } catch (Exception ex) {
-        MessageBox.Show(ex.Message);
-        return;
-      }
-
-      // only look for a face if the frameNumber equals 0
-      if (frameNumber == 0) {
-        // create a smaller image for the face detection
-        Image<Bgr, Byte> img = new Image<Bgr, Byte>(640, 480);
-        img.ConvertFrom(image);
-        img = img.Resize(resize, Emgu.CV.CvEnum.Inter.Linear);
-        // uncomment this line to overwrite the image variable to see the scaled image in our form
-        //   instead of the full image.
-        //image = img.Mat;
-
-        faces.Clear();
-        eyes.Clear();
-        // The cuda cascade classifier doesn't seem to be able to load "haarcascade_frontalface_default.xml"
-        //   file in this release disabling CUDA module for now
-
-        //* DetectFace.Detect is a very expensive process. We might need to consider not doing this on every frame
-        DetectFace.Detect(
-          img.Mat,
-          "haarcascade_frontalface_default.xml", "haarcascade_eye.xml",
-          faces, eyes,
-          tryUseCuda,
-          tryUseOpenCL,
-          out detectionTime);
-        //*/
-
-        if (training && faces != null && faces.Count > 0) {
-          trainingRectangle = faces[0];
-          trainingRectangle.Width = Convert.ToInt32(faces[0].Width * (1 / resize));
-          trainingRectangle.Height = Convert.ToInt32(faces[0].Height * (1 / resize));
-          trainingRectangle.X = Convert.ToInt32(faces[0].X * (1 / resize));
-          trainingRectangle.Y = Convert.ToInt32(faces[0].Y * (1 / resize));
-          var face = new Image<Gray, Byte>(640, 480);
-          face.ConvertFrom(image);
-          face.ROI = trainingRectangle;
-          face = face.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
-          trainingFaces.Add(face);
-          trainingCount++;
-          if (trainingCount == 10) {
-            StopTraining();
-          }
-        } else if (predicting && faces != null && faces.Count > 0) {
-          predicting = false;
-          trainingRectangle = faces[0];
-          trainingRectangle.Width = Convert.ToInt32(faces[0].Width * (1 / resize));
-          trainingRectangle.Height = Convert.ToInt32(faces[0].Height * (1 / resize));
-          trainingRectangle.X = Convert.ToInt32(faces[0].X * (1 / resize));
-          trainingRectangle.Y = Convert.ToInt32(faces[0].Y * (1 / resize));
-          img = new Image<Bgr, Byte>(640, 480);
-          img.ConvertFrom(image);
-          img.ROI = trainingRectangle;
-          img = img.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
-          var gray = img.Convert<Gray, Byte>();
-          Dispatcher.Invoke((Action)(() => {
-            PredictMessage.Content = recognizeFace.Recognise(gray, 70);
-          }));
-        }
-      }
-      // increment frameNumber till we get to 10 and then reset it (faster
-      //   logic than requiring an additional if since we're inside a loop like
-      //   situation.
-      frameNumber = ++frameNumber % 10;
-      foreach (System.Drawing.Rectangle face in faces) {
-        // math here is used to create a properly sized rectangle proportionate to the larger image
-        //   since the face detection was performed on a smaller scaled image.
-        rec.Width = Convert.ToInt32(face.Width * (1 / resize));
-        rec.Height = Convert.ToInt32(face.Height * (1 / resize));
-        rec.X = Convert.ToInt32(face.X * (1 / resize));
-        rec.Y = Convert.ToInt32(face.Y * (1 / resize));
-        CvInvoke.Rectangle(image, rec, new Bgr(System.Drawing.Color.Red).MCvScalar, 2);
-      }
-      foreach (System.Drawing.Rectangle eye in eyes) {
-        // math here is used to create a properly sized rectangle proportionate to the larger image
-        //   since the face detection was performed on a smaller scaled image.
-        rec.Width = Convert.ToInt32(eye.Width * (1 / resize));
-        rec.Height = Convert.ToInt32(eye.Height * (1 / resize));
-        rec.X = Convert.ToInt32(eye.X * (1 / resize));
-        rec.Y = Convert.ToInt32(eye.Y * (1 / resize));
-        CvInvoke.Rectangle(image, rec, new Bgr(System.Drawing.Color.Blue).MCvScalar, 2);
-      }
-
-      using (MemoryStream memory = new MemoryStream()) {
-        // thread safe image processing that updates the MainWindow's ImageViewer's source
-        image.Bitmap.Save(memory, ImageFormat.Png);
-        memory.Position = 0;
-        bitmapImage.Dispatcher.Invoke((Action)(() => {
-          bitmapImage = new BitmapImage();
-          bitmapImage.BeginInit();
-          bitmapImage.StreamSource = memory;
-          bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-          bitmapImage.EndInit();
-          var wb = new WriteableBitmap(bitmapImage);
-          ImageViewer.Source = wb;
-        }));
-      }
-    }
-
-    private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-      try {
-        capture.Stop();
-      } catch (Exception ex) {
-        MessageBox.Show(ex.Message);
-        return;
-      }
-
-    }
-
     private void Train_Click(object sender, RoutedEventArgs e) {
       Dispatcher.Invoke((Action)(() => {
         TrainMessage.Content = "Training Started";
       }));
       trainingFaces.Clear();
       training = true;
-      frameNumber = 0;
       trainingCount = 0;
     }
 
-    private void DeviceList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
-      try {
-        if (capture != null) capture.Stop();
-      } catch (Exception ex) {
-        MessageBox.Show(ex.Message);
-        return;
-      }
-      // start capturing images from the web camera
-      try {
-        capture = new Capture(DeviceList.SelectedIndex);
-      } catch (NullReferenceException excpt) {
-        MessageBox.Show(excpt.Message);
-      }
-      if (capture != null) {
-        capture.ImageGrabbed -= ProcessFrame;
-        capture.ImageGrabbed += ProcessFrame;
-        capture.Start();
-      }
-    }
-
     private void Predict_Click(object sender, RoutedEventArgs e) {
-      predicting = true;
+      predicting = Predict.IsChecked.GetValueOrDefault();
+      if (!predicting) PredictMessage.Content = "";
     }
 
 
 
     // Methods
-    private void InitializeDeviceList() {
-      List<KeyValuePair<int, string>> ListCamerasData = new List<KeyValuePair<int, string>>();
-      //-> Find systems cameras with DirectShow.Net dll 
-      DsDevice[] systemCamereas = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
-      int deviceIndex = 0;
-      foreach (DsDevice camera in systemCamereas) {
-        ListCamerasData.Add(new KeyValuePair<int, string>(deviceIndex, camera.Name));
-        deviceIndex++;
-      }
-      DeviceList.Items.Clear();
-      DeviceList.ItemsSource = ListCamerasData;
-      DeviceList.DisplayMemberPath = "Value";
-      DeviceList.SelectedValuePath = "Key";
-    }
-
     private void StopTraining() {
       training = false;
-      Image<Gray, Byte>[] images = null;
-      int[] labels = new int[10];
-      Dispatcher.Invoke((Action)(() => {
-        images = trainingFaces.ToArray();
-        int i = 0;
-        foreach (var face in trainingFaces) {
-          if (i < 10) {
-            face.Save(@"data\" + NameTextBox.Text + "0" + i + ".bmp");
-          } else {
-            face.Save(@"data\" + NameTextBox.Text + i + ".bmp");
-          }
-          labels[i] = i;
-          i++;
-        }
-      }));
+      DirectoryInfo di = new DirectoryInfo(@"data");
+      var files = di.EnumerateFiles("face_*.bmp");
+      int[] labels = new int[files.Count() + 10];
+      int i = 0;
+      Image<Gray, Byte>[] images = new Image<Gray, Byte>[files.Count() + 10];
+      foreach (var file in files) {
+        labels[i] = i;
+        images[i] = new Image<Gray, Byte>(file.FullName);
+        i++;
+      }
+
+      files = di.EnumerateFiles("face_" + NameTextBox.Text + "_*.bmp");
+      // getting the current count of files should give us the next available index number that can be used
+      int fileIndex = files.Count();
+      foreach (var face in trainingFaces) {
+        face.Save(@"data\face_" + NameTextBox.Text + "_" + fileIndex + ".bmp");
+        images[i] = face;
+        labels[i] = i;
+        fileIndex++;
+        i++;
+      }
       recognizeFace.Train(images, labels);
-      Dispatcher.Invoke((Action)(() => {
-        TrainMessage.Content = "Done Training";
-      }));
+      TrainMessage.Content = "Done Training";
+    }
+
+    private void DrawSquare(int width, int height, int x, int y) {
+      int size = width * height;
+      int borderWidth = 9;
+      byte[] pixels = new byte[width * height * 4];
+      this.colorBitmap.CopyPixels(
+        new Int32Rect(x, y, width, height),
+        pixels, width * 4, 0);
+      for (int i = 0; i < size; i++) {
+        if (i < (width * borderWidth)) {
+          var start = i * 4;
+          pixels[start] = 0;
+          pixels[start + 1] = 0;
+          pixels[start + 2] = 0;
+          pixels[start + 3] = 0;
+        } else if (i % width == 0) {
+          for (int j = i - borderWidth; j < i + borderWidth; j++) {
+            var start = (j) * 4;
+            pixels[start] = 0;
+            pixels[start + 1] = 0;
+            pixels[start + 2] = 0;
+            pixels[start + 3] = 0;
+          }
+        } else if (i > size - (width * borderWidth)) {
+          var start = i * 4;
+          pixels[start] = 0;
+          pixels[start + 1] = 0;
+          pixels[start + 2] = 0;
+          pixels[start + 3] = 0;
+        }
+      }
+      this.colorBitmap.WritePixels(
+        new Int32Rect(0, 0, width, height),
+        pixels, width * 4, x, y);
+    }
+
+    private void LoadTrainedFaces() {
+      DirectoryInfo di = new DirectoryInfo(@"data");
+      var files = di.EnumerateFiles("face_*.bmp");
+      int[] labels = new int[files.Count()];
+      int i = 0;
+      Image<Gray, Byte>[] images = new Image<Gray, Byte>[files.Count()];
+      foreach (var file in files) {
+        labels[i] = i;
+        images[i] = new Image<Gray, Byte>(file.FullName);
+        i++;
+      }
+      recognizeFace.Train(images, labels, true);
     }
 
   }
