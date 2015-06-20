@@ -101,15 +101,36 @@
 
       // specify which opencv recognizer to use for facial recognition
       //recognizeFace = new RecognizeFace("EMGU.CV.EigenFaceRecognizer");
-      recognizeFace = new RecognizeFace("EMGU.CV.LBPHFaceRecognizer");
+      this.recognizeFace = new RecognizeFace("EMGU.CV.LBPHFaceRecognizer");
       //recognizeFace = new RecognizeFace("EMGU.CV.FisherFaceRecognizer");
+
+      // setup facial recognition callbacks
+      this.recognizeFace.FaceRecognitionArrived += FaceRecognitionArrived;
+      this.recognizeFace.FaceTrainingComplete += FaceTrainingComplete;
 
       // use the window object as the view model in this simple example
       this.DataContext = this;
 
-      LoadTrainedFaces();
 
       InitializeComponent();
+
+      LoadTrainedFaces();
+    }
+
+
+
+    // Event Handlers
+    private void FaceTrainingComplete(bool trained) {
+      if (trained) {
+        TrainMessage.Content = "Done Training";
+      } else {
+        TrainMessage.Content = "Training Failed";
+      }
+      Train.IsEnabled = true;
+    }
+
+    private void FaceRecognitionArrived(string result) {
+      this.PredictMessage.Content = result;
     }
 
     private void BodyFrameReader_FrameArrived(object sender, BodyFrameArrivedEventArgs e) {
@@ -139,7 +160,9 @@
         face.Y = box.Top;
 
         try {
-          DrawSquare(face.Width, face.Height, box.Left, box.Top);
+          if (training || predicting) {
+            DrawSquare(face.Width, face.Height, box.Left, box.Top);
+          }
         } catch (Exception ex) { }
       }
     }
@@ -167,26 +190,29 @@
           }
           //*
           if (training && face.Width > 0 && face.Height > 0) {
-            // grab the bytes for the image inside of the frame
-            byte[] pixels = new byte[face.Width * face.Height * 4];
-            this.colorBitmap.CopyPixels(
-              new Int32Rect(face.X, face.Y, face.Width, face.Height),
-              pixels, face.Width * 4, 0);
+            if (trainingCount % 10 == 0) {
+              TrainMessage.Content = "Capturing face";
+              // grab the bytes for the image inside of the frame
+              byte[] pixels = new byte[face.Width * face.Height * 4];
+              this.colorBitmap.CopyPixels(
+                new Int32Rect(face.X, face.Y, face.Width, face.Height),
+                pixels, face.Width * 4, 0);
 
-            // load the image into a format emgu opencv understands
-            var faceImage = new Image<Bgra, Byte>(face.Width, face.Height);
-            faceImage.Bytes = pixels;
-            // resize so we always have the same size of images to work with
-            faceImage = faceImage.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
-            // convert to grayscale for emgu opencv facial recognition
-            var grayFace = new Image<Gray, Byte>(100, 100);
-            grayFace.ConvertFrom<Bgra, Byte>(faceImage);
+              // load the image into a format emgu opencv understands
+              var faceImage = new Image<Bgra, Byte>(face.Width, face.Height);
+              faceImage.Bytes = pixels;
+              // resize so we always have the same size of images to work with
+              faceImage = faceImage.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+              // convert to grayscale for emgu opencv facial recognition
+              var grayFace = new Image<Gray, Byte>(100, 100);
+              grayFace.ConvertFrom<Bgra, Byte>(faceImage);
 
-            trainingFaces.Add(grayFace);
-            trainingCount++;
-            if (trainingCount == 10) {
-              StopTraining();
+              trainingFaces.Add(grayFace);
+              if (trainingCount == 90) {
+                StopTraining();
+              }
             }
+            trainingCount++;
           } else if (predicting && face.Width > 0 && face.Height > 0) {
             //predicting = false;
             // grab the bytes for the image inside of the frame
@@ -204,19 +230,15 @@
             var grayFace = new Image<Gray, Byte>(100, 100);
             grayFace.ConvertFrom<Bgra, Byte>(faceImage);
 
-            PredictMessage.Content = recognizeFace.Recognise(grayFace, 75);
+            recognizeFace.RecogniseAsync(grayFace, 80);
           }
         }
       }
     }
 
-
-
-    // Event Handlers
     private void Train_Click(object sender, RoutedEventArgs e) {
-      Dispatcher.Invoke((Action)(() => {
-        TrainMessage.Content = "Training Started";
-      }));
+      Train.IsEnabled = false;
+      TrainMessage.Content = "Searching for face";
       trainingFaces.Clear();
       training = true;
       trainingCount = 0;
@@ -231,6 +253,7 @@
 
     // Methods
     private void StopTraining() {
+      TrainMessage.Content = "Training software";
       training = false;
       DirectoryInfo di = new DirectoryInfo(@"data");
       var files = di.EnumerateFiles("face_*.bmp");
@@ -253,8 +276,7 @@
         fileIndex++;
         i++;
       }
-      recognizeFace.Train(images, labels);
-      TrainMessage.Content = "Done Training";
+      recognizeFace.TrainAsync(images, labels);
     }
 
     private void DrawSquare(int width, int height, int x, int y) {
@@ -293,6 +315,8 @@
     }
 
     private void LoadTrainedFaces() {
+      Train.IsEnabled = false;
+      TrainMessage.Content = "Loading Training Faces";
       DirectoryInfo di = new DirectoryInfo(@"data");
       var files = di.EnumerateFiles("face_*.bmp");
       int[] labels = new int[files.Count()];
@@ -303,7 +327,7 @@
         images[i] = new Image<Gray, Byte>(file.FullName);
         i++;
       }
-      recognizeFace.Train(images, labels, true);
+      recognizeFace.TrainAsync(images, labels, true);
     }
 
   }
