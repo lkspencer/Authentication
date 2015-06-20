@@ -86,7 +86,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="RecognizeFace.cs" />
-    <Compile Include="String.Extensions.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -265,12 +264,6 @@
     <Content Include="libs\Emgu.CV.UI.GL.dll" />
     <Content Include="libs\Emgu.CV.VideoStab.dll" />
     <Content Include="libs\Emgu.Util.dll" />
-    <Content Include="haarcascade_eye.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="haarcascade_frontalface_default.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="libs\Kinect20.Face.dll" />
     <Content Include="libs\Microsoft.Kinect.dll" />
     <Resource Include="libs\Microsoft.Kinect.xml" />
