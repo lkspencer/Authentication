@@ -43,6 +43,10 @@
     /// </summary>
     private FaceFrameReader faceFrameReader = null;
     /// <summary>
+    /// Reader for depth
+    /// </summary>
+    private DepthFrameReader depthFrameReader = null;
+    /// <summary>
     /// The body frame reader is used to identify the bodies
     /// </summary>
     BodyFrameReader bodyFrameReader = null;
@@ -58,7 +62,15 @@
         return this.colorBitmap;
       }
     }
-
+    private WriteableBitmap threeDBitmap = null;
+    /// <summary>
+    /// Gets the bitmap to display
+    /// </summary>
+    public ImageSource ThreeDSource {
+      get {
+        return this.threeDBitmap;
+      }
+    }
 
 
     // Constructors
@@ -68,9 +80,13 @@
 
       // create the colorFrameDescription from the ColorFrameSource using Bgra format
       FrameDescription colorFrameDescription = this.kinectSensor.ColorFrameSource.CreateFrameDescription(ColorImageFormat.Bgra);
+      FrameDescription depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription; // ColorFrameSource.CreateFrameDescription(ColorImageFormat.Bgra);
 
       // create the writeable bitmap to display our frames
       this.colorBitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+
+      // create the writeable bitmap to display our frames
+      this.threeDBitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
 
       // create our bodies array to track human bodies in the field of view
       this.bodies = new Body[this.kinectSensor.BodyFrameSource.BodyCount];
@@ -90,11 +106,13 @@
       this.colorFrameReader = this.kinectSensor.ColorFrameSource.OpenReader();
       this.bodyFrameReader = this.kinectSensor.BodyFrameSource.OpenReader();
       this.faceFrameReader = this.faceFrameSource.OpenReader();
+      this.depthFrameReader =  this.kinectSensor.DepthFrameSource.OpenReader();
 
       // wire handlers for frame arrivals
       this.colorFrameReader.FrameArrived += this.Reader_ColorFrameArrived;
       this.bodyFrameReader.FrameArrived += this.BodyFrameReader_FrameArrived;
       this.faceFrameReader.FrameArrived += this.FaceFrameReader_FrameArrived;
+      this.depthFrameReader.FrameArrived += DepthFrameReader_FrameArrived;
 
       // open the sensor
       this.kinectSensor.Open();
@@ -236,6 +254,17 @@
       }
     }
 
+    private void DepthFrameReader_FrameArrived(object sender, DepthFrameArrivedEventArgs e) {
+      //*
+      using (DepthFrame depthFrame = e.FrameReference.AcquireFrame()) {
+        if (depthFrame != null) {
+          DrawDepth(depthFrame);
+        } else {
+        }
+      }
+      //*/
+    }
+
     private void Train_Click(object sender, RoutedEventArgs e) {
       Train.IsEnabled = false;
       TrainMessage.Content = "Searching for face";
@@ -328,6 +357,42 @@
         i++;
       }
       recognizeFace.TrainAsync(images, labels, true);
+    }
+
+    private void DrawDepth(DepthFrame frame) {
+      this.threeDBitmap.Lock();
+      int width = frame.FrameDescription.Width;
+      int height = frame.FrameDescription.Height;
+
+      ushort minDepth = frame.DepthMinReliableDistance;
+      ushort maxDepth = frame.DepthMaxReliableDistance;
+
+      ushort[] depthData = new ushort[width * height];
+      byte[] pixelData = new byte[width * height * (PixelFormats.Bgr32.BitsPerPixel + 7) / 8];
+
+      frame.CopyFrameDataToArray(depthData);
+
+      int colorIndex = 0;
+      for (int depthIndex = 0; depthIndex < depthData.Length; ++depthIndex) {
+        ushort depth = depthData[depthIndex];
+        byte intensity = (byte)(depth >= minDepth && depth <= maxDepth ? depth : 0);
+
+        pixelData[colorIndex++] = intensity; // Blue
+        pixelData[colorIndex++] = intensity; // Green
+        pixelData[colorIndex++] = intensity; // Red
+
+        ++colorIndex;
+      }
+
+      int stride = width * PixelFormats.Bgr32.BitsPerPixel / 8;
+
+      if ((frame.FrameDescription.Width == this.threeDBitmap.PixelWidth) && (frame.FrameDescription.Height == this.threeDBitmap.PixelHeight)) {
+        this.threeDBitmap.WritePixels(new Int32Rect(0, 0, this.threeDBitmap.PixelWidth, this.threeDBitmap.PixelHeight), pixelData, stride, 0);
+        this.threeDBitmap.AddDirtyRect(new Int32Rect(0, 0, this.threeDBitmap.PixelWidth, this.threeDBitmap.PixelHeight));
+      }
+
+      this.threeDBitmap.Unlock();
+      //return BitmapSource.Create(width, height, 96, 96, PixelFormats.Bgr32, null, pixelData, stride);
     }
 
   }
