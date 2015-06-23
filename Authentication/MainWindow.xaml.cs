@@ -1,4 +1,5 @@
 ﻿namespace Trainer {
+  //*
   using DirectShowLib;
   using Emgu.CV;
   using Emgu.CV.Structure;
@@ -9,9 +10,11 @@
   using System.Drawing.Imaging;
   using System.IO;
   using System.Linq;
+  using System.Threading.Tasks;
   using System.Windows;
   using System.Windows.Media;
   using System.Windows.Media.Imaging;
+  //*/
 
   // EMGU documentation link for our reference: http://www.emgu.com/wiki/files/3.0.0-alpha/document/html/b72c032d-59ae-c36f-5e00-12f8d621dfb8.htm
   public partial class MainWindow : Window {
@@ -71,6 +74,16 @@
         return this.threeDBitmap;
       }
     }
+    private int faceFramePosition = 0;
+    private HighDefinitionFaceFrameSource faceSource = null;
+    private HighDefinitionFaceFrameReader faceReader = null;
+    private FaceAlignment faceAlignment = null;
+    private FaceModel faceModel = null;
+    private List<System.Windows.Shapes.Ellipse> points = new List<System.Windows.Shapes.Ellipse>();
+
+    private RectI ThreeDFaceBox;
+    private IReadOnlyDictionary<FacePointType, PointF> facePoints;
+
 
 
     // Constructors
@@ -80,7 +93,7 @@
 
       // create the colorFrameDescription from the ColorFrameSource using Bgra format
       FrameDescription colorFrameDescription = this.kinectSensor.ColorFrameSource.CreateFrameDescription(ColorImageFormat.Bgra);
-      FrameDescription depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription; // ColorFrameSource.CreateFrameDescription(ColorImageFormat.Bgra);
+      FrameDescription depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
 
       // create the writeable bitmap to display our frames
       this.colorBitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
@@ -89,30 +102,34 @@
       this.threeDBitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
 
       // create our bodies array to track human bodies in the field of view
-      this.bodies = new Body[this.kinectSensor.BodyFrameSource.BodyCount];
+      //this.bodies = new Body[this.kinectSensor.BodyFrameSource.BodyCount];
 
       // specify which facial features we're interested in capturing
       this.faceFrameSource = new FaceFrameSource(this.kinectSensor, 0,
         FaceFrameFeatures.BoundingBoxInColorSpace |
-        FaceFrameFeatures.FaceEngagement |
-        FaceFrameFeatures.Glasses |
-        FaceFrameFeatures.Happy |
-        FaceFrameFeatures.LeftEyeClosed |
-        FaceFrameFeatures.MouthOpen |
+        FaceFrameFeatures.BoundingBoxInInfraredSpace |
         FaceFrameFeatures.PointsInColorSpace |
-        FaceFrameFeatures.RightEyeClosed);
+        FaceFrameFeatures.PointsInInfraredSpace);
+
+      //this.faceModel = new FaceModel();
+      //this.faceAlignment = new FaceAlignment();
+      //this.faceSource = new HighDefinitionFaceFrameSource(this.kinectSensor);
+      //this.faceSource.TrackingQuality = FaceAlignmentQuality.High;
+      //this.faceSource.FaceModel = this.faceModel;
 
       // open the reader for the face frames
       this.colorFrameReader = this.kinectSensor.ColorFrameSource.OpenReader();
       this.bodyFrameReader = this.kinectSensor.BodyFrameSource.OpenReader();
       this.faceFrameReader = this.faceFrameSource.OpenReader();
       this.depthFrameReader =  this.kinectSensor.DepthFrameSource.OpenReader();
+      //this.faceReader = this.faceSource.OpenReader();
 
       // wire handlers for frame arrivals
       this.colorFrameReader.FrameArrived += this.Reader_ColorFrameArrived;
       this.bodyFrameReader.FrameArrived += this.BodyFrameReader_FrameArrived;
       this.faceFrameReader.FrameArrived += this.FaceFrameReader_FrameArrived;
-      this.depthFrameReader.FrameArrived += DepthFrameReader_FrameArrived;
+      this.depthFrameReader.FrameArrived += this.DepthFrameReader_FrameArrived;
+      //this.faceReader.FrameArrived += this.HighDefinitionFaceFrameReader_FrameArrived;
 
       // open the sensor
       this.kinectSensor.Open();
@@ -129,10 +146,10 @@
       // use the window object as the view model in this simple example
       this.DataContext = this;
 
-
       InitializeComponent();
 
       LoadTrainedFaces();
+      multiplier = (255.0 / (maxDepth - minDepth));
     }
 
 
@@ -148,20 +165,36 @@
     }
 
     private void FaceRecognitionArrived(string result) {
-      this.PredictMessage.Content = result;
+      //*
+      this.Dispatcher.Invoke((Action)(() => {
+        this.PredictMessage.Content = result;
+      }));
+      //*/
+    }
+
+    private void HighDefinitionFaceFrameReader_FrameArrived(object sender, HighDefinitionFaceFrameArrivedEventArgs e) {
+      using (var frame = e.FrameReference.AcquireFrame()) {
+        if (frame != null && frame.IsFaceTracked) {
+          frame.GetAndRefreshFaceAlignmentResult(faceAlignment);
+          UpdateFacePoints();
+        }
+      }
     }
 
     private void BodyFrameReader_FrameArrived(object sender, BodyFrameArrivedEventArgs e) {
       using (var frame = e.FrameReference.AcquireFrame()) {
         if (frame != null) {
+          bodies = new Body[frame.BodyCount];
           frame.GetAndRefreshBodyData(bodies);
 
+          // only use the first body
           Body body = bodies.Where(b => b.IsTracked).FirstOrDefault();
 
           if (!faceFrameSource.IsTrackingIdValid) {
             if (body != null) {
               // Assign a tracking ID to the face source
               faceFrameSource.TrackingId = body.TrackingId;
+              //faceSource.TrackingId = body.TrackingId;
             }
           }
         }
@@ -171,6 +204,8 @@
     private void FaceFrameReader_FrameArrived(object sender, FaceFrameArrivedEventArgs e) {
       var frame = e.FrameReference.AcquireFrame();
       if (frame != null && frame.FaceFrameResult != null && frame.FaceFrameResult.FaceBoundingBoxInColorSpace != null) {
+        ThreeDFaceBox = frame.FaceFrameResult.FaceBoundingBoxInInfraredSpace;
+        facePoints = frame.FaceFrameResult.FacePointsInInfraredSpace;
         var box = frame.FaceFrameResult.FaceBoundingBoxInColorSpace;
         face.Width = box.Right - box.Left;
         face.Height = box.Bottom - box.Top;
@@ -182,6 +217,25 @@
             DrawSquare(face.Width, face.Height, box.Left, box.Top);
           }
         } catch (Exception ex) { }
+        if (predicting && faceFramePosition == 0 && face.Width > 0 && face.Height > 0) {
+          //predicting = false;
+          // grab the bytes for the image inside of the frame
+          byte[] pixels = new byte[face.Width * face.Height * 4];
+          this.colorBitmap.CopyPixels(
+            new Int32Rect(face.X, face.Y, face.Width, face.Height),
+            pixels, face.Width * 4, 0);
+
+          // load the image into a format emgu opencv understands
+          var faceImage = new Image<Bgra, Byte>(face.Width, face.Height);
+          faceImage.Bytes = pixels;
+          // resize so we always have the same size of images to work with
+          faceImage = faceImage.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
+          // convert to grayscale for emgu opencv facial recognition
+          var grayFace = new Image<Gray, Byte>(100, 100);
+          grayFace.ConvertFrom<Bgra, Byte>(faceImage);
+          recognizeFace.Recognise(grayFace, 80);
+        }
+        faceFramePosition = ++faceFramePosition % 10;
       }
     }
 
@@ -231,24 +285,6 @@
               }
             }
             trainingCount++;
-          } else if (predicting && face.Width > 0 && face.Height > 0) {
-            //predicting = false;
-            // grab the bytes for the image inside of the frame
-            byte[] pixels = new byte[face.Width * face.Height * 4];
-            this.colorBitmap.CopyPixels(
-              new Int32Rect(face.X, face.Y, face.Width, face.Height),
-              pixels, face.Width * 4, 0);
-
-            // load the image into a format emgu opencv understands
-            var faceImage = new Image<Bgra, Byte>(face.Width, face.Height);
-            faceImage.Bytes = pixels;
-            // resize so we always have the same size of images to work with
-            faceImage = faceImage.Resize(100, 100, Emgu.CV.CvEnum.Inter.Cubic);
-            // convert to grayscale for emgu opencv facial recognition
-            var grayFace = new Image<Gray, Byte>(100, 100);
-            grayFace.ConvertFrom<Bgra, Byte>(faceImage);
-
-            recognizeFace.RecogniseAsync(grayFace, 80);
           }
         }
       }
@@ -256,10 +292,9 @@
 
     private void DepthFrameReader_FrameArrived(object sender, DepthFrameArrivedEventArgs e) {
       //*
-      using (DepthFrame depthFrame = e.FrameReference.AcquireFrame()) {
+      using (var depthFrame = e.FrameReference.AcquireFrame()) {
         if (depthFrame != null) {
           DrawDepth(depthFrame);
-        } else {
         }
       }
       //*/
@@ -359,23 +394,63 @@
       recognizeFace.TrainAsync(images, labels, true);
     }
 
+    private ushort minDepth = 500; // frame.DepthMinReliableDistance;
+    private ushort maxDepth = 1000; // frame.DepthMaxReliableDistance;
+    private double multiplier;
+
     private void DrawDepth(DepthFrame frame) {
       this.threeDBitmap.Lock();
       int width = frame.FrameDescription.Width;
       int height = frame.FrameDescription.Height;
-
-      ushort minDepth = frame.DepthMinReliableDistance;
-      ushort maxDepth = frame.DepthMaxReliableDistance;
-
       ushort[] depthData = new ushort[width * height];
       byte[] pixelData = new byte[width * height * (PixelFormats.Bgr32.BitsPerPixel + 7) / 8];
+      int stride = width * PixelFormats.Bgr32.BitsPerPixel / 8;
 
       frame.CopyFrameDataToArray(depthData);
 
       int colorIndex = 0;
       for (int depthIndex = 0; depthIndex < depthData.Length; ++depthIndex) {
         ushort depth = depthData[depthIndex];
-        byte intensity = (byte)(depth >= minDepth && depth <= maxDepth ? depth : 0);
+        // this math only works because x and y are integers
+        int y = depthIndex / width;
+        int x = depthIndex - (y * width);
+        if (depth > 1000 || depth < 500) {
+          pixelData[colorIndex++] = 0; // Blue
+          pixelData[colorIndex++] = 0; // Green
+          pixelData[colorIndex++] = 0; // Red
+          ++colorIndex;
+          continue;
+        } else  if (depth > 1000 || depth < 500 || x < ThreeDFaceBox.Left || x > ThreeDFaceBox.Right || y < ThreeDFaceBox.Top || y > ThreeDFaceBox.Bottom) {
+          pixelData[colorIndex++] = 0; // Blue
+          pixelData[colorIndex++] = 0; // Green
+          pixelData[colorIndex++] = 0; // Red
+          ++colorIndex;
+          continue;
+        } else if (facePoints[FacePointType.Nose].X < x + 2 && facePoints[FacePointType.Nose].X > x - 2
+            && facePoints[FacePointType.Nose].Y < y + 2 && facePoints[FacePointType.Nose].Y > y - 2) {
+          pixelData[colorIndex++] = 0; // Blue
+          pixelData[colorIndex++] = 0; // Green
+          pixelData[colorIndex++] = 255; // Red
+          ++colorIndex;
+          continue;
+        } else if (facePoints[FacePointType.EyeLeft].X < x + 2 && facePoints[FacePointType.EyeLeft].X > x - 2
+            && facePoints[FacePointType.EyeLeft].Y < y + 2 && facePoints[FacePointType.EyeLeft].Y > y - 2) {
+          pixelData[colorIndex++] = 0; // Blue
+          pixelData[colorIndex++] = 255; // Green
+          pixelData[colorIndex++] = 0; // Red
+          ++colorIndex;
+          continue;
+        } else if (facePoints[FacePointType.EyeRight].X < x + 2 && facePoints[FacePointType.EyeRight].X > x - 2
+            && facePoints[FacePointType.EyeRight].Y < y + 2 && facePoints[FacePointType.EyeRight].Y > y - 2) {
+          pixelData[colorIndex++] = 255; // Blue
+          pixelData[colorIndex++] = 0; // Green
+          pixelData[colorIndex++] = 0; // Red
+          ++colorIndex;
+          continue;
+        }
+        //var distance = Math.Sqrt(Math.Pow((x1 - x2), 2) + Math.Pow((y1 - y2), 2) + Math.Pow((z1 - z2), 2));
+
+        byte intensity = (byte)((depth - minDepth) * multiplier);
 
         pixelData[colorIndex++] = intensity; // Blue
         pixelData[colorIndex++] = intensity; // Green
@@ -384,15 +459,48 @@
         ++colorIndex;
       }
 
-      int stride = width * PixelFormats.Bgr32.BitsPerPixel / 8;
-
       if ((frame.FrameDescription.Width == this.threeDBitmap.PixelWidth) && (frame.FrameDescription.Height == this.threeDBitmap.PixelHeight)) {
         this.threeDBitmap.WritePixels(new Int32Rect(0, 0, this.threeDBitmap.PixelWidth, this.threeDBitmap.PixelHeight), pixelData, stride, 0);
         this.threeDBitmap.AddDirtyRect(new Int32Rect(0, 0, this.threeDBitmap.PixelWidth, this.threeDBitmap.PixelHeight));
       }
 
       this.threeDBitmap.Unlock();
-      //return BitmapSource.Create(width, height, 96, 96, PixelFormats.Bgr32, null, pixelData, stride);
+    }
+
+    private void UpdateFacePoints() {
+      if (faceModel == null) return;
+
+      var vertices = faceModel.CalculateVerticesForAlignment(faceAlignment);
+
+      if (vertices.Count > 0) {
+        if (points.Count == 0) {
+          for (int index = 0; index < vertices.Count; index++) {
+            System.Windows.Shapes.Ellipse ellipse = new System.Windows.Shapes.Ellipse {
+              Width = 2.0,
+              Height = 2.0,
+              Fill = new SolidColorBrush(Colors.Blue)
+            };
+
+            points.Add(ellipse);
+          }
+
+          foreach (System.Windows.Shapes.Ellipse ellipse in points) {
+            canvas.Children.Add(ellipse);
+          }
+        }
+
+        for (int index = 0; index < vertices.Count; index++) {
+          CameraSpacePoint vertice = vertices[index];
+          DepthSpacePoint point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(vertice);
+
+          if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
+
+          System.Windows.Shapes.Ellipse ellipse = points[index];
+
+          System.Windows.Controls.Canvas.SetLeft(ellipse, point.X);
+          System.Windows.Controls.Canvas.SetTop(ellipse, point.Y);
+        }
+      }
     }
 
   }

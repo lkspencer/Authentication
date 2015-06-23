@@ -3,6 +3,7 @@
   using Emgu.CV.Face;
   using Emgu.CV.Structure;
   using System;
+  using System.Threading;
   using System.Threading.Tasks;
   using System.Windows;
 
@@ -16,6 +17,7 @@
     public event FaceRecognition FaceRecognitionArrived;
     public delegate void FaceTraining(bool trained);
     public event FaceTraining FaceTrainingComplete;
+    private Thread thread;
 
 
 
@@ -52,32 +54,36 @@
       FaceTrainingComplete(isTrained);
     }
 
-    public async Task RecogniseAsync(Image<Gray, Byte> Input_image, int Eigen_Thresh = -1) {
-      if (!isTrained) FaceRecognitionArrived("Not Trained Yet");
+    public void Recognise(Image<Gray, Byte> Input_image, int Eigen_Thresh = -1) {
+      if (thread == null || thread.ThreadState == ThreadState.Stopped) {
+        thread = new Thread(() => {
+          if (!isTrained) FaceRecognitionArrived("Not Trained Yet");
 
-      var LBPH_threshold = Eigen_Thresh;
-      var Fisher_threshold = Eigen_Thresh;
-      FaceRecognizer.PredictionResult predictionResult = new FaceRecognizer.PredictionResult();
-      await Task.Run(() => {
-        predictionResult = recognizer.Predict(Input_image);
-      });
-      switch (recognizerType) {
-        case ("EMGU.CV.EigenFaceRecognizer"):
-          if (predictionResult.Distance /*Eigen_Distance*/ > Eigen_Thresh) FaceRecognitionArrived(String.Format("EigenMatch, Distance: {0}", predictionResult.Distance));
-          else FaceRecognitionArrived(String.Format("Unknown, Distance: {0}", predictionResult.Distance));
-          break;
-        case ("EMGU.CV.LBPHFaceRecognizer"):
-          //Note how the Eigen Distance must be below the threshold unlike as above
-          if (predictionResult.Distance < LBPH_threshold) FaceRecognitionArrived(String.Format("LBPHMatch, Distance: {0}", predictionResult.Distance));
-          else FaceRecognitionArrived(String.Format("Unknown, Distance: {0}", predictionResult.Distance));
-          break;
-        case ("EMGU.CV.FisherFaceRecognizer"):
-          if (predictionResult.Distance < Fisher_threshold) FaceRecognitionArrived(String.Format("FisherMatch, Distance: {0}", predictionResult.Distance));
-          else FaceRecognitionArrived(String.Format("Unknown, Distance: {0}", predictionResult.Distance));
-          break;
-        default:
-          FaceRecognitionArrived("Unknown");
-          break;
+          var LBPH_threshold = Eigen_Thresh;
+          var Fisher_threshold = Eigen_Thresh;
+          FaceRecognizer.PredictionResult predictionResult = new FaceRecognizer.PredictionResult();
+          predictionResult = recognizer.Predict(Input_image);
+          switch (recognizerType) {
+            case ("EMGU.CV.EigenFaceRecognizer"):
+              if (predictionResult.Distance /*Eigen_Distance*/ > Eigen_Thresh) FaceRecognitionArrived(String.Format("EigenMatch, Distance: {0}", predictionResult.Distance));
+              else FaceRecognitionArrived(String.Format("Unknown, Distance: {0}", predictionResult.Distance));
+              break;
+            case ("EMGU.CV.LBPHFaceRecognizer"):
+              //Note how the Eigen Distance must be below the threshold unlike as above
+              if (predictionResult.Distance < LBPH_threshold) FaceRecognitionArrived(String.Format("LBPHMatch, Distance: {0}", predictionResult.Distance));
+              else FaceRecognitionArrived(String.Format("Unknown, Distance: {0}", predictionResult.Distance));
+              break;
+            case ("EMGU.CV.FisherFaceRecognizer"):
+              if (predictionResult.Distance < Fisher_threshold) FaceRecognitionArrived(String.Format("FisherMatch, Distance: {0}", predictionResult.Distance));
+              else FaceRecognitionArrived(String.Format("Unknown, Distance: {0}", predictionResult.Distance));
+              break;
+            default:
+              FaceRecognitionArrived("Unknown");
+              break;
+          }
+        });
+
+        thread.Start();
       }
     }
 
