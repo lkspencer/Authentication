@@ -10,7 +10,7 @@
     <Label x:Name="TrainMessage" Content="" HorizontalAlignment="Left" Margin="1051,37,0,0" VerticalAlignment="Top" Height="20" Width="349" Padding="5,0,69,0"/>
     <Label x:Name="PredictMessage" Content="" HorizontalAlignment="Left" Margin="1051,62,0,0" VerticalAlignment="Top" Height="20" Width="349" Padding="5,0"/>
     <Image x:Name="PointCloud" HorizontalAlignment="Left" Height="313" Margin="971,87,0,0" VerticalAlignment="Top" Width="429" Source="{Binding ThreeDSource}" />
-    <Canvas x:Name="canvas" Width="512" Height="424"/>
+    <Canvas x:Name="canvas" Width="512" Height="424" Margin="454,136,444,10"/>
 
   </Grid>
 </Window>

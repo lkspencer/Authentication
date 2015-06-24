@@ -75,14 +75,18 @@
       }
     }
     private int faceFramePosition = 0;
-    private HighDefinitionFaceFrameSource faceSource = null;
-    private HighDefinitionFaceFrameReader faceReader = null;
-    private FaceAlignment faceAlignment = null;
-    private FaceModel faceModel = null;
+    private HighDefinitionFaceFrameSource highDefinitionFaceSource = null;
+    private HighDefinitionFaceFrameReader highDefinitionFaceReader = null;
+    private FaceAlignment highdefinitionFaceAlignment = null;
+    private FaceModel highDefinitionFaceModel = null;
     private List<System.Windows.Shapes.Ellipse> points = new List<System.Windows.Shapes.Ellipse>();
 
     private RectI ThreeDFaceBox;
     private IReadOnlyDictionary<FacePointType, PointF> facePoints;
+
+    private ushort minDepth = 500; // frame.DepthMinReliableDistance;
+    private ushort maxDepth = 1000; // frame.DepthMaxReliableDistance;
+    private double multiplier;
 
 
 
@@ -101,9 +105,6 @@
       // create the writeable bitmap to display our frames
       this.threeDBitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
 
-      // create our bodies array to track human bodies in the field of view
-      //this.bodies = new Body[this.kinectSensor.BodyFrameSource.BodyCount];
-
       // specify which facial features we're interested in capturing
       this.faceFrameSource = new FaceFrameSource(this.kinectSensor, 0,
         FaceFrameFeatures.BoundingBoxInColorSpace |
@@ -111,33 +112,33 @@
         FaceFrameFeatures.PointsInColorSpace |
         FaceFrameFeatures.PointsInInfraredSpace);
 
-      //this.faceModel = new FaceModel();
-      //this.faceAlignment = new FaceAlignment();
-      //this.faceSource = new HighDefinitionFaceFrameSource(this.kinectSensor);
-      //this.faceSource.TrackingQuality = FaceAlignmentQuality.High;
-      //this.faceSource.FaceModel = this.faceModel;
+      //this.highDefinitionFaceModel = new FaceModel();
+      //this.highdefinitionFaceAlignment = new FaceAlignment();
+      //this.highDefinitionFaceSource = new HighDefinitionFaceFrameSource(this.kinectSensor);
+      //this.highDefinitionFaceSource.TrackingQuality = FaceAlignmentQuality.High;
+      //this.highDefinitionFaceSource.FaceModel = this.highDefinitionFaceModel;
 
       // open the reader for the face frames
       this.colorFrameReader = this.kinectSensor.ColorFrameSource.OpenReader();
       this.bodyFrameReader = this.kinectSensor.BodyFrameSource.OpenReader();
       this.faceFrameReader = this.faceFrameSource.OpenReader();
       this.depthFrameReader =  this.kinectSensor.DepthFrameSource.OpenReader();
-      //this.faceReader = this.faceSource.OpenReader();
+      //this.highDefinitionFaceReader = this.highDefinitionFaceSource.OpenReader();
 
       // wire handlers for frame arrivals
       this.colorFrameReader.FrameArrived += this.Reader_ColorFrameArrived;
       this.bodyFrameReader.FrameArrived += this.BodyFrameReader_FrameArrived;
       this.faceFrameReader.FrameArrived += this.FaceFrameReader_FrameArrived;
       this.depthFrameReader.FrameArrived += this.DepthFrameReader_FrameArrived;
-      //this.faceReader.FrameArrived += this.HighDefinitionFaceFrameReader_FrameArrived;
+      //this.highDefinitionFaceReader.FrameArrived += this.HighDefinitionFaceFrameReader_FrameArrived;
 
       // open the sensor
       this.kinectSensor.Open();
 
       // specify which opencv recognizer to use for facial recognition
-      //recognizeFace = new RecognizeFace("EMGU.CV.EigenFaceRecognizer");
-      this.recognizeFace = new RecognizeFace("EMGU.CV.LBPHFaceRecognizer");
-      //recognizeFace = new RecognizeFace("EMGU.CV.FisherFaceRecognizer");
+      //this.recognizeFace = new RecognizeFace("EMGU.CV.EigenFaceRecognizer");
+      //this.recognizeFace = new RecognizeFace("EMGU.CV.LBPHFaceRecognizer");
+      this.recognizeFace = new RecognizeFace("EMGU.CV.FisherFaceRecognizer");
 
       // setup facial recognition callbacks
       this.recognizeFace.FaceRecognitionArrived += FaceRecognitionArrived;
@@ -175,7 +176,7 @@
     private void HighDefinitionFaceFrameReader_FrameArrived(object sender, HighDefinitionFaceFrameArrivedEventArgs e) {
       using (var frame = e.FrameReference.AcquireFrame()) {
         if (frame != null && frame.IsFaceTracked) {
-          frame.GetAndRefreshFaceAlignmentResult(faceAlignment);
+          frame.GetAndRefreshFaceAlignmentResult(highdefinitionFaceAlignment);
           UpdateFacePoints();
         }
       }
@@ -194,7 +195,7 @@
             if (body != null) {
               // Assign a tracking ID to the face source
               faceFrameSource.TrackingId = body.TrackingId;
-              //faceSource.TrackingId = body.TrackingId;
+              //highDefinitionFaceSource.TrackingId = body.TrackingId;
             }
           }
         }
@@ -233,7 +234,8 @@
           // convert to grayscale for emgu opencv facial recognition
           var grayFace = new Image<Gray, Byte>(100, 100);
           grayFace.ConvertFrom<Bgra, Byte>(faceImage);
-          recognizeFace.Recognise(grayFace, 80);
+          //recognizeFace.Recognise(grayFace, 80);
+          recognizeFace.Recognise(grayFace, 1800);
         }
         faceFramePosition = ++faceFramePosition % 10;
       }
@@ -394,10 +396,6 @@
       recognizeFace.TrainAsync(images, labels, true);
     }
 
-    private ushort minDepth = 500; // frame.DepthMinReliableDistance;
-    private ushort maxDepth = 1000; // frame.DepthMaxReliableDistance;
-    private double multiplier;
-
     private void DrawDepth(DepthFrame frame) {
       this.threeDBitmap.Lock();
       int width = frame.FrameDescription.Width;
@@ -407,50 +405,62 @@
       int stride = width * PixelFormats.Bgr32.BitsPerPixel / 8;
 
       frame.CopyFrameDataToArray(depthData);
-
       int colorIndex = 0;
+      float xnose = 0;
+      float xlefteye = 0;
+      float xrighteye = 0;
+      float ynose = 0;
+      float ylefteye = 0;
+      float yrighteye = 0;
+      if (facePoints != null) {
+        xnose = facePoints[FacePointType.Nose].X;
+        xlefteye = facePoints[FacePointType.EyeLeft].X;
+        xrighteye = facePoints[FacePointType.EyeRight].X;
+        ynose = facePoints[FacePointType.Nose].Y;
+        ylefteye = facePoints[FacePointType.EyeLeft].Y;
+        yrighteye = facePoints[FacePointType.EyeRight].Y;
+      }
       for (int depthIndex = 0; depthIndex < depthData.Length; ++depthIndex) {
-        ushort depth = depthData[depthIndex];
+        ushort z = depthData[depthIndex];
         // this math only works because x and y are integers
         int y = depthIndex / width;
         int x = depthIndex - (y * width);
-        if (depth > 1000 || depth < 500) {
+        if (z > maxDepth || z < 500) {
           pixelData[colorIndex++] = 0; // Blue
           pixelData[colorIndex++] = 0; // Green
           pixelData[colorIndex++] = 0; // Red
           ++colorIndex;
           continue;
-        } else  if (depth > 1000 || depth < 500 || x < ThreeDFaceBox.Left || x > ThreeDFaceBox.Right || y < ThreeDFaceBox.Top || y > ThreeDFaceBox.Bottom) {
+        } else  if (x < ThreeDFaceBox.Left || x > ThreeDFaceBox.Right || y < ThreeDFaceBox.Top || y > ThreeDFaceBox.Bottom) {
           pixelData[colorIndex++] = 0; // Blue
           pixelData[colorIndex++] = 0; // Green
           pixelData[colorIndex++] = 0; // Red
           ++colorIndex;
           continue;
-        } else if (facePoints[FacePointType.Nose].X < x + 2 && facePoints[FacePointType.Nose].X > x - 2
-            && facePoints[FacePointType.Nose].Y < y + 2 && facePoints[FacePointType.Nose].Y > y - 2) {
-          pixelData[colorIndex++] = 0; // Blue
-          pixelData[colorIndex++] = 0; // Green
-          pixelData[colorIndex++] = 255; // Red
-          ++colorIndex;
-          continue;
-        } else if (facePoints[FacePointType.EyeLeft].X < x + 2 && facePoints[FacePointType.EyeLeft].X > x - 2
-            && facePoints[FacePointType.EyeLeft].Y < y + 2 && facePoints[FacePointType.EyeLeft].Y > y - 2) {
-          pixelData[colorIndex++] = 0; // Blue
-          pixelData[colorIndex++] = 255; // Green
-          pixelData[colorIndex++] = 0; // Red
-          ++colorIndex;
-          continue;
-        } else if (facePoints[FacePointType.EyeRight].X < x + 2 && facePoints[FacePointType.EyeRight].X > x - 2
-            && facePoints[FacePointType.EyeRight].Y < y + 2 && facePoints[FacePointType.EyeRight].Y > y - 2) {
-          pixelData[colorIndex++] = 255; // Blue
-          pixelData[colorIndex++] = 0; // Green
-          pixelData[colorIndex++] = 0; // Red
-          ++colorIndex;
-          continue;
+        } else {
+          if (xnose < x + 2 && xnose > x - 2 && ynose < y + 2 && ynose > y - 2) {
+            pixelData[colorIndex++] = 0; // Blue
+            pixelData[colorIndex++] = 0; // Green
+            pixelData[colorIndex++] = 255; // Red
+            ++colorIndex;
+            continue;
+          } else if (xlefteye < x + 2 && xlefteye > x - 2 && ylefteye < y + 2 && ylefteye > y - 2) {
+            pixelData[colorIndex++] = 0; // Blue
+            pixelData[colorIndex++] = 255; // Green
+            pixelData[colorIndex++] = 0; // Red
+            ++colorIndex;
+            continue;
+          } else if (xrighteye < x + 2 && xrighteye > x - 2 && yrighteye < y + 2 && yrighteye > y - 2) {
+            pixelData[colorIndex++] = 255; // Blue
+            pixelData[colorIndex++] = 0; // Green
+            pixelData[colorIndex++] = 0; // Red
+            ++colorIndex;
+            continue;
+          }
         }
         //var distance = Math.Sqrt(Math.Pow((x1 - x2), 2) + Math.Pow((y1 - y2), 2) + Math.Pow((z1 - z2), 2));
 
-        byte intensity = (byte)((depth - minDepth) * multiplier);
+        byte intensity = (byte)((z - minDepth) * multiplier);
 
         pixelData[colorIndex++] = intensity; // Blue
         pixelData[colorIndex++] = intensity; // Green
@@ -468,9 +478,9 @@
     }
 
     private void UpdateFacePoints() {
-      if (faceModel == null) return;
+      if (highDefinitionFaceModel == null) return;
 
-      var vertices = faceModel.CalculateVerticesForAlignment(faceAlignment);
+      var vertices = highDefinitionFaceModel.CalculateVerticesForAlignment(highdefinitionFaceAlignment);
 
       if (vertices.Count > 0) {
         if (points.Count == 0) {

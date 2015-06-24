@@ -42,6 +42,10 @@
     // Methods
     public async Task TrainAsync<TColor, TDepth>(Image<TColor, TDepth>[] images, int[] labels, bool save = true) where TColor : struct, IColor where TDepth : new() {
       isTrained = false;
+      if (images == null || images.Length == 0 || labels == null || labels.Length == 0 || labels.Length != images.Length) {
+        FaceTrainingComplete(false);
+        return;
+      }
       try {
         await Task.Run(() => {
           recognizer.Train(images, labels);
@@ -65,7 +69,7 @@
           predictionResult = recognizer.Predict(Input_image);
           switch (recognizerType) {
             case ("EMGU.CV.EigenFaceRecognizer"):
-              if (predictionResult.Distance /*Eigen_Distance*/ > Eigen_Thresh) FaceRecognitionArrived(String.Format("EigenMatch, Distance: {0}", predictionResult.Distance));
+              if (predictionResult.Distance /*Eigen_Distance*/ < Eigen_Thresh) FaceRecognitionArrived(String.Format("EigenMatch, Distance: {0}, Threshold {1}", predictionResult.Distance, Eigen_Thresh));
               else FaceRecognitionArrived(String.Format("Unknown, Distance: {0}", predictionResult.Distance));
               break;
             case ("EMGU.CV.LBPHFaceRecognizer"):
