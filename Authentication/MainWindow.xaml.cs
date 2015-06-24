@@ -404,6 +404,12 @@
     private List<int> righteye_xes = new List<int>();
     private List<int> righteye_yes = new List<int>();
     private List<int> righteye_zes = new List<int>();
+    private List<int> leftmouth_xes = new List<int>();
+    private List<int> leftmouth_yes = new List<int>();
+    private List<int> leftmouth_zes = new List<int>();
+    private List<int> rightmouth_xes = new List<int>();
+    private List<int> rightmouth_yes = new List<int>();
+    private List<int> rightmouth_zes = new List<int>();
     private void DrawDepth(DepthFrame frame) {
       this.threeDBitmap.Lock();
       int width = frame.FrameDescription.Width;
@@ -417,16 +423,24 @@
       float xnose = 0;
       float xlefteye = 0;
       float xrighteye = 0;
+      float xleftmouth = 0;
+      float xrightmouth = 0;
       float ynose = 0;
       float ylefteye = 0;
       float yrighteye = 0;
+      float yleftmouth = 0;
+      float yrightmouth = 0;
       if (facePoints != null) {
         xnose = facePoints[FacePointType.Nose].X;
         xlefteye = facePoints[FacePointType.EyeLeft].X;
         xrighteye = facePoints[FacePointType.EyeRight].X;
+        xleftmouth = facePoints[FacePointType.MouthCornerLeft].X;
+        xrightmouth = facePoints[FacePointType.MouthCornerRight].X;
         ynose = facePoints[FacePointType.Nose].Y;
         ylefteye = facePoints[FacePointType.EyeLeft].Y;
         yrighteye = facePoints[FacePointType.EyeRight].Y;
+        yleftmouth = facePoints[FacePointType.MouthCornerLeft].Y;
+        yrightmouth = facePoints[FacePointType.MouthCornerRight].Y;
       }
       for (int depthIndex = 0; depthIndex < depthData.Length; ++depthIndex) {
         ushort z = depthData[depthIndex];
@@ -473,6 +487,24 @@
             pixelData[colorIndex++] = 0; // Red
             ++colorIndex;
             continue;
+          } else if (xleftmouth < x + 2 && xleftmouth > x - 2 && yleftmouth < y + 2 && yleftmouth > y - 2) {
+            leftmouth_xes.Add(x);
+            leftmouth_yes.Add(y);
+            leftmouth_zes.Add(z);
+            pixelData[colorIndex++] = 255; // Blue
+            pixelData[colorIndex++] = 255; // Green
+            pixelData[colorIndex++] = 0; // Red
+            ++colorIndex;
+            continue;
+          } else if (xrightmouth < x + 2 && xrightmouth > x - 2 && yrightmouth < y + 2 && yrightmouth > y - 2) {
+            rightmouth_xes.Add(x);
+            rightmouth_yes.Add(y);
+            rightmouth_zes.Add(z);
+            pixelData[colorIndex++] = 255; // Blue
+            pixelData[colorIndex++] = 0; // Green
+            pixelData[colorIndex++] = 255; // Red
+            ++colorIndex;
+            continue;
           }
         }
         //var distance = Math.Sqrt(Math.Pow((x1 - x2), 2) + Math.Pow((y1 - y2), 2) + Math.Pow((z1 - z2), 2));
@@ -502,18 +534,29 @@
             + Math.Pow((nose_yes.Average() - righteye_yes.Average()), 2)
             + Math.Pow((nose_zes.Average() - righteye_zes.Average()), 2));
           //*/
-          var distance1 = nose_zes.Average();
-          var distance2 = lefteye_zes.Average();
-          var distance3 = righteye_zes.Average();
-          if (distance1 < distance2) {
-            Distance1Label.Content = String.Format("depth distance: {0}", distance2 - distance1);
+          var nosededepth = nose_zes.Average();
+          var lefteyedepth = lefteye_zes.Average();
+          var righteyedepth = righteye_zes.Average();
+          var leftmouthdepth = leftmouth_zes.Average();
+          var rightmouthdepth = rightmouth_zes.Average();
+          if (nosededepth < lefteyedepth) {
+            //Distance1Label.Content = String.Format("depth distance: {0}", lefteyedepth - nosededepth);
+            Distance1Label.Content = String.Format("You have a lovely left eye");
           } else {
-            Distance1Label.Content = String.Format("your nose is on backwards!");
+            Distance1Label.Content = String.Format("your left eye is sticking out");
           }
-          if (distance1 < distance3) {
-            Distance2Label.Content = String.Format("depth distance: {0}", distance3 - distance1);
+          if (nosededepth < righteyedepth) {
+            //Distance2Label.Content = String.Format("depth distance: {0}", righteyedepth - nosededepth);
+            Distance2Label.Content = String.Format("You have a lovely right eye");
           } else {
-            Distance2Label.Content = String.Format("your nose is on backwards!");
+            Distance2Label.Content = String.Format("your right eye is sticking out");
+          }
+          if (nosededepth < leftmouthdepth && nosededepth < righteyedepth) {
+            //Distance3Label.Content = String.Format("You have great lips: {0} - {1}", rightmouthdepth, righteyedepth);
+            Distance3Label.Content = String.Format("You have great lips");
+          } else {
+            //Distance3Label.Content = String.Format("Your lips are on wrong: {0} - {1}", leftmouthdepth, lefteyedepth);
+            Distance3Label.Content = String.Format("Your lips are on wrong!");
           }
           nose_xes.Clear();
           nose_yes.Clear();
@@ -524,6 +567,12 @@
           righteye_xes.Clear();
           righteye_yes.Clear();
           righteye_zes.Clear();
+          leftmouth_xes.Clear();
+          leftmouth_yes.Clear();
+          leftmouth_zes.Clear();
+          rightmouth_xes.Clear();
+          rightmouth_yes.Clear();
+          rightmouth_zes.Clear();
         }
       }
 
