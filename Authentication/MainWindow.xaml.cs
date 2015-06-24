@@ -394,6 +394,16 @@
       recognizeFace.TrainAsync(images, labels, true);
     }
 
+    private int depthFrame = 0;
+    private List<int> nose_xes = new List<int>();
+    private List<int> nose_yes = new List<int>();
+    private List<int> nose_zes = new List<int>();
+    private List<int> lefteye_xes = new List<int>();
+    private List<int> lefteye_yes = new List<int>();
+    private List<int> lefteye_zes = new List<int>();
+    private List<int> righteye_xes = new List<int>();
+    private List<int> righteye_yes = new List<int>();
+    private List<int> righteye_zes = new List<int>();
     private void DrawDepth(DepthFrame frame) {
       this.threeDBitmap.Lock();
       int width = frame.FrameDescription.Width;
@@ -437,18 +447,27 @@
           continue;
         } else {
           if (xnose < x + 2 && xnose > x - 2 && ynose < y + 2 && ynose > y - 2) {
+            nose_xes.Add(x);
+            nose_yes.Add(y);
+            nose_zes.Add(z);
             pixelData[colorIndex++] = 0; // Blue
             pixelData[colorIndex++] = 0; // Green
             pixelData[colorIndex++] = 255; // Red
             ++colorIndex;
             continue;
           } else if (xlefteye < x + 2 && xlefteye > x - 2 && ylefteye < y + 2 && ylefteye > y - 2) {
+            lefteye_xes.Add(x);
+            lefteye_yes.Add(y);
+            lefteye_zes.Add(z);
             pixelData[colorIndex++] = 0; // Blue
             pixelData[colorIndex++] = 255; // Green
             pixelData[colorIndex++] = 0; // Red
             ++colorIndex;
             continue;
           } else if (xrighteye < x + 2 && xrighteye > x - 2 && yrighteye < y + 2 && yrighteye > y - 2) {
+            righteye_xes.Add(x);
+            righteye_yes.Add(y);
+            righteye_zes.Add(z);
             pixelData[colorIndex++] = 255; // Blue
             pixelData[colorIndex++] = 0; // Green
             pixelData[colorIndex++] = 0; // Red
@@ -467,12 +486,54 @@
         ++colorIndex;
       }
 
+      if (depthFrame == 0) {
+        if (nose_xes.Count > 0 && nose_yes.Count > 0 && nose_zes.Count > 0
+          && lefteye_xes.Count > 0 && lefteye_yes.Count > 0 && lefteye_zes.Count > 0
+          && righteye_xes.Count > 0 && righteye_yes.Count > 0 && righteye_zes.Count > 0) {
+          /*
+          // this doesn't exactly work because the z's are a measurement in meters
+          // and the x's and y's are measurements in pixels
+          var distance1 = Math.Sqrt(
+            Math.Pow((nose_xes.Average() - lefteye_xes.Average()), 2)
+            + Math.Pow((nose_yes.Average() - lefteye_yes.Average()), 2)
+            + Math.Pow((nose_zes.Average() - lefteye_zes.Average()), 2));
+          var distance2 = Math.Sqrt(
+            Math.Pow((nose_xes.Average() - righteye_xes.Average()), 2)
+            + Math.Pow((nose_yes.Average() - righteye_yes.Average()), 2)
+            + Math.Pow((nose_zes.Average() - righteye_zes.Average()), 2));
+          //*/
+          var distance1 = nose_zes.Average();
+          var distance2 = lefteye_zes.Average();
+          var distance3 = righteye_zes.Average();
+          if (distance1 < distance2) {
+            Distance1Label.Content = String.Format("depth distance: {0}", distance2 - distance1);
+          } else {
+            Distance1Label.Content = String.Format("your nose is on backwards!");
+          }
+          if (distance1 < distance3) {
+            Distance2Label.Content = String.Format("depth distance: {0}", distance3 - distance1);
+          } else {
+            Distance2Label.Content = String.Format("your nose is on backwards!");
+          }
+          nose_xes.Clear();
+          nose_yes.Clear();
+          nose_zes.Clear();
+          lefteye_xes.Clear();
+          lefteye_yes.Clear();
+          lefteye_zes.Clear();
+          righteye_xes.Clear();
+          righteye_yes.Clear();
+          righteye_zes.Clear();
+        }
+      }
+
       if ((frame.FrameDescription.Width == this.threeDBitmap.PixelWidth) && (frame.FrameDescription.Height == this.threeDBitmap.PixelHeight)) {
         this.threeDBitmap.WritePixels(new Int32Rect(0, 0, this.threeDBitmap.PixelWidth, this.threeDBitmap.PixelHeight), pixelData, stride, 0);
         this.threeDBitmap.AddDirtyRect(new Int32Rect(0, 0, this.threeDBitmap.PixelWidth, this.threeDBitmap.PixelHeight));
       }
 
       this.threeDBitmap.Unlock();
+      depthFrame = ++depthFrame % 5;
     }
 
     private void UpdateFacePoints() {
