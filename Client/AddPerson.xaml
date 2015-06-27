@@ -1,0 +1,21 @@
+﻿<Window x:Class="FaceApiClient.AddPerson"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FaceApiClient"
+        mc:Ignorable="d"
+        Title="Add a new Person" Height="434" Width="690">
+  <Grid>
+    <TextBox x:Name="Name" HorizontalAlignment="Left" Height="23" Margin="10,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="193"/>
+    <Label x:Name="label" Content="Person Name:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="110"/>
+    <ListBox x:Name="FileListBox" HorizontalAlignment="Left" Height="265" Margin="10,0,0,35" VerticalAlignment="Bottom" Width="260" SelectionChanged="FileListBox_SelectionChanged" ItemsSource="{Binding FilePaths}" />
+    <Label x:Name="label1" Content="Faces" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.158,-0.231"/>
+    <Button x:Name="AddFace" Content="Add" HorizontalAlignment="Left" Margin="166,69,0,0" VerticalAlignment="Top" Width="48" Click="AddFace_Click"/>
+    <Button x:Name="DeleteFace" Content="Delete" HorizontalAlignment="Left" Margin="219,69,0,0" VerticalAlignment="Top" Width="51" Click="DeleteFace_Click"/>
+    <Image x:Name="ImageViewer" HorizontalAlignment="Right" Height="355" Margin="0,-1,10,35" VerticalAlignment="Bottom" Width="379"/>
+    <Button x:Name="Save" Content="Save" HorizontalAlignment="Left" Margin="618,0,0,10" VerticalAlignment="Bottom" Width="46" Click="Save_Click"/>
+    <Button x:Name="Cancel" Content="Cancel" HorizontalAlignment="Left" Margin="557,0,0,10" VerticalAlignment="Bottom" Width="56" Click="Cancel_Click"/>
+
+  </Grid>
+</Window>

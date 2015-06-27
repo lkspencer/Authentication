@@ -1,0 +1,23 @@
+﻿<Window x:Class="FaceApiClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FaceApiClient"
+        mc:Ignorable="d"
+        Title="Face API Client" Height="431" Width="625" ResizeMode="CanMinimize">
+  <Grid>
+    <Button x:Name="TestImage" Content="Test Image" HorizontalAlignment="Left" Margin="523,0,0,13" VerticalAlignment="Bottom" Width="75" Click="TestImage_Click"/>
+    <ListBox x:Name="GroupsListBox" HorizontalAlignment="Left" Height="339" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="390" RenderTransformOrigin="0.53,0.13" SelectionChanged="GroupsListBox_SelectionChanged" ItemsSource="{Binding PersonGroups}" DisplayMemberPath="Name" />
+    <Label x:Name="label" Content="Groups" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="53"/>
+    <Label x:Name="label1" Content="People" HorizontalAlignment="Left" Margin="415,10,0,0" VerticalAlignment="Top"/>
+    <ListBox x:Name="PeopleListBox" HorizontalAlignment="Left" Height="308" Margin="415,0,0,41" VerticalAlignment="Bottom" Width="183" SelectionChanged="PeopleListBox_SelectionChanged" ItemsSource="{Binding GroupPersons}" DisplayMemberPath="Name" />
+    <Button x:Name="AddGroup" Content="Add" HorizontalAlignment="Left" Margin="296,13,0,0" VerticalAlignment="Top" Width="48" RenderTransformOrigin="-0.083,1.35" Click="AddGroup_Click"/>
+    <Button x:Name="DeleteGroup" Content="Delete" HorizontalAlignment="Left" Margin="349,13,0,0" VerticalAlignment="Top" Width="51" Click="DeleteGroup_Click"/>
+    <Label x:Name="FacesCountLabel" Content="{Binding FacesCount}" HorizontalAlignment="Left" Margin="415,0,0,10" VerticalAlignment="Bottom" Width="103" />
+    <Button x:Name="AddPerson" Content="Add" HorizontalAlignment="Left" Margin="494,13,0,0" VerticalAlignment="Top" Width="48" Click="AddPerson_Click"/>
+    <Button x:Name="DeletePerson" Content="Delete" HorizontalAlignment="Left" Margin="547,13,0,0" VerticalAlignment="Top" Width="51" RenderTransformOrigin="0.922,0.5" Click="DeletePerson_Click"/>
+    <TextBox x:Name="GroupNameTextBox" HorizontalAlignment="Left" Height="23" Margin="68,13,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="223" Text="{Binding GroupName}"/>
+
+  </Grid>
+</Window>
