@@ -14,6 +14,8 @@
     <Label x:Name="Distance1Label" Content="Label" HorizontalAlignment="Left" Margin="971,405,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.746,0.5" Width="429"/>
     <Label x:Name="Distance2Label" Content="Label" HorizontalAlignment="Left" Margin="971,436,0,0" VerticalAlignment="Top" Width="429"/>
     <Label x:Name="Distance3Label" Content="Label" HorizontalAlignment="Left" Margin="971,467,0,0" VerticalAlignment="Top" Width="429"/>
+    <Label x:Name="label" Content="{Binding AverageFaceDepth}" HorizontalAlignment="Left" Margin="971,498,0,0" VerticalAlignment="Top" Width="429" />
+
 
   </Grid>
 </Window>

@@ -6,6 +6,7 @@
   using Microsoft.Kinect.Face;
   using System;
   using System.Collections.Generic;
+  using System.ComponentModel;
   using System.Drawing.Imaging;
   using System.IO;
   using System.Linq;
@@ -15,7 +16,7 @@
   using System.Windows.Media.Imaging;
 
   // EMGU documentation link for our reference: http://www.emgu.com/wiki/files/3.0.0-alpha/document/html/b72c032d-59ae-c36f-5e00-12f8d621dfb8.htm
-  public partial class MainWindow : Window {
+  public partial class MainWindow : Window, INotifyPropertyChanged {
     // MainWindow Variables
     private RecognizeFace recognizeFace;
     private bool training = false;
@@ -83,8 +84,39 @@
     private IReadOnlyDictionary<FacePointType, PointF> facePoints;
 
     private ushort minDepth = 500; // frame.DepthMinReliableDistance;
-    private ushort maxDepth = 1000; // frame.DepthMaxReliableDistance;
+    private ushort maxDepth = 585; // frame.DepthMaxReliableDistance;
     private double multiplier;
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    private int depthFrame = 0;
+    private List<int> nose_xes = new List<int>();
+    private List<int> nose_yes = new List<int>();
+    private List<int> nose_zes = new List<int>();
+    private List<int> lefteye_xes = new List<int>();
+    private List<int> lefteye_yes = new List<int>();
+    private List<int> lefteye_zes = new List<int>();
+    private List<int> righteye_xes = new List<int>();
+    private List<int> righteye_yes = new List<int>();
+    private List<int> righteye_zes = new List<int>();
+    private List<int> leftmouth_xes = new List<int>();
+    private List<int> leftmouth_yes = new List<int>();
+    private List<int> leftmouth_zes = new List<int>();
+    private List<int> rightmouth_xes = new List<int>();
+    private List<int> rightmouth_yes = new List<int>();
+    private List<int> rightmouth_zes = new List<int>();
+
+    private string averageFaceDepth;
+
+
+    public string AverageFaceDepth {
+      get {
+        return this.averageFaceDepth;
+      }
+      set {
+        NotifyPropertyChanged("AverageFaceDepth");
+        this.averageFaceDepth = value;
+      }
+    }
 
 
 
@@ -148,7 +180,7 @@
       InitializeComponent();
 
       LoadTrainedFaces();
-      multiplier = (255.0 / (maxDepth - minDepth));
+      multiplier = (255.0 / (this.maxDepth - this.minDepth));
     }
 
 
@@ -394,23 +426,9 @@
       recognizeFace.TrainAsync(images, labels, true);
     }
 
-    private int depthFrame = 0;
-    private List<int> nose_xes = new List<int>();
-    private List<int> nose_yes = new List<int>();
-    private List<int> nose_zes = new List<int>();
-    private List<int> lefteye_xes = new List<int>();
-    private List<int> lefteye_yes = new List<int>();
-    private List<int> lefteye_zes = new List<int>();
-    private List<int> righteye_xes = new List<int>();
-    private List<int> righteye_yes = new List<int>();
-    private List<int> righteye_zes = new List<int>();
-    private List<int> leftmouth_xes = new List<int>();
-    private List<int> leftmouth_yes = new List<int>();
-    private List<int> leftmouth_zes = new List<int>();
-    private List<int> rightmouth_xes = new List<int>();
-    private List<int> rightmouth_yes = new List<int>();
-    private List<int> rightmouth_zes = new List<int>();
+    private List<int> averageDepth = new List<int>();
     private void DrawDepth(DepthFrame frame) {
+      this.averageDepth.Clear();
       this.threeDBitmap.Lock();
       int width = frame.FrameDescription.Width;
       int height = frame.FrameDescription.Height;
@@ -447,7 +465,7 @@
         // this math only works because x and y are integers
         int y = depthIndex / width;
         int x = depthIndex - (y * width);
-        if (z > maxDepth || z < 500) {
+        if (z > this.maxDepth || z < minDepth) {
           pixelData[colorIndex++] = 0; // Blue
           pixelData[colorIndex++] = 0; // Green
           pixelData[colorIndex++] = 0; // Red
@@ -461,6 +479,7 @@
           continue;
         } else {
           if (xnose < x + 2 && xnose > x - 2 && ynose < y + 2 && ynose > y - 2) {
+            averageDepth.Add(z);
             nose_xes.Add(x);
             nose_yes.Add(y);
             nose_zes.Add(z);
@@ -470,6 +489,7 @@
             ++colorIndex;
             continue;
           } else if (xlefteye < x + 2 && xlefteye > x - 2 && ylefteye < y + 2 && ylefteye > y - 2) {
+            averageDepth.Add(z);
             lefteye_xes.Add(x);
             lefteye_yes.Add(y);
             lefteye_zes.Add(z);
@@ -479,6 +499,7 @@
             ++colorIndex;
             continue;
           } else if (xrighteye < x + 2 && xrighteye > x - 2 && yrighteye < y + 2 && yrighteye > y - 2) {
+            averageDepth.Add(z);
             righteye_xes.Add(x);
             righteye_yes.Add(y);
             righteye_zes.Add(z);
@@ -488,6 +509,7 @@
             ++colorIndex;
             continue;
           } else if (xleftmouth < x + 2 && xleftmouth > x - 2 && yleftmouth < y + 2 && yleftmouth > y - 2) {
+            averageDepth.Add(z);
             leftmouth_xes.Add(x);
             leftmouth_yes.Add(y);
             leftmouth_zes.Add(z);
@@ -497,6 +519,7 @@
             ++colorIndex;
             continue;
           } else if (xrightmouth < x + 2 && xrightmouth > x - 2 && yrightmouth < y + 2 && yrightmouth > y - 2) {
+            averageDepth.Add(z);
             rightmouth_xes.Add(x);
             rightmouth_yes.Add(y);
             rightmouth_zes.Add(z);
@@ -509,6 +532,7 @@
         }
         //var distance = Math.Sqrt(Math.Pow((x1 - x2), 2) + Math.Pow((y1 - y2), 2) + Math.Pow((z1 - z2), 2));
 
+        averageDepth.Add(z);
         byte intensity = (byte)((z - minDepth) * multiplier);
 
         pixelData[colorIndex++] = intensity; // Blue
@@ -521,7 +545,9 @@
       if (depthFrame == 0) {
         if (nose_xes.Count > 0 && nose_yes.Count > 0 && nose_zes.Count > 0
           && lefteye_xes.Count > 0 && lefteye_yes.Count > 0 && lefteye_zes.Count > 0
-          && righteye_xes.Count > 0 && righteye_yes.Count > 0 && righteye_zes.Count > 0) {
+          && righteye_xes.Count > 0 && righteye_yes.Count > 0 && righteye_zes.Count > 0
+           && leftmouth_xes.Count > 0 && leftmouth_yes.Count > 0 && leftmouth_zes.Count > 0
+           && rightmouth_xes.Count > 0 && rightmouth_yes.Count > 0 && rightmouth_zes.Count > 0) {
           /*
           // this doesn't exactly work because the z's are a measurement in meters
           // and the x's and y's are measurements in pixels
@@ -575,6 +601,9 @@
           rightmouth_zes.Clear();
         }
       }
+      if (averageDepth.Count > 0) {
+        this.AverageFaceDepth = String.Format("Average face depth: {0}", averageDepth.Average());
+      }
 
       if ((frame.FrameDescription.Width == this.threeDBitmap.PixelWidth) && (frame.FrameDescription.Height == this.threeDBitmap.PixelHeight)) {
         this.threeDBitmap.WritePixels(new Int32Rect(0, 0, this.threeDBitmap.PixelWidth, this.threeDBitmap.PixelHeight), pixelData, stride, 0);
@@ -618,6 +647,12 @@
           System.Windows.Controls.Canvas.SetLeft(ellipse, point.X);
           System.Windows.Controls.Canvas.SetTop(ellipse, point.Y);
         }
+      }
+    }
+
+    public void NotifyPropertyChanged(string propertyName) {
+      if (PropertyChanged != null) {
+        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
       }
     }
 
