@@ -1,23 +1,24 @@
 ﻿namespace Trainer {
-  using DirectShowLib;
-  using Emgu.CV;
-  using Emgu.CV.Structure;
-  using Microsoft.Kinect;
-  using Microsoft.Kinect.Face;
-  using System;
-  using System.Collections.Generic;
-  using System.ComponentModel;
-  using System.Drawing.Imaging;
-  using System.IO;
-  using System.Linq;
-  using System.Threading.Tasks;
-  using System.Windows;
-  using System.Windows.Controls;
-  using System.Windows.Media;
-  using System.Windows.Media.Imaging;
+    using DirectShowLib;
+    using Emgu.CV;
+    using Emgu.CV.Structure;
+    using Microsoft.Kinect;
+    using Microsoft.Kinect.Face;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Drawing.Imaging;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
 
-  // EMGU documentation link for our reference: http://www.emgu.com/wiki/files/3.0.0-alpha/document/html/b72c032d-59ae-c36f-5e00-12f8d621dfb8.htm
-  public partial class Overlay : Window, INotifyPropertyChanged {
+    // EMGU documentation link for our reference: http://www.emgu.com/wiki/files/3.0.0-alpha/document/html/b72c032d-59ae-c36f-5e00-12f8d621dfb8.htm
+    public partial class Overlay : Window, INotifyPropertyChanged {
     // MainWindow Variables
     private KinectSensor kinectSensor = null;
     private DepthFrameReader depthFrameReader = null;
@@ -288,5 +289,15 @@
 
       return result;
     }
-  }
+
+        private void uiScaleSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            //TransformGroup transformGroup = (TransformGroup)canvas.LayoutTransform;
+            //ScaleTransform transform = (ScaleTransform)transformGroup.Children[0];
+
+            //double zoom = e.NewValue;
+            //transform.ScaleX = zoom;
+            //transform.ScaleY = zoom;
+        }
+    }
 }

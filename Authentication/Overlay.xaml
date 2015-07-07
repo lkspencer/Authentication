@@ -2,9 +2,23 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Overlay" Width="548" Height="483" ResizeMode="CanMinimize" ScrollViewer.CanContentScroll="True">
-  <Grid>
-    <Canvas x:Name="canvas" Width="512" Height="424" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" />
 
+    <ScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Visible">
+        <Grid>
+            <Slider
+                x:Name="uiScaleSlider"
+                ToolTip="Determines the UI scale factor."
+                Value="1" Minimum="0.1" Maximum="4" ValueChanged="uiScaleSlider_ValueChanged"/>
 
-  </Grid>
+            <Canvas x:Name="canvas" Width="512" Height="424" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" >
+                <Canvas.LayoutTransform>
+                    <ScaleTransform   
+                    ScaleX="{Binding ElementName=uiScaleSlider,Path=Value}"
+                    ScaleY="{Binding ElementName=uiScaleSlider,Path=Value}" 
+                    CenterX="0" 
+                    CenterY="0" />
+                </Canvas.LayoutTransform>
+            </Canvas>
+        </Grid>
+    </ScrollViewer>
 </Window>
