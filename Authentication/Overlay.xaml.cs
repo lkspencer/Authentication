@@ -29,8 +29,8 @@
     private FaceAlignment highdefinitionFaceAlignment = null;
     private FaceModel highDefinitionFaceModel = null;
     private List<System.Windows.Shapes.Ellipse> points = new List<System.Windows.Shapes.Ellipse>();
-    private ushort minDepth = 500;
-    private ushort maxDepth = 1000;
+    private ushort minDepth = 2500;
+    private ushort maxDepth = 3000;
     private double multiplier;
     public event PropertyChangedEventHandler PropertyChanged;
     private Body currentTrackedBody = null;
@@ -138,6 +138,14 @@
       frame.CopyFrameDataToArray(depthData);
       CameraSpacePoint[] vertices = new CameraSpacePoint[depthData.Length];
       this.kinectSensor.CoordinateMapper.MapDepthFrameToCameraSpace(depthData, vertices);
+      /*
+      var length = vertices.Length;
+      for (int i = 0; i < length; i++) {
+        vertices[i] = vertices[i].RotateY(10);
+      }
+      DepthSpacePoint[] depths = new DepthSpacePoint[depthData.Length];
+      this.kinectSensor.CoordinateMapper.MapCameraPointsToDepthSpace(vertices, depths);
+      */
       /*
       if (facePoints != null) {
         var xnose = facePoints[FacePointType.Nose].X;
