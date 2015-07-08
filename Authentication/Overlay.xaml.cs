@@ -49,10 +49,12 @@
 
     public event PropertyChangedEventHandler PropertyChanged;
 
+        private Point origin;
+        private Point start;
 
 
-    // Constructors
-    public Overlay() {
+        // Constructors
+        public Overlay() {
       // get the kinectSensor object
       this.kinectSensor = KinectSensor.GetDefault();
 
@@ -106,8 +108,18 @@
       // use the window object as the view model in this simple example
       this.DataContext = this;
 
-      InitializeComponent();
-      depthCanvasImage.Source = this.depthBitmap;
+
+
+
+
+            InitializeComponent();
+            //Pan + Zoom Variables
+            WPFWindow.MouseWheel += Overlay_MouseWheel;
+
+            canvas.MouseLeftButtonDown += canvas_MouseLeftButtonDown;
+            canvas.MouseLeftButtonUp += canvas_MouseLeftButtonUp;
+            canvas.MouseMove += canvas_MouseMove;
+            depthCanvasImage.Source = this.depthBitmap;
       canvas.Children.Add(depthCanvasImage);
     }
 
@@ -390,5 +402,47 @@
       return result;
     }
 
-  }
+        private void canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            canvas.ReleaseMouseCapture();
+        }
+
+        private void canvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!canvas.IsMouseCaptured) return;
+            Point p = e.MouseDevice.GetPosition(border);
+
+            Matrix m = canvas.RenderTransform.Value;
+            m.OffsetX = origin.X + (p.X - start.X);
+            m.OffsetY = origin.Y + (p.Y - start.Y);
+
+            canvas.RenderTransform = new MatrixTransform(m);
+        }
+
+        private void canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (canvas.IsMouseCaptured) return;
+
+
+
+            start = e.GetPosition(border);
+            origin.X = canvas.RenderTransform.Value.OffsetX;
+            origin.Y = canvas.RenderTransform.Value.OffsetY;
+            canvas.CaptureMouse();
+        }
+
+        private void Overlay_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            Point p = e.MouseDevice.GetPosition(canvas);
+
+            Matrix m = canvas.RenderTransform.Value;
+            if (e.Delta > 0)
+                m.ScaleAtPrepend(1.1, 1.1, p.X, p.Y);
+            else
+                m.ScaleAtPrepend(1 / 1.1, 1 / 1.1, p.X, p.Y);
+
+            canvas.RenderTransform = new MatrixTransform(m);
+        }
+
+    }
 }
