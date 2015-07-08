@@ -1,43 +1,51 @@
 ﻿namespace Trainer {
-    using DirectShowLib;
-    using Emgu.CV;
-    using Emgu.CV.Structure;
-    using Microsoft.Kinect;
-    using Microsoft.Kinect.Face;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Drawing.Imaging;
-    using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Input;
-    using System.Windows.Media;
-    using System.Windows.Media.Imaging;
+  using DirectShowLib;
+  using Emgu.CV;
+  using Emgu.CV.Structure;
+  using Microsoft.Kinect;
+  using Microsoft.Kinect.Face;
+  using System;
+  using System.Collections.Generic;
+  using System.ComponentModel;
+  using System.Drawing.Imaging;
+  using System.IO;
+  using System.Linq;
+  using System.Threading.Tasks;
+  using System.Windows;
+  using System.Windows.Controls;
+  using System.Windows.Input;
+  using System.Windows.Media;
+  using System.Windows.Media.Imaging;
 
-    // EMGU documentation link for our reference: http://www.emgu.com/wiki/files/3.0.0-alpha/document/html/b72c032d-59ae-c36f-5e00-12f8d621dfb8.htm
-    public partial class Overlay : Window, INotifyPropertyChanged {
+  // EMGU documentation link for our reference: http://www.emgu.com/wiki/files/3.0.0-alpha/document/html/b72c032d-59ae-c36f-5e00-12f8d621dfb8.htm
+  public partial class Overlay : Window, INotifyPropertyChanged {
     // MainWindow Variables
     private KinectSensor kinectSensor = null;
     private DepthFrameReader depthFrameReader = null;
     BodyFrameReader bodyFrameReader = null;
     IList<Body> bodies = null;
-    private WriteableBitmap threeDBitmap = null;
+    private Body currentTrackedBody = null;
+    private ulong currentTrackingId = 0;
+    //HD variables
     private HighDefinitionFaceFrameSource highDefinitionFaceSource = null;
     private HighDefinitionFaceFrameReader highDefinitionFaceReader = null;
     private FaceAlignment highdefinitionFaceAlignment = null;
     private FaceModel highDefinitionFaceModel = null;
     private List<System.Windows.Shapes.Ellipse> points = new List<System.Windows.Shapes.Ellipse>();
-    private ushort minDepth = 2500;
-    private ushort maxDepth = 3000;
+    //Face Frame Variables
+    private FaceFrameSource faceFrameSource = null;
+    private FaceFrameReader faceFrameReader = null;
+    private IReadOnlyDictionary<FacePointType, PointF> facePoints;
+    //Depth Variables
+    private ushort minDepth = 500;
+    private ushort maxDepth = 1000;
     private double multiplier;
-    public event PropertyChangedEventHandler PropertyChanged;
-    private Body currentTrackedBody = null;
-    private ulong currentTrackingId = 0;
     private ushort[] depthData;
     private Image depthCanvasImage = new Image();
+    private WriteableBitmap depthBitmap = null;
+    private CameraSpacePoint[] depthVertices = null;
+
+    public event PropertyChangedEventHandler PropertyChanged;
 
 
 
@@ -50,7 +58,25 @@
       FrameDescription depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
 
       // create the writeable bitmap to display our frames
-      this.threeDBitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+      this.depthBitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+      depthVertices = new CameraSpacePoint[depthFrameDescription.Width * depthFrameDescription.Height];
+
+      /* Set the backgroud to white
+      this.threeDBitmap.Lock();
+      byte[] pixelData = new byte[depthFrameDescription.Width * depthFrameDescription.Height * (PixelFormats.Bgr32.BitsPerPixel + 7) / 8];
+      int stride = depthFrameDescription.Width * PixelFormats.Bgr32.BitsPerPixel / 8;
+      var length = pixelData.Length;
+      for (int i = 0; i < length; i++) {
+        pixelData[i] = (byte)255;
+      }
+      var box = new Int32Rect(0, 0, this.threeDBitmap.PixelWidth, this.threeDBitmap.PixelHeight);
+      this.threeDBitmap.WritePixels(box, pixelData, stride, 0);
+      this.threeDBitmap.AddDirtyRect(box);
+      this.threeDBitmap.Unlock();
+      //*/
+      this.faceFrameSource = new FaceFrameSource(this.kinectSensor, 0,
+        FaceFrameFeatures.BoundingBoxInInfraredSpace |
+        FaceFrameFeatures.PointsInInfraredSpace);
 
       this.highDefinitionFaceModel = new FaceModel();
       this.highdefinitionFaceAlignment = new FaceAlignment();
@@ -62,13 +88,15 @@
 
       // open the reader for the face frames
       this.bodyFrameReader = this.kinectSensor.BodyFrameSource.OpenReader();
-      this.depthFrameReader =  this.kinectSensor.DepthFrameSource.OpenReader();
+      //this.depthFrameReader =  this.kinectSensor.DepthFrameSource.OpenReader();
       this.highDefinitionFaceReader = this.highDefinitionFaceSource.OpenReader();
+      this.faceFrameReader = this.faceFrameSource.OpenReader();
 
       // wire handlers for frame arrivals
       this.bodyFrameReader.FrameArrived += this.BodyFrameReader_FrameArrived;
-      this.depthFrameReader.FrameArrived += this.DepthFrameReader_FrameArrived;
+      //this.depthFrameReader.FrameArrived += this.DepthFrameReader_FrameArrived;
       this.highDefinitionFaceReader.FrameArrived += this.HighDefinitionFaceFrameReader_FrameArrived;
+      this.faceFrameReader.FrameArrived += this.FaceFrameReader_FrameArrived; ;
 
       // open the sensor
       this.kinectSensor.Open();
@@ -77,10 +105,9 @@
       this.DataContext = this;
 
       InitializeComponent();
-      depthCanvasImage.Source = this.threeDBitmap;
+      depthCanvasImage.Source = this.depthBitmap;
       canvas.Children.Add(depthCanvasImage);
     }
-
 
 
 
@@ -99,11 +126,12 @@
         this.currentTrackedBody = selectedBody;
         this.currentTrackingId = selectedBody.TrackingId;
         highDefinitionFaceSource.TrackingId = this.currentTrackingId;
+        faceFrameSource.TrackingId = this.currentTrackingId;
       }
     }
 
     private void DepthFrameReader_FrameArrived(object sender, DepthFrameArrivedEventArgs e) {
-      //*
+      /*
       using (var depthFrame = e.FrameReference.AcquireFrame()) {
         if (depthFrame != null) {
           SimpleDrawDepth(depthFrame);
@@ -115,77 +143,96 @@
     private void HighDefinitionFaceFrameReader_FrameArrived(object sender, HighDefinitionFaceFrameArrivedEventArgs e) {
       //*
       using (var frame = e.FrameReference.AcquireFrame()) {
-        if (frame != null && frame.IsFaceTracked) {
-          frame.GetAndRefreshFaceAlignmentResult(highdefinitionFaceAlignment);
-          UpdateFacePoints();
+        if (frame != null) {
+          using (var depthFrame = frame.DepthFrameReference.AcquireFrame()) {
+            if (depthFrame != null) {
+              SimpleDrawDepth(depthFrame);
+            }
+          }
+          if (frame.IsFaceTracked) {
+            frame.GetAndRefreshFaceAlignmentResult(highdefinitionFaceAlignment);
+            UpdateFacePoints();
+          }
         }
       }
       //*/
+    }
+
+    private void FaceFrameReader_FrameArrived(object sender, FaceFrameArrivedEventArgs e) {
+      var frame = e.FrameReference.AcquireFrame();
+      if (frame != null && frame.FaceFrameResult != null && frame.FaceFrameResult.FaceBoundingBoxInColorSpace != null) {
+        facePoints = frame.FaceFrameResult.FacePointsInColorSpace;
+      }
+    }
+
+    private void uiScaleSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+      //TransformGroup transformGroup = (TransformGroup)canvas.LayoutTransform;
+      //ScaleTransform transform = (ScaleTransform)transformGroup.Children[0];
+
+      //double zoom = e.NewValue;
+      //transform.ScaleX = zoom;
+      //transform.ScaleY = zoom;
     }
 
 
 
     // Methods
     private void SimpleDrawDepth(DepthFrame frame) {
-      this.threeDBitmap.Lock();
       int width = frame.FrameDescription.Width;
       int height = frame.FrameDescription.Height;
-      //ushort[] depthData = new ushort[width * height];
-      depthData = new ushort[width * height];
-      byte[] pixelData = new byte[width * height * (PixelFormats.Bgr32.BitsPerPixel + 7) / 8];
-      int stride = width * PixelFormats.Bgr32.BitsPerPixel / 8;
-      multiplier = (255.0 / (this.maxDepth - this.minDepth));
+      if (width == this.depthBitmap.PixelWidth && height == this.depthBitmap.PixelHeight) {
+        this.depthBitmap.Lock();
+        depthData = new ushort[width * height];
+        byte[] pixelData = new byte[width * height * (PixelFormats.Bgr32.BitsPerPixel + 7) / 8];
+        int stride = width * PixelFormats.Bgr32.BitsPerPixel / 8;
+        multiplier = (255.0 / (this.maxDepth - this.minDepth));
 
-      frame.CopyFrameDataToArray(depthData);
-      CameraSpacePoint[] vertices = new CameraSpacePoint[depthData.Length];
-      this.kinectSensor.CoordinateMapper.MapDepthFrameToCameraSpace(depthData, vertices);
-      /*
-      var length = vertices.Length;
-      for (int i = 0; i < length; i++) {
-        vertices[i] = vertices[i].RotateY(10);
-      }
-      DepthSpacePoint[] depths = new DepthSpacePoint[depthData.Length];
-      this.kinectSensor.CoordinateMapper.MapCameraPointsToDepthSpace(vertices, depths);
-      */
-      /*
-      if (facePoints != null) {
-        var xnose = facePoints[FacePointType.Nose].X;
-        var xlefteye = facePoints[FacePointType.EyeLeft].X;
-        var ynose = facePoints[FacePointType.Nose].Y;
-        var ylefteye = facePoints[FacePointType.EyeLeft].Y;
+        frame.CopyFrameDataToArray(depthData);
 
-      }
-      */
+        //*
+        this.kinectSensor.CoordinateMapper.MapDepthFrameToCameraSpace(depthData, depthVertices);
+        //*/
+        /*
+        if (facePoints != null) {
+          this.kinectSensor.CoordinateMapper.map
+          var xnose = facePoints[FacePointType.Nose].;
+          var xlefteye = facePoints[FacePointType.EyeLeft].X;
+          var ynose = facePoints[FacePointType.Nose].Y;
+          var ylefteye = facePoints[FacePointType.EyeLeft].Y;
 
-
-      int colorIndex = 0;
-      for (int depthIndex = 0; depthIndex < depthData.Length; ++depthIndex) {
-        ushort z = depthData[depthIndex];
-        if (z > this.maxDepth || z < minDepth) {
-          pixelData[colorIndex++] = 0; // Blue
-          pixelData[colorIndex++] = 0; // Green
-          pixelData[colorIndex++] = 0; // Red
-          ++colorIndex;
-          continue;
         }
-        byte intensity = (byte)((z - minDepth) * multiplier);
+        //*/
 
-        pixelData[colorIndex++] = intensity; // Blue
-        pixelData[colorIndex++] = intensity; // Green
-        pixelData[colorIndex++] = intensity; // Red
 
-        ++colorIndex;
+        int colorIndex = 0;
+        var length = depthData.Length;
+        for (int i = 0; i < length; ++i) {
+          ushort z = depthData[i];
+          //float z = vertices[i].Z * 1000;
+          if (z > this.maxDepth || z < minDepth) {
+            pixelData[colorIndex++] = 0; // Blue
+            pixelData[colorIndex++] = 0; // Green
+            pixelData[colorIndex++] = 0; // Red
+            ++colorIndex;
+            continue;
+          }
+          byte intensity = (byte)((z - minDepth) * multiplier);
+
+          pixelData[colorIndex++] = intensity; // Blue
+          pixelData[colorIndex++] = intensity; // Green
+          pixelData[colorIndex++] = intensity; // Red
+
+          ++colorIndex;
+        }
+
+        var box = new Int32Rect(0, 0, this.depthBitmap.PixelWidth, this.depthBitmap.PixelHeight);
+        this.depthBitmap.WritePixels(box, pixelData, stride, 0);
+        this.depthBitmap.AddDirtyRect(box);
+        this.depthBitmap.Unlock();
       }
-
-      if (frame.FrameDescription.Width == this.threeDBitmap.PixelWidth && frame.FrameDescription.Height == this.threeDBitmap.PixelHeight) {
-        var box = new Int32Rect(0, 0, this.threeDBitmap.PixelWidth, this.threeDBitmap.PixelHeight);
-        this.threeDBitmap.WritePixels(box, pixelData, stride, 0);
-        this.threeDBitmap.AddDirtyRect(box);
-      }
-
-      this.threeDBitmap.Unlock();
     }
 
+    private bool oneTimeCheck = true;
     private void UpdateFacePoints() {
       if (highDefinitionFaceModel == null) return;
 
@@ -219,10 +266,24 @@
           //if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
 
           System.Windows.Shapes.Ellipse ellipse = points[index];
+          if (oneTimeCheck) {
+            var values = from dv in depthVertices
+                         where dv.X >= vertice.X - 0.00005
+                           && dv.X <= vertice.X + 0.00005
+                           && dv.Y <= vertice.Y + 0.00005
+                           && dv.Y <= vertice.Y + 0.00005
+                           && dv.Z <= vertice.Z + 0.00005
+                           && dv.Z <= vertice.Z + 0.00005
+                         select dv;
+            if (values != null && values.Count() > 0) {
+              ellipse.Fill = new SolidColorBrush(Colors.Red);
+            }
+          }
 
           System.Windows.Controls.Canvas.SetLeft(ellipse, point.X);
           System.Windows.Controls.Canvas.SetTop(ellipse, point.Y);
         }
+        if (oneTimeCheck) oneTimeCheck = false;
         //*/
       }
     }
@@ -231,6 +292,14 @@
       if (PropertyChanged != null) {
         PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
       }
+    }
+
+    private static double VectorDistance(CameraSpacePoint point1, CameraSpacePoint point2) {
+      var result = Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2) + Math.Pow(point1.Z - point2.Z, 2);
+
+      result = Math.Sqrt(result);
+
+      return result;
     }
 
     /// <summary>
@@ -298,14 +367,5 @@
       return result;
     }
 
-        private void uiScaleSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            //TransformGroup transformGroup = (TransformGroup)canvas.LayoutTransform;
-            //ScaleTransform transform = (ScaleTransform)transformGroup.Children[0];
-
-            //double zoom = e.NewValue;
-            //transform.ScaleX = zoom;
-            //transform.ScaleY = zoom;
-        }
-    }
+  }
 }
