@@ -246,7 +246,7 @@
       }
     }
 
-    private bool oneTimeCheck = true;
+    private int oneTimeCheck = 0;
     private void UpdateFacePoints() {
       if (highDefinitionFaceModel == null) return;
 
@@ -280,7 +280,8 @@
           //if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
 
           System.Windows.Shapes.Ellipse ellipse = points[i];
-          if (oneTimeCheck) {
+          //((SolidColorBrush)ellipse.Fill).Color = Colors.Blue;
+          if (oneTimeCheck == 0) {
             /*
             var x1 = Convert.ToInt32(point.X);
             var x2 = x1 + 1;
@@ -290,7 +291,7 @@
             var z2 = depthData[(y2 * depthWidth) + x2];
             var z3 = depthData[(y1 * depthWidth) + x2];
             var z4 = depthData[(y2 * depthWidth) + x1];
-            var acceptedVariance = 50;
+            var acceptedVariance = 5000;
             if ((z1 >= vertice.Z - acceptedVariance && z1 <= vertice.Z + acceptedVariance)
               || (z2 >= vertice.Z - acceptedVariance && z2 <= vertice.Z + acceptedVariance)
               || (z3 >= vertice.Z - acceptedVariance && z3 <= vertice.Z + acceptedVariance)
@@ -300,25 +301,38 @@
             //*/
 
             //*
-            int start = ((Convert.ToInt32(point.Y) * depthWidth) + Convert.ToInt32(point.X)) - 20;
-            var values = from dv in depthVertices.Skip(start).Take(40)
+            ((SolidColorBrush)ellipse.Fill).Color = Colors.Blue;
+            int start = ((Convert.ToInt32(point.Y) * depthWidth) + Convert.ToInt32(point.X));
+            var depthVertice = depthVertices[start];
+            if (depthVertice.X >= vertice.X - 0.0015
+                && depthVertice.Y >= vertice.Y - 0.0015
+                && depthVertice.Z >= vertice.Z - 0.0015
+                && depthVertice.X <= vertice.X + 0.0015
+                && depthVertice.Y <= vertice.Y + 0.0015
+                && depthVertice.Z <= vertice.Z + 0.0015) {
+              ((SolidColorBrush)ellipse.Fill).Color = Colors.Red;
+            }
+            /*
+            var values = from dv in depthVertices.Skip(start).Take(3)
                          where dv.X >= vertice.X - 0.0015
-                           && dv.Y >= vertice.Y -  0.0015
-                           && dv.Z >= vertice.Z -  0.0015
-                           && dv.X <= vertice.X +  0.0015
-                           && dv.Y <= vertice.Y +  0.0015
-                           && dv.Z <= vertice.Z +  0.0015
+                           && dv.Y >= vertice.Y - 0.0015
+                           && dv.Z >= vertice.Z - 0.0015
+                           && dv.X <= vertice.X + 0.0015
+                           && dv.Y <= vertice.Y + 0.0015
+                           && dv.Z <= vertice.Z + 0.0015
                          select dv;
+            ((SolidColorBrush)ellipse.Fill).Color = Colors.Blue;
             if (values != null && values.Count() > 0) {
               ((SolidColorBrush)ellipse.Fill).Color = Colors.Red;
             }
+            //*/
             //*/
           }
 
           System.Windows.Controls.Canvas.SetLeft(ellipse, point.X);
           System.Windows.Controls.Canvas.SetTop(ellipse, point.Y);
         }
-        if (oneTimeCheck) oneTimeCheck = false;
+        oneTimeCheck = ++oneTimeCheck % 10;
         //*/
       }
     }
