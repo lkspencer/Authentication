@@ -49,12 +49,12 @@
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-        private Point origin;
-        private Point start;
+    private Point origin;
+    private Point start;
 
 
-        // Constructors
-        public Overlay() {
+    // Constructors
+    public Overlay() {
       // get the kinectSensor object
       this.kinectSensor = KinectSensor.GetDefault();
 
@@ -112,14 +112,14 @@
 
 
 
-            InitializeComponent();
-            //Pan + Zoom Variables
-            WPFWindow.MouseWheel += Overlay_MouseWheel;
+      InitializeComponent();
+      //Pan + Zoom Variables
+      WPFWindow.MouseWheel += Overlay_MouseWheel;
 
-            canvas.MouseLeftButtonDown += canvas_MouseLeftButtonDown;
-            canvas.MouseLeftButtonUp += canvas_MouseLeftButtonUp;
-            canvas.MouseMove += canvas_MouseMove;
-            depthCanvasImage.Source = this.depthBitmap;
+      canvas.MouseLeftButtonDown += canvas_MouseLeftButtonDown;
+      canvas.MouseLeftButtonUp += canvas_MouseLeftButtonUp;
+      canvas.MouseMove += canvas_MouseMove;
+      depthCanvasImage.Source = this.depthBitmap;
       canvas.Children.Add(depthCanvasImage);
     }
 
@@ -186,6 +186,44 @@
       //double zoom = e.NewValue;
       //transform.ScaleX = zoom;
       //transform.ScaleY = zoom;
+    }
+
+    private void canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+      canvas.ReleaseMouseCapture();
+    }
+
+    private void canvas_MouseMove(object sender, MouseEventArgs e) {
+      if (!canvas.IsMouseCaptured) return;
+      Point p = e.MouseDevice.GetPosition(border);
+
+      Matrix m = canvas.RenderTransform.Value;
+      m.OffsetX = origin.X + (p.X - start.X);
+      m.OffsetY = origin.Y + (p.Y - start.Y);
+
+      canvas.RenderTransform = new MatrixTransform(m);
+    }
+
+    private void canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+      if (canvas.IsMouseCaptured) return;
+
+
+
+      start = e.GetPosition(border);
+      origin.X = canvas.RenderTransform.Value.OffsetX;
+      origin.Y = canvas.RenderTransform.Value.OffsetY;
+      canvas.CaptureMouse();
+    }
+
+    private void Overlay_MouseWheel(object sender, MouseWheelEventArgs e) {
+      Point p = e.MouseDevice.GetPosition(canvas);
+
+      Matrix m = canvas.RenderTransform.Value;
+      if (e.Delta > 0)
+        m.ScaleAtPrepend(1.1, 1.1, p.X, p.Y);
+      else
+        m.ScaleAtPrepend(1 / 1.1, 1 / 1.1, p.X, p.Y);
+
+      canvas.RenderTransform = new MatrixTransform(m);
     }
 
 
@@ -280,7 +318,6 @@
           //if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
 
           System.Windows.Shapes.Ellipse ellipse = points[i];
-          //((SolidColorBrush)ellipse.Fill).Color = Colors.Blue;
           if (oneTimeCheck == 0) {
             /*
             var x1 = Convert.ToInt32(point.X);
@@ -300,39 +337,25 @@
             }
             //*/
 
-            //*
             ((SolidColorBrush)ellipse.Fill).Color = Colors.Blue;
             int start = ((Convert.ToInt32(point.Y) * depthWidth) + Convert.ToInt32(point.X));
-            var depthVertice = depthVertices[start];
-            if (depthVertice.X >= vertice.X - 0.0015
-                && depthVertice.Y >= vertice.Y - 0.0015
-                && depthVertice.Z >= vertice.Z - 0.0015
-                && depthVertice.X <= vertice.X + 0.0015
-                && depthVertice.Y <= vertice.Y + 0.0015
-                && depthVertice.Z <= vertice.Z + 0.0015) {
-              ((SolidColorBrush)ellipse.Fill).Color = Colors.Red;
+            if (start > 0 && start < depthVertices.Length) {
+              var depthVertice = depthVertices[start];
+              if (depthVertice.X >= vertice.X - 0.0015
+                  && depthVertice.Y >= vertice.Y - 0.0015
+                  && depthVertice.Z >= vertice.Z - 0.0015
+                  && depthVertice.X <= vertice.X + 0.0015
+                  && depthVertice.Y <= vertice.Y + 0.0015
+                  && depthVertice.Z <= vertice.Z + 0.0015) {
+                ((SolidColorBrush)ellipse.Fill).Color = Colors.Red;
+              }
             }
-            /*
-            var values = from dv in depthVertices.Skip(start).Take(3)
-                         where dv.X >= vertice.X - 0.0015
-                           && dv.Y >= vertice.Y - 0.0015
-                           && dv.Z >= vertice.Z - 0.0015
-                           && dv.X <= vertice.X + 0.0015
-                           && dv.Y <= vertice.Y + 0.0015
-                           && dv.Z <= vertice.Z + 0.0015
-                         select dv;
-            ((SolidColorBrush)ellipse.Fill).Color = Colors.Blue;
-            if (values != null && values.Count() > 0) {
-              ((SolidColorBrush)ellipse.Fill).Color = Colors.Red;
-            }
-            //*/
-            //*/
           }
 
           System.Windows.Controls.Canvas.SetLeft(ellipse, point.X);
           System.Windows.Controls.Canvas.SetTop(ellipse, point.Y);
         }
-        oneTimeCheck = ++oneTimeCheck % 10;
+        oneTimeCheck = ++oneTimeCheck % 30;
         //*/
       }
     }
@@ -416,47 +439,5 @@
       return result;
     }
 
-        private void canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            canvas.ReleaseMouseCapture();
-        }
-
-        private void canvas_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (!canvas.IsMouseCaptured) return;
-            Point p = e.MouseDevice.GetPosition(border);
-
-            Matrix m = canvas.RenderTransform.Value;
-            m.OffsetX = origin.X + (p.X - start.X);
-            m.OffsetY = origin.Y + (p.Y - start.Y);
-
-            canvas.RenderTransform = new MatrixTransform(m);
-        }
-
-        private void canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (canvas.IsMouseCaptured) return;
-
-
-
-            start = e.GetPosition(border);
-            origin.X = canvas.RenderTransform.Value.OffsetX;
-            origin.Y = canvas.RenderTransform.Value.OffsetY;
-            canvas.CaptureMouse();
-        }
-
-        private void Overlay_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            Point p = e.MouseDevice.GetPosition(canvas);
-
-            Matrix m = canvas.RenderTransform.Value;
-            if (e.Delta > 0)
-                m.ScaleAtPrepend(1.1, 1.1, p.X, p.Y);
-            else
-                m.ScaleAtPrepend(1 / 1.1, 1 / 1.1, p.X, p.Y);
-
-            canvas.RenderTransform = new MatrixTransform(m);
-        }
-
-    }
+  }
 }
