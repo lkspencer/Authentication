@@ -44,6 +44,8 @@
     private Image depthCanvasImage = new Image();
     private WriteableBitmap depthBitmap = null;
     private CameraSpacePoint[] depthVertices = null;
+    private int depthWidth;
+    private int depthHeight;
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -178,13 +180,13 @@
 
     // Methods
     private void SimpleDrawDepth(DepthFrame frame) {
-      int width = frame.FrameDescription.Width;
-      int height = frame.FrameDescription.Height;
-      if (width == this.depthBitmap.PixelWidth && height == this.depthBitmap.PixelHeight) {
+      depthWidth = frame.FrameDescription.Width;
+      depthHeight = frame.FrameDescription.Height;
+      if (depthWidth == this.depthBitmap.PixelWidth && depthHeight == this.depthBitmap.PixelHeight) {
         this.depthBitmap.Lock();
-        depthData = new ushort[width * height];
-        byte[] pixelData = new byte[width * height * (PixelFormats.Bgr32.BitsPerPixel + 7) / 8];
-        int stride = width * PixelFormats.Bgr32.BitsPerPixel / 8;
+        depthData = new ushort[depthWidth * depthHeight];
+        byte[] pixelData = new byte[depthWidth * depthHeight * (PixelFormats.Bgr32.BitsPerPixel + 7) / 8];
+        int stride = depthWidth * PixelFormats.Bgr32.BitsPerPixel / 8;
         multiplier = (255.0 / (this.maxDepth - this.minDepth));
 
         frame.CopyFrameDataToArray(depthData);
@@ -255,8 +257,8 @@
         }
 
         //*
-        for (int index = 0; index < vertices.Count; index++) {
-          CameraSpacePoint vertice = vertices[index];
+        for (int i = 0; i < vertices.Count; i++) {
+          CameraSpacePoint vertice = vertices[i];
           DepthSpacePoint point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(vertice);
 
           if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
@@ -265,19 +267,40 @@
           //point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(vertice);
           //if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
 
-          System.Windows.Shapes.Ellipse ellipse = points[index];
+          System.Windows.Shapes.Ellipse ellipse = points[i];
           if (oneTimeCheck) {
-            var values = from dv in depthVertices
-                         where dv.X >= vertice.X - 0.00005
-                           && dv.X <= vertice.X + 0.00005
-                           && dv.Y <= vertice.Y + 0.00005
-                           && dv.Y <= vertice.Y + 0.00005
-                           && dv.Z <= vertice.Z + 0.00005
-                           && dv.Z <= vertice.Z + 0.00005
+            /*
+            var x1 = Convert.ToInt32(point.X);
+            var x2 = x1 + 1;
+            var y1 = Convert.ToInt32(point.Y);
+            var y2 = y1 + 1;
+            var z1 = depthData[(y1 * depthWidth) + x1];
+            var z2 = depthData[(y2 * depthWidth) + x2];
+            var z3 = depthData[(y1 * depthWidth) + x2];
+            var z4 = depthData[(y2 * depthWidth) + x1];
+            var acceptedVariance = 50;
+            if ((z1 >= vertice.Z - acceptedVariance && z1 <= vertice.Z + acceptedVariance)
+              || (z2 >= vertice.Z - acceptedVariance && z2 <= vertice.Z + acceptedVariance)
+              || (z3 >= vertice.Z - acceptedVariance && z3 <= vertice.Z + acceptedVariance)
+              || (z4 >= vertice.Z - acceptedVariance && z4 <= vertice.Z + acceptedVariance)) {
+              ((SolidColorBrush)ellipse.Fill).Color = Colors.Red;
+            }
+            //*/
+
+            //*
+            int start = ((Convert.ToInt32(point.Y) * depthWidth) + Convert.ToInt32(point.X)) - 20;
+            var values = from dv in depthVertices.Skip(start).Take(40)
+                         where dv.X >= vertice.X - 0.0015
+                           && dv.Y >= vertice.Y -  0.0015
+                           && dv.Z >= vertice.Z -  0.0015
+                           && dv.X <= vertice.X +  0.0015
+                           && dv.Y <= vertice.Y +  0.0015
+                           && dv.Z <= vertice.Z +  0.0015
                          select dv;
             if (values != null && values.Count() > 0) {
-              ellipse.Fill = new SolidColorBrush(Colors.Red);
+              ((SolidColorBrush)ellipse.Fill).Color = Colors.Red;
             }
+            //*/
           }
 
           System.Windows.Controls.Canvas.SetLeft(ellipse, point.X);
