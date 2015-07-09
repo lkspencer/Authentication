@@ -26,6 +26,9 @@
     private FaceModel highDefinitionFaceModel = null;
     private List<System.Windows.Shapes.Ellipse> points = new List<System.Windows.Shapes.Ellipse>();
     private int checkPointMatches = 0;
+    private IReadOnlyList<CameraSpacePoint> defaultVertices;
+    private CameraSpacePoint tempVertice = new CameraSpacePoint();
+    private float tollerance = 0.0015f;
     //Face Frame Variables
     private FaceFrameSource faceFrameSource = null;
     private FaceFrameReader faceFrameReader = null;
@@ -51,10 +54,6 @@
 
 
 
-    private IReadOnlyList<CameraSpacePoint> defaultVertices;
-
-
-
     // Constructors
     public Overlay() {
       // get the kinectSensor object
@@ -67,19 +66,6 @@
       this.depthBitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
       depthVertices = new CameraSpacePoint[depthFrameDescription.Width * depthFrameDescription.Height];
 
-      /* Set the backgroud to white
-      this.threeDBitmap.Lock();
-      byte[] pixelData = new byte[depthFrameDescription.Width * depthFrameDescription.Height * (PixelFormats.Bgr32.BitsPerPixel + 7) / 8];
-      int stride = depthFrameDescription.Width * PixelFormats.Bgr32.BitsPerPixel / 8;
-      var length = pixelData.Length;
-      for (int i = 0; i < length; i++) {
-        pixelData[i] = (byte)255;
-      }
-      var box = new Int32Rect(0, 0, this.threeDBitmap.PixelWidth, this.threeDBitmap.PixelHeight);
-      this.threeDBitmap.WritePixels(box, pixelData, stride, 0);
-      this.threeDBitmap.AddDirtyRect(box);
-      this.threeDBitmap.Unlock();
-      //*/
       this.faceFrameSource = new FaceFrameSource(this.kinectSensor, 0, FaceFrameFeatures.BoundingBoxInColorSpace);
 
       this.highDefinitionFaceModel = new FaceModel();
@@ -100,7 +86,7 @@
       this.bodyFrameReader.FrameArrived += this.BodyFrameReader_FrameArrived;
       //this.depthFrameReader.FrameArrived += this.DepthFrameReader_FrameArrived;
       this.highDefinitionFaceReader.FrameArrived += this.HighDefinitionFaceFrameReader_FrameArrived;
-      this.faceFrameReader.FrameArrived += this.FaceFrameReader_FrameArrived; ;
+      this.faceFrameReader.FrameArrived += this.FaceFrameReader_FrameArrived;
 
       // open the sensor
       this.kinectSensor.Open();
@@ -133,42 +119,17 @@
       var length = savedVertices.Length;
       for (int i = 0; i < length; i++) {
         System.Windows.Shapes.Ellipse ellipse = null;
-        if (i == 18) {
-          ellipse = new System.Windows.Shapes.Ellipse {
-            Width = 2.0,
-            Height = 2.0,
-            Fill = new SolidColorBrush(Colors.Red)
-          };
-        } else {
-          ellipse = new System.Windows.Shapes.Ellipse {
-            Width = 2.0,
-            Height = 2.0,
-            Fill = new SolidColorBrush(Colors.Blue)
-          };
-        }
-
+        ellipse = new System.Windows.Shapes.Ellipse {
+          Width = 2.0,
+          Height = 2.0,
+          Fill = new SolidColorBrush(Colors.Blue)
+        };
         savedDots.Add(ellipse);
       }
       foreach (System.Windows.Shapes.Ellipse ellipse in savedDots) {
         canvas.Children.Add(ellipse);
       }
-      /*
-      for (int i = 0; i < length; i++) {
-        CameraSpacePoint vertice = savedVertices[i];
-        //vertice = vertice.RotateY(Math.PI);
-        //vertice = vertice.RotateY(Math.PI / 4);
-        vertice = vertice.RotateZ(Math.PI);
-        DepthSpacePoint point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(vertice);
 
-        //if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
-        System.Windows.Shapes.Ellipse ellipse = savedDots[i];
-        //DepthSpacePoint point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(vertices[i]);
-        //if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
-        System.Windows.Controls.Canvas.SetLeft(ellipse, vertice.X * 500);
-        System.Windows.Controls.Canvas.SetTop(ellipse, vertice.Y * 500);
-
-      }
-      //*/
     }
 
 
@@ -193,7 +154,6 @@
     }
 
     private void HighDefinitionFaceFrameReader_FrameArrived(object sender, HighDefinitionFaceFrameArrivedEventArgs e) {
-      //*
       using (var frame = e.FrameReference.AcquireFrame()) {
         if (frame != null) {
           using (var depthFrame = frame.DepthFrameReference.AcquireFrame()) {
@@ -207,7 +167,6 @@
           }
         }
       }
-      //*/
     }
 
     private void FaceFrameReader_FrameArrived(object sender, FaceFrameArrivedEventArgs e) {
@@ -277,26 +236,12 @@
 
         frame.CopyFrameDataToArray(depthData);
 
-        //*
         this.kinectSensor.CoordinateMapper.MapDepthFrameToCameraSpace(depthData, depthVertices);
-        //*/
-        /*
-        if (facePoints != null) {
-          this.kinectSensor.CoordinateMapper.map
-          var xnose = facePoints[FacePointType.Nose].;
-          var xlefteye = facePoints[FacePointType.EyeLeft].X;
-          var ynose = facePoints[FacePointType.Nose].Y;
-          var ylefteye = facePoints[FacePointType.EyeLeft].Y;
-
-        }
-        //*/
-
 
         int colorIndex = 0;
         var length = depthData.Length;
         for (int i = 0; i < length; ++i) {
           ushort z = depthData[i];
-          //float z = vertices[i].Z * 1000;
           if (z > this.maxDepth || z < minDepth) {
             pixelData[colorIndex++] = 0; // Blue
             pixelData[colorIndex++] = 0; // Green
@@ -319,8 +264,7 @@
         this.depthBitmap.Unlock();
       }
     }
-    private CameraSpacePoint tempVertice = new CameraSpacePoint();
-    private float tollerance = 0.0015f;
+
     private void UpdateFacePoints() {
       if (highDefinitionFaceModel == null) return;
 
