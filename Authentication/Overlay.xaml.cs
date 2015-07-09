@@ -4,6 +4,7 @@
   using System;
   using System.Collections.Generic;
   using System.ComponentModel;
+  using System.Web.Script.Serialization;
   using System.Windows;
   using System.Windows.Controls;
   using System.Windows.Input;
@@ -44,6 +45,13 @@
     private Point start;
     //Property Variables
     public event PropertyChangedEventHandler PropertyChanged;
+
+    private List<System.Windows.Shapes.Ellipse> savedDots = new List<System.Windows.Shapes.Ellipse>();
+    private CameraSpacePoint[] savedVertices = null;
+
+
+
+    private IReadOnlyList<CameraSpacePoint> defaultVertices;
 
 
 
@@ -101,9 +109,6 @@
       this.DataContext = this;
 
 
-
-
-
       InitializeComponent();
       //Pan + Zoom Variables
       WPFWindow.MouseWheel += Overlay_MouseWheel;
@@ -113,6 +118,57 @@
       canvas.MouseMove += canvas_MouseMove;
       depthCanvasImage.Source = this.depthBitmap;
       canvas.Children.Add(depthCanvasImage);
+
+      // load in saved face mesh
+      var jss = new JavaScriptSerializer();
+      using (var file = new System.IO.StreamReader(@"data\kirk.fml")) {
+        var data = file.ReadLine();
+        savedVertices = jss.Deserialize<CameraSpacePoint[]>(data);
+      }
+
+      var averageModel = new FaceModel();
+      var defaultAlignment = new FaceAlignment();
+      defaultVertices = averageModel.CalculateVerticesForAlignment(defaultAlignment);
+
+      var length = savedVertices.Length;
+      for (int i = 0; i < length; i++) {
+        System.Windows.Shapes.Ellipse ellipse = null;
+        if (i == 18) {
+          ellipse = new System.Windows.Shapes.Ellipse {
+            Width = 2.0,
+            Height = 2.0,
+            Fill = new SolidColorBrush(Colors.Red)
+          };
+        } else {
+          ellipse = new System.Windows.Shapes.Ellipse {
+            Width = 2.0,
+            Height = 2.0,
+            Fill = new SolidColorBrush(Colors.Blue)
+          };
+        }
+
+        savedDots.Add(ellipse);
+      }
+      foreach (System.Windows.Shapes.Ellipse ellipse in savedDots) {
+        canvas.Children.Add(ellipse);
+      }
+      /*
+      for (int i = 0; i < length; i++) {
+        CameraSpacePoint vertice = savedVertices[i];
+        //vertice = vertice.RotateY(Math.PI);
+        //vertice = vertice.RotateY(Math.PI / 4);
+        vertice = vertice.RotateZ(Math.PI);
+        DepthSpacePoint point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(vertice);
+
+        //if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
+        System.Windows.Shapes.Ellipse ellipse = savedDots[i];
+        //DepthSpacePoint point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(vertices[i]);
+        //if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
+        System.Windows.Controls.Canvas.SetLeft(ellipse, vertice.X * 500);
+        System.Windows.Controls.Canvas.SetTop(ellipse, vertice.Y * 500);
+
+      }
+      //*/
     }
 
 
@@ -134,16 +190,6 @@
         highDefinitionFaceSource.TrackingId = this.currentTrackingId;
         faceFrameSource.TrackingId = this.currentTrackingId;
       }
-    }
-
-    private void DepthFrameReader_FrameArrived(object sender, DepthFrameArrivedEventArgs e) {
-      /*
-      using (var depthFrame = e.FrameReference.AcquireFrame()) {
-        if (depthFrame != null) {
-          SimpleDrawDepth(depthFrame);
-        }
-      }
-      //*/
     }
 
     private void HighDefinitionFaceFrameReader_FrameArrived(object sender, HighDefinitionFaceFrameArrivedEventArgs e) {
@@ -295,36 +341,65 @@
           }
         }
 
+        var count = defaultVertices.Count;
+        for (int i = 0; i < count; i++) {
+          var xdif = defaultVertices[i].X - vertices[i].X;
+          var ydif = defaultVertices[i].Y - vertices[i].Y;
+          var zdif = defaultVertices[i].Z - vertices[i].Z;
+
+          var tempVertice = new CameraSpacePoint {
+            X = savedVertices[i].X - xdif,
+            Y = savedVertices[i].Y - ydif,
+            Z = savedVertices[i].Z - zdif
+          };
+          var ellipse = savedDots[i];
+          DepthSpacePoint point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(tempVertice);
+          if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
+          ((SolidColorBrush)ellipse.Fill).Color = Colors.Blue;
+          int start = ((Convert.ToInt32(point.Y) * depthWidth) + Convert.ToInt32(point.X));
+          if (start >= 0 && start < depthVertices.Length) {
+            var depthVertice = depthVertices[start];
+            if (depthVertice.X >= tempVertice.X - 0.0015
+                && depthVertice.Y >= tempVertice.Y - 0.0015
+                && depthVertice.Z >= tempVertice.Z - 0.0015
+                && depthVertice.X <= tempVertice.X + 0.0015
+                && depthVertice.Y <= tempVertice.Y + 0.0015
+                && depthVertice.Z <= tempVertice.Z + 0.0015) {
+              ((SolidColorBrush)ellipse.Fill).Color = Colors.Red;
+            }
+          }
+
+          System.Windows.Controls.Canvas.SetLeft(savedDots[i], point.X);
+          System.Windows.Controls.Canvas.SetTop(savedDots[i], point.Y);
+        }
+
+        /*
+        if (checkPointMatches == 0) {
+          for (int i = 0; i < savedVertices.Length; i++) {
+            CameraSpacePoint vertice = savedVertices[i];
+            //vertice = vertice.RotateY(Math.PI);
+            //vertice = vertice.RotateY(Math.PI / 4);
+            vertice = vertice.RotateX(-highdefinitionFaceAlignment.FaceOrientation.X);
+            vertice = vertice.RotateY(-highdefinitionFaceAlignment.FaceOrientation.Y);
+            vertice = vertice.RotateZ(highdefinitionFaceAlignment.FaceOrientation.Z);
+            vertice = vertice.RotateZ(Math.PI);
+            vertice.X += 0.5f;
+            vertice.Y += 0.5f;
+            //vertice.Y += highdefinitionFaceAlignment.HeadPivotPoint.Y;
+            //vertice.Z += highdefinitionFaceAlignment.HeadPivotPoint.Z;
+            System.Windows.Shapes.Ellipse ellipse = savedDots[i];
+            System.Windows.Controls.Canvas.SetLeft(ellipse, vertice.X * 500);
+            System.Windows.Controls.Canvas.SetTop(ellipse, vertice.Y * 500);
+          }
+        }
+        //*/
+        /*
         for (int i = 0; i < vertices.Count; i++) {
           CameraSpacePoint vertice = vertices[i];
           DepthSpacePoint point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(vertice);
-
           if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
-
-          //vertice.Z = depthData[(this.threeDBitmap.PixelWidth * Convert.ToInt32(point.Y)) + Convert.ToInt32(point.X)];
-          //point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(vertice);
-          //if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
-
           System.Windows.Shapes.Ellipse ellipse = points[i];
           if (checkPointMatches == 0) {
-            /*
-            var x1 = Convert.ToInt32(point.X);
-            var x2 = x1 + 1;
-            var y1 = Convert.ToInt32(point.Y);
-            var y2 = y1 + 1;
-            var z1 = depthData[(y1 * depthWidth) + x1];
-            var z2 = depthData[(y2 * depthWidth) + x2];
-            var z3 = depthData[(y1 * depthWidth) + x2];
-            var z4 = depthData[(y2 * depthWidth) + x1];
-            var acceptedVariance = 5000;
-            if ((z1 >= vertice.Z - acceptedVariance && z1 <= vertice.Z + acceptedVariance)
-              || (z2 >= vertice.Z - acceptedVariance && z2 <= vertice.Z + acceptedVariance)
-              || (z3 >= vertice.Z - acceptedVariance && z3 <= vertice.Z + acceptedVariance)
-              || (z4 >= vertice.Z - acceptedVariance && z4 <= vertice.Z + acceptedVariance)) {
-              ((SolidColorBrush)ellipse.Fill).Color = Colors.Red;
-            }
-            //*/
-
             ((SolidColorBrush)ellipse.Fill).Color = Colors.Blue;
             int start = ((Convert.ToInt32(point.Y) * depthWidth) + Convert.ToInt32(point.X));
             if (start >= 0 && start < depthVertices.Length) {
@@ -343,7 +418,8 @@
           System.Windows.Controls.Canvas.SetLeft(ellipse, point.X);
           System.Windows.Controls.Canvas.SetTop(ellipse, point.Y);
         }
-        checkPointMatches = ++checkPointMatches % 30;
+        //*/
+        checkPointMatches = ++checkPointMatches % 3;
       }
     }
 
