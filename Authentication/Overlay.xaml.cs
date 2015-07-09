@@ -14,26 +14,28 @@
   public partial class Overlay : Window, INotifyPropertyChanged {
     // MainWindow Variables
     private KinectSensor kinectSensor = null;
-    private DepthFrameReader depthFrameReader = null;
     BodyFrameReader bodyFrameReader = null;
+    // Body Variables
     IList<Body> bodies = null;
     private Body currentTrackedBody = null;
     private ulong currentTrackingId = 0;
-    //HD variables
+    // HD variables
     private HighDefinitionFaceFrameSource highDefinitionFaceSource = null;
     private HighDefinitionFaceFrameReader highDefinitionFaceReader = null;
     private FaceAlignment highdefinitionFaceAlignment = null;
     private FaceModel highDefinitionFaceModel = null;
-    private List<System.Windows.Shapes.Ellipse> points = new List<System.Windows.Shapes.Ellipse>();
     private int checkPointMatches = 0;
     private IReadOnlyList<CameraSpacePoint> defaultVertices;
     private CameraSpacePoint tempVertice = new CameraSpacePoint();
     private float tollerance = 0.0015f;
-    //Face Frame Variables
+    // Saved HD Face Variables
+    private List<System.Windows.Shapes.Ellipse> savedDots = new List<System.Windows.Shapes.Ellipse>();
+    private CameraSpacePoint[] savedVertices = null;
+    // Face Frame Variables
     private FaceFrameSource faceFrameSource = null;
     private FaceFrameReader faceFrameReader = null;
-    private IReadOnlyDictionary<FacePointType, PointF> facePoints;
-    //Depth Variables
+    // Depth Variables
+    private DepthFrameReader depthFrameReader = null;
     private ushort minDepth = 500;
     private ushort maxDepth = 1000;
     private double multiplier;
@@ -43,14 +45,11 @@
     private CameraSpacePoint[] depthVertices = null;
     private int depthWidth;
     private int depthHeight;
-    //Mouse Variables
-    private Point origin;
-    private Point start;
-    //Property Variables
+    // Mouse Variables
+    private Point mouseOrigin;
+    private Point mouseStart;
+    // Property Variables
     public event PropertyChangedEventHandler PropertyChanged;
-
-    private List<System.Windows.Shapes.Ellipse> savedDots = new List<System.Windows.Shapes.Ellipse>();
-    private CameraSpacePoint[] savedVertices = null;
 
 
 
@@ -61,30 +60,27 @@
 
       // create the colorFrameDescription from the ColorFrameSource using Bgra format
       FrameDescription depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
-
-      // create the writeable bitmap to display our frames
       this.depthBitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
       depthVertices = new CameraSpacePoint[depthFrameDescription.Width * depthFrameDescription.Height];
 
-      this.faceFrameSource = new FaceFrameSource(this.kinectSensor, 0, FaceFrameFeatures.BoundingBoxInColorSpace);
-
-      this.highDefinitionFaceModel = new FaceModel();
+      // start with default alignment
       this.highdefinitionFaceAlignment = new FaceAlignment();
+
+      // setup sources prior to opening readers
+      this.faceFrameSource = new FaceFrameSource(this.kinectSensor, 0, FaceFrameFeatures.BoundingBoxInColorSpace);
+      this.highDefinitionFaceModel = new FaceModel();
       this.highDefinitionFaceSource = new HighDefinitionFaceFrameSource(this.kinectSensor);
       this.highDefinitionFaceSource.TrackingQuality = FaceAlignmentQuality.High;
       this.highDefinitionFaceSource.FaceModel = this.highDefinitionFaceModel;
-      // Start capturing face model to use later
 
 
-      // open the reader for the face frames
+      // open readers for the face frames
       this.bodyFrameReader = this.kinectSensor.BodyFrameSource.OpenReader();
-      //this.depthFrameReader =  this.kinectSensor.DepthFrameSource.OpenReader();
       this.highDefinitionFaceReader = this.highDefinitionFaceSource.OpenReader();
       this.faceFrameReader = this.faceFrameSource.OpenReader();
 
       // wire handlers for frame arrivals
       this.bodyFrameReader.FrameArrived += this.BodyFrameReader_FrameArrived;
-      //this.depthFrameReader.FrameArrived += this.DepthFrameReader_FrameArrived;
       this.highDefinitionFaceReader.FrameArrived += this.HighDefinitionFaceFrameReader_FrameArrived;
       this.faceFrameReader.FrameArrived += this.FaceFrameReader_FrameArrived;
 
@@ -94,20 +90,27 @@
       // use the window object as the view model in this simple example
       this.DataContext = this;
 
+      multiplier = (255.0 / (this.maxDepth - this.minDepth));
 
       InitializeComponent();
-      //Pan + Zoom Variables
-      WPFWindow.MouseWheel += Overlay_MouseWheel;
 
+      // Pan + Zoom event handlers
+      WPFWindow.MouseWheel += Overlay_MouseWheel;
       canvas.MouseLeftButtonDown += canvas_MouseLeftButtonDown;
       canvas.MouseLeftButtonUp += canvas_MouseLeftButtonUp;
       canvas.MouseMove += canvas_MouseMove;
+
+      // add depth image to our canvas
       depthCanvasImage.Source = this.depthBitmap;
       canvas.Children.Add(depthCanvasImage);
 
+      LoadSavedFaceMesh(@"data\kirk.fml");
+    }
+
+    private void LoadSavedFaceMesh(string path) {
       // load in saved face mesh
       var jss = new JavaScriptSerializer();
-      using (var file = new System.IO.StreamReader(@"data\kirk.fml")) {
+      using (var file = new System.IO.StreamReader(path)) {
         var data = file.ReadLine();
         savedVertices = jss.Deserialize<CameraSpacePoint[]>(data);
       }
@@ -129,8 +132,8 @@
       foreach (System.Windows.Shapes.Ellipse ellipse in savedDots) {
         canvas.Children.Add(ellipse);
       }
-
     }
+
 
 
 
@@ -172,7 +175,7 @@
     private void FaceFrameReader_FrameArrived(object sender, FaceFrameArrivedEventArgs e) {
       var frame = e.FrameReference.AcquireFrame();
       if (frame != null && frame.FaceFrameResult != null && frame.FaceFrameResult.FaceBoundingBoxInColorSpace != null) {
-        facePoints = frame.FaceFrameResult.FacePointsInColorSpace;
+        // Grab the person's face (padded a little) and use oxford to do the initial 2D recognition
       }
     }
 
@@ -194,8 +197,8 @@
       Point p = e.MouseDevice.GetPosition(border);
 
       Matrix m = canvas.RenderTransform.Value;
-      m.OffsetX = origin.X + (p.X - start.X);
-      m.OffsetY = origin.Y + (p.Y - start.Y);
+      m.OffsetX = mouseOrigin.X + (p.X - mouseStart.X);
+      m.OffsetY = mouseOrigin.Y + (p.Y - mouseStart.Y);
 
       canvas.RenderTransform = new MatrixTransform(m);
     }
@@ -203,9 +206,9 @@
     private void canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
       if (canvas.IsMouseCaptured) return;
 
-      start = e.GetPosition(border);
-      origin.X = canvas.RenderTransform.Value.OffsetX;
-      origin.Y = canvas.RenderTransform.Value.OffsetY;
+      mouseStart = e.GetPosition(border);
+      mouseOrigin.X = canvas.RenderTransform.Value.OffsetX;
+      mouseOrigin.Y = canvas.RenderTransform.Value.OffsetY;
       canvas.CaptureMouse();
     }
 
@@ -232,7 +235,6 @@
         depthData = new ushort[depthWidth * depthHeight];
         byte[] pixelData = new byte[depthWidth * depthHeight * (PixelFormats.Bgr32.BitsPerPixel + 7) / 8];
         int stride = depthWidth * PixelFormats.Bgr32.BitsPerPixel / 8;
-        multiplier = (255.0 / (this.maxDepth - this.minDepth));
 
         frame.CopyFrameDataToArray(depthData);
 
