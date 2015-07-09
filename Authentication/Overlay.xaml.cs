@@ -27,7 +27,7 @@
     private int checkPointMatches = 0;
     private IReadOnlyList<CameraSpacePoint> defaultVertices;
     private CameraSpacePoint tempVertice = new CameraSpacePoint();
-    private float tollerance = 0.0015f;
+    private float tollerance = 0.005f;
     // Saved HD Face Variables
     private List<System.Windows.Shapes.Ellipse> savedDots = new List<System.Windows.Shapes.Ellipse>();
     private CameraSpacePoint[] savedVertices = null;
@@ -272,6 +272,7 @@
 
       var vertices = highDefinitionFaceModel.CalculateVerticesForAlignment(highdefinitionFaceAlignment);
       if (vertices.Count > 0) {
+        var matched = 0;
         var count = defaultVertices.Count;
         for (int i = 0; i < count; i++) {
           // align saved vertice with live face
@@ -300,6 +301,7 @@
                   && depthVertice.Z <= tempVertice.Z + tollerance) {
                 // change dot to red if it's vertice was within the set tollerance for the point on the live face
                 ellipse.Fill = Brushes.Red;
+                matched++;
               }
             }
           }
@@ -307,7 +309,7 @@
           System.Windows.Controls.Canvas.SetLeft(ellipse, point.X);
           System.Windows.Controls.Canvas.SetTop(ellipse, point.Y);
         }
-
+        if (matched != 0) matchCount.Content = String.Format("Red Dots: {0}", matched);
         checkPointMatches = ++checkPointMatches % 10;
       }
     }

@@ -8,9 +8,12 @@
         ResizeMode="CanMinimize" 
         ScrollViewer.CanContentScroll="True">
 
-    <Grid x:Name="LayoutRoot" >
-        <Border Grid.Row="1" Name="border" ClipToBounds="True">
-            <Canvas x:Name="canvas" Width="1364" Height="765" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,37,0,0" ></Canvas>
-        </Border>
-    </Grid>
+  <Grid x:Name="LayoutRoot" >
+    <Border Grid.Row="1">
+      <Label x:Name="matchCount" Content="Label" />
+    </Border>
+    <Border Grid.Row="1" Name="border" ClipToBounds="True">
+      <Canvas x:Name="canvas" Width="1364" Height="765" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,37,0,0" ></Canvas>
+    </Border>
+  </Grid>
 </Window>
