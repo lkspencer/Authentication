@@ -33,6 +33,7 @@
     private float tollerance = 0.005f;
     // Color Variables
     private WriteableBitmap colorImage;
+    private bool isColor = false;
     // Saved HD Face Variables
     private List<System.Windows.Shapes.Ellipse> savedDots = new List<System.Windows.Shapes.Ellipse>();
     private CameraSpacePoint[] savedVertices = null;
@@ -176,9 +177,13 @@
         if (colorFrame == null) return;
         faceCaptured = true;
         var left = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Left - 150;
+        left = left < 0 ? 0 : left;
         var top = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Top - 150;
+        top = top < 0 ? 0 : top;
         var right = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Right + 150;
+        right = right > colorFrame.FrameDescription.Width ? colorFrame.FrameDescription.Width : right;
         var bottom = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Bottom + 150;
+        bottom = bottom > colorFrame.FrameDescription.Height ? colorFrame.FrameDescription.Height : bottom;
         var width = right - left;
         var height = bottom - top;
         using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer()) {
@@ -300,33 +305,36 @@
           tempVertice.Z = savedVertices[i].Z - (defaultVertices[i].Z - vertices[i].Z);
 
           var ellipse = savedDots[i];
-          DepthSpacePoint point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(tempVertice);
-          // do nothing if we cannot properly map the vertice to 2D space
-          if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
+          if (isColor) {
+            var colorPoint = this.kinectSensor.CoordinateMapper.MapCameraPointToColorSpace(tempVertice);
+          } else {
+            var point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(tempVertice);
+            // do nothing if we cannot properly map the vertice to 2D space
+            if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
 
-          if (checkPointMatches == 0) {
-            // reset dot to blue
-            ellipse.Fill = Brushes.Blue;
-            int depthPosition = ((Convert.ToInt32(point.Y) * depthWidth) + Convert.ToInt32(point.X));
-            if (depthPosition >= 0 && depthPosition < depthVertices.Length) {
-              // NOTE: this depthVertice is a depth value from the point cloud converted
-              //       to a CameraSpacePoint (aka vertice).
-              var depthVertice = depthVertices[depthPosition];
-              if (depthVertice.X >= tempVertice.X - tollerance
-                  && depthVertice.Y >= tempVertice.Y - tollerance
-                  && depthVertice.Z >= tempVertice.Z - tollerance
-                  && depthVertice.X <= tempVertice.X + tollerance
-                  && depthVertice.Y <= tempVertice.Y + tollerance
-                  && depthVertice.Z <= tempVertice.Z + tollerance) {
-                // change dot to red if it's vertice was within the set tollerance for the point on the live face
-                ellipse.Fill = Brushes.Red;
-                matched++;
+            if (checkPointMatches == 0) {
+              // reset dot to blue
+              ellipse.Fill = Brushes.Blue;
+              int depthPosition = ((Convert.ToInt32(point.Y) * depthWidth) + Convert.ToInt32(point.X));
+              if (depthPosition >= 0 && depthPosition < depthVertices.Length) {
+                // NOTE: this depthVertice is a depth value from the point cloud converted
+                //       to a CameraSpacePoint (aka vertice).
+                var depthVertice = depthVertices[depthPosition];
+                if (depthVertice.X >= tempVertice.X - tollerance
+                    && depthVertice.Y >= tempVertice.Y - tollerance
+                    && depthVertice.Z >= tempVertice.Z - tollerance
+                    && depthVertice.X <= tempVertice.X + tollerance
+                    && depthVertice.Y <= tempVertice.Y + tollerance
+                    && depthVertice.Z <= tempVertice.Z + tollerance) {
+                  // change dot to red if it's vertice was within the set tollerance for the point on the live face
+                  ellipse.Fill = Brushes.Red;
+                  matched++;
+                }
               }
             }
+            System.Windows.Controls.Canvas.SetLeft(ellipse, point.X);
+            System.Windows.Controls.Canvas.SetTop(ellipse, point.Y);
           }
-
-          System.Windows.Controls.Canvas.SetLeft(ellipse, point.X);
-          System.Windows.Controls.Canvas.SetTop(ellipse, point.Y);
         }
         if (matched != 0) matchCount.Content = String.Format("Red Dots: {0}", matched);
         checkPointMatches = ++checkPointMatches % 10;
@@ -471,13 +479,13 @@
         bmp = bmp.Clone(new System.Drawing.Rectangle(left, top, width, height), System.Drawing.Imaging.PixelFormat.DontCare);
         // scale more to save on bandwidth at the cost of quality/precision
         bmp = ScaleImage(bmp, 256, 256);
-        bmp.Save(@"data\kirk.png");
+        bmp.Save(@"data\face.png");
       }
     }
 
     private async Task Match2D(int left, int top, int width, int height) {
-      if (!File.Exists(@"data\kirk.png")) return;
-      using (var fStream = File.OpenRead(@"data\kirk.png")) {
+      if (!File.Exists(@"data\face.png")) return;
+      using (var fStream = File.OpenRead(@"data\face.png")) {
         var groups = await App.Instance.GetPersonGroupsAsync();
         var group = groups.Where(g => g.Name == "First Test").FirstOrDefault();
         if (group == null) {
@@ -505,11 +513,14 @@
           }
           if (found > 0) {
             matchName.Content = String.Format("Name{0}: {1}", (found > 1 ? "s" : ""), names.Substring(0, names.Length - 2));
-            LoadSavedFaceMesh(
-              String.Format(@"data\{0}.fml",
-              names.Split(new string[] { ", " }, StringSplitOptions.None).FirstOrDefault())
-            );
-
+            var name = names.Split(new string[] { ", " }, StringSplitOptions.None).FirstOrDefault();
+            var fileName = String.Format(@"data\{0}.fml", name);
+            if (File.Exists(fileName)) {
+              LoadSavedFaceMesh(fileName);
+            } else {
+              matchName.Content = String.Format("No saved mesh for {0}.", name);
+              faceCaptured = false;
+            }
           } else {
             matchName.Content = "No match found for this person";
             faceCaptured = false;

@@ -3,20 +3,20 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Name="WPFWindow"
         Title="Overlay" 
-        Width="1407" 
-        Height="841" 
-        ResizeMode="CanMinimize" 
+        Width="1675.657" 
+        Height="735.03" 
+        ResizeMode="CanResizeWithGrip" 
         ScrollViewer.CanContentScroll="True">
 
   <Grid x:Name="LayoutRoot" >
     <Border Grid.Row="1">
-      <Label x:Name="matchCount" Content="count" />
+      <Label x:Name="matchCount" Content="count" FontSize="64" />
     </Border>
     <Border Grid.Row="1">
-      <Label x:Name="matchName" Content="name" Margin="200,0,0,0" />
+      <Label x:Name="matchName" Content="name" Margin="600,0,0,0" FontSize="64" />
     </Border>
     <Border Grid.Row="1" Name="border" ClipToBounds="True">
-      <Canvas x:Name="canvas" Width="1364" Height="765" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,37,0,0" ></Canvas>
+      <Canvas x:Name="canvas" Width="1364" Height="580" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,100,0,0" ></Canvas>
     </Border>
   </Grid>
 </Window>
