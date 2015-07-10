@@ -4,6 +4,8 @@
   using System;
   using System.Collections.Generic;
   using System.ComponentModel;
+  using System.IO;
+  using System.Linq;
   using System.Web.Script.Serialization;
   using System.Windows;
   using System.Windows.Controls;
@@ -34,6 +36,7 @@
     // Face Frame Variables
     private FaceFrameSource faceFrameSource = null;
     private FaceFrameReader faceFrameReader = null;
+    private bool faceCaptured = false;
     // Depth Variables
     private DepthFrameReader depthFrameReader = null;
     private ushort minDepth = 500;
@@ -50,6 +53,8 @@
     private Point mouseStart;
     // Property Variables
     public event PropertyChangedEventHandler PropertyChanged;
+    // Oxford Variables
+    private string key = "";
 
 
 
@@ -105,35 +110,21 @@
       canvas.Children.Add(depthCanvasImage);
 
       LoadSavedFaceMesh(@"data\kirk.fml");
+      if (File.Exists("key.txt")) {
+        this.key = File.ReadAllText("key.txt");
+      }
+      if (string.IsNullOrWhiteSpace(this.key)) {
+        MessageBox.Show(String.Format("{0}{1}{2}{3}",
+          "Create a \"key.txt\" file in the root of the Client project. The key file should have your Azure Project Oxford key in it. It should be on a single line, no carriage return after the key.",
+          "\r\n\r\n*********************************************************************************\r\n",
+          "     DO NOT CHECK THE KEY.TXT FILE IN TO GITHUB!!!!!!!",
+          "\r\n*********************************************************************************"));
+        this.Close();
+        return;
+      }
+      App.Initialize(this.key);
+
     }
-
-    private void LoadSavedFaceMesh(string path) {
-      // load in saved face mesh
-      var jss = new JavaScriptSerializer();
-      using (var file = new System.IO.StreamReader(path)) {
-        var data = file.ReadLine();
-        savedVertices = jss.Deserialize<CameraSpacePoint[]>(data);
-      }
-
-      var averageModel = new FaceModel();
-      var defaultAlignment = new FaceAlignment();
-      defaultVertices = averageModel.CalculateVerticesForAlignment(defaultAlignment);
-
-      var length = savedVertices.Length;
-      for (int i = 0; i < length; i++) {
-        System.Windows.Shapes.Ellipse ellipse = null;
-        ellipse = new System.Windows.Shapes.Ellipse {
-          Width = 2.0,
-          Height = 2.0,
-          Fill = new SolidColorBrush(Colors.Blue)
-        };
-        savedDots.Add(ellipse);
-      }
-      foreach (System.Windows.Shapes.Ellipse ellipse in savedDots) {
-        canvas.Children.Add(ellipse);
-      }
-    }
-
 
 
 
@@ -171,11 +162,90 @@
         }
       }
     }
+    public static System.Drawing.Bitmap ScaleImage(System.Drawing.Bitmap image, int maxWidth, int maxHeight) {
+      var ratioX = (double)maxWidth / image.Width;
+      var ratioY = (double)maxHeight / image.Height;
+      var ratio = Math.Min(ratioX, ratioY);
 
-    private void FaceFrameReader_FrameArrived(object sender, FaceFrameArrivedEventArgs e) {
+      var newWidth = (int)(image.Width * ratio);
+      var newHeight = (int)(image.Height * ratio);
+
+      var newImage = new System.Drawing.Bitmap(newWidth, newHeight);
+
+      using (var graphics = System.Drawing.Graphics.FromImage(newImage))
+        graphics.DrawImage(image, 0, 0, newWidth, newHeight);
+
+      return newImage;
+    }
+    private async void FaceFrameReader_FrameArrived(object sender, FaceFrameArrivedEventArgs e) {
       var frame = e.FrameReference.AcquireFrame();
       if (frame != null && frame.FaceFrameResult != null && frame.FaceFrameResult.FaceBoundingBoxInColorSpace != null) {
-        // Grab the person's face (padded a little) and use oxford to do the initial 2D recognition
+        if (faceCaptured) return;
+        var colorFrame = frame.ColorFrameReference.AcquireFrame();
+        if (colorFrame == null) return;
+        faceCaptured = true;
+        var left = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Left - 150;
+        var top = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Top - 150;
+        var right = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Right + 150;
+        var bottom = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Bottom + 150;
+        var width = right - left;
+        var height = bottom - top;
+        var wb = new WriteableBitmap(colorFrame.FrameDescription.Width, colorFrame.FrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+        if ((colorFrame.FrameDescription.Width == wb.PixelWidth) && (colorFrame.FrameDescription.Height == wb.PixelHeight)) {
+          colorFrame.CopyConvertedFrameDataToIntPtr(
+              wb.BackBuffer,
+              (uint)(colorFrame.FrameDescription.Width * colorFrame.FrameDescription.Height * 4),
+              ColorImageFormat.Bgra);
+
+        }
+        //colorFrame.CopyConvertedFrameDataToArray(pixels, ColorImageFormat.Rgba);
+
+        var encoder = new JpegBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(wb));
+        using (var jpgStream = new MemoryStream()) {
+          encoder.Save(jpgStream);
+          var bmp = new System.Drawing.Bitmap(jpgStream);
+          bmp = bmp.Clone(new System.Drawing.Rectangle(left, top, width, height), System.Drawing.Imaging.PixelFormat.DontCare);
+          bmp = ScaleImage(bmp, 256, 256);
+          using (var croppedStream = new MemoryStream()) {
+            Console.WriteLine("width: {0}, height: {1}", bmp.Width, bmp.Height);
+            bmp.Save(croppedStream, System.Drawing.Imaging.ImageFormat.Png);
+            bmp.Save(@"data\kirk.png");
+
+            var groups = await App.Instance.GetPersonGroupsAsync();
+            var group = groups.Where(g => g.Name == "Building Access").FirstOrDefault();
+            if (group == null) {
+              faceCaptured = false;
+              return;
+            }
+            var faces = await App.Instance.DetectAsync(croppedStream);
+            if (faces == null || faces.Length == 0) {
+              MessageBox.Show("No face found");
+            } else {
+              //System.Threading.Thread.Sleep(5000);
+              var identifyResults = await App.Instance.IdentifyAsync(group.PersonGroupId, faces.Select(f => f.FaceId).ToArray());
+              var found = 0;
+              var names = "";
+              foreach (var result in identifyResults) {
+                foreach (var candidate in result.Candidates) {
+                  if (candidate.Confidence > 0.5) {
+                    //System.Threading.Thread.Sleep(5000);
+                    var person = await App.Instance.GetPersonAsync(group.PersonGroupId, candidate.PersonId);
+                    var attributes = faces.Where(f => f.FaceId == result.FaceId).Select(f => f.Attributes).FirstOrDefault();
+                    names += String.Format("{0}({1}) - {2}{3}", person.Name, attributes.Gender, attributes.Age, ", ");
+                    found++;
+                  }
+                }
+              }
+              if (found > 0) {
+                MessageBox.Show(String.Format("Name{0}: {1}", (found > 1 ? "s" : ""), names.Substring(0, names.Length - 2)));
+              } else {
+                MessageBox.Show("No match found for this person");
+              }
+            }
+          }
+        }
+
       }
     }
 
@@ -391,6 +461,33 @@
       }
 
       return result;
+    }
+
+    private void LoadSavedFaceMesh(string path) {
+      // load in saved face mesh
+      var jss = new JavaScriptSerializer();
+      using (var file = new System.IO.StreamReader(path)) {
+        var data = file.ReadLine();
+        savedVertices = jss.Deserialize<CameraSpacePoint[]>(data);
+      }
+
+      var averageModel = new FaceModel();
+      var defaultAlignment = new FaceAlignment();
+      defaultVertices = averageModel.CalculateVerticesForAlignment(defaultAlignment);
+
+      var length = savedVertices.Length;
+      for (int i = 0; i < length; i++) {
+        System.Windows.Shapes.Ellipse ellipse = null;
+        ellipse = new System.Windows.Shapes.Ellipse {
+          Width = 2.0,
+          Height = 2.0,
+          Fill = new SolidColorBrush(Colors.Blue)
+        };
+        savedDots.Add(ellipse);
+      }
+      foreach (System.Windows.Shapes.Ellipse ellipse in savedDots) {
+        canvas.Children.Add(ellipse);
+      }
     }
 
   }
