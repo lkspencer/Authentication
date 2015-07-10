@@ -10,7 +10,10 @@
 
   <Grid x:Name="LayoutRoot" >
     <Border Grid.Row="1">
-      <Label x:Name="matchCount" Content="Label" />
+      <Label x:Name="matchCount" Content="count" />
+    </Border>
+    <Border Grid.Row="1">
+      <Label x:Name="matchName" Content="name" Margin="200,0,0,0" />
     </Border>
     <Border Grid.Row="1" Name="border" ClipToBounds="True">
       <Canvas x:Name="canvas" Width="1364" Height="765" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,37,0,0" ></Canvas>

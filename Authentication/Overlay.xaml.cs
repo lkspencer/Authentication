@@ -6,6 +6,7 @@
   using System.ComponentModel;
   using System.IO;
   using System.Linq;
+  using System.Threading;
   using System.Web.Script.Serialization;
   using System.Windows;
   using System.Windows.Controls;
@@ -162,22 +163,8 @@
         }
       }
     }
-    public static System.Drawing.Bitmap ScaleImage(System.Drawing.Bitmap image, int maxWidth, int maxHeight) {
-      var ratioX = (double)maxWidth / image.Width;
-      var ratioY = (double)maxHeight / image.Height;
-      var ratio = Math.Min(ratioX, ratioY);
 
-      var newWidth = (int)(image.Width * ratio);
-      var newHeight = (int)(image.Height * ratio);
-
-      var newImage = new System.Drawing.Bitmap(newWidth, newHeight);
-
-      using (var graphics = System.Drawing.Graphics.FromImage(newImage))
-        graphics.DrawImage(image, 0, 0, newWidth, newHeight);
-
-      return newImage;
-    }
-    private async void FaceFrameReader_FrameArrived(object sender, FaceFrameArrivedEventArgs e) {
+    private void FaceFrameReader_FrameArrived(object sender, FaceFrameArrivedEventArgs e) {
       var frame = e.FrameReference.AcquireFrame();
       if (frame != null && frame.FaceFrameResult != null && frame.FaceFrameResult.FaceBoundingBoxInColorSpace != null) {
         if (faceCaptured) return;
@@ -198,54 +185,57 @@
               ColorImageFormat.Bgra);
 
         }
-        //colorFrame.CopyConvertedFrameDataToArray(pixels, ColorImageFormat.Rgba);
+        Match2D(wb, left, top, width, height);
+      }
+    }
 
-        var encoder = new JpegBitmapEncoder();
-        encoder.Frames.Add(BitmapFrame.Create(wb));
-        using (var jpgStream = new MemoryStream()) {
-          encoder.Save(jpgStream);
-          var bmp = new System.Drawing.Bitmap(jpgStream);
-          bmp = bmp.Clone(new System.Drawing.Rectangle(left, top, width, height), System.Drawing.Imaging.PixelFormat.DontCare);
-          bmp = ScaleImage(bmp, 256, 256);
-          using (var croppedStream = new MemoryStream()) {
-            Console.WriteLine("width: {0}, height: {1}", bmp.Width, bmp.Height);
-            bmp.Save(croppedStream, System.Drawing.Imaging.ImageFormat.Png);
-            bmp.Save(@"data\kirk.png");
+    private async void Match2D(WriteableBitmap wb, int left, int top, int width, int height) {
+      var encoder = new JpegBitmapEncoder();
+      System.Drawing.Bitmap bmp = null;
+      encoder.Frames.Add(BitmapFrame.Create(wb));
+      using (var jpgStream = new MemoryStream()) {
+        encoder.Save(jpgStream);
+        bmp = new System.Drawing.Bitmap(jpgStream);
+        if (bmp == null) {
+          faceCaptured = false;
+          return;
+        }
+        bmp = bmp.Clone(new System.Drawing.Rectangle(left, top, width, height), System.Drawing.Imaging.PixelFormat.DontCare);
+        // scale more to save on bandwidth at the cost of quality/precision
+        bmp = ScaleImage(bmp, 256, 256);
+        bmp.Save(@"data\kirk.png");
+      }
+      using (var fStream = File.OpenRead(@"data\kirk.png")) {
 
-            var groups = await App.Instance.GetPersonGroupsAsync();
-            var group = groups.Where(g => g.Name == "Building Access").FirstOrDefault();
-            if (group == null) {
-              faceCaptured = false;
-              return;
-            }
-            var faces = await App.Instance.DetectAsync(croppedStream);
-            if (faces == null || faces.Length == 0) {
-              MessageBox.Show("No face found");
-            } else {
-              //System.Threading.Thread.Sleep(5000);
-              var identifyResults = await App.Instance.IdentifyAsync(group.PersonGroupId, faces.Select(f => f.FaceId).ToArray());
-              var found = 0;
-              var names = "";
-              foreach (var result in identifyResults) {
-                foreach (var candidate in result.Candidates) {
-                  if (candidate.Confidence > 0.5) {
-                    //System.Threading.Thread.Sleep(5000);
-                    var person = await App.Instance.GetPersonAsync(group.PersonGroupId, candidate.PersonId);
-                    var attributes = faces.Where(f => f.FaceId == result.FaceId).Select(f => f.Attributes).FirstOrDefault();
-                    names += String.Format("{0}({1}) - {2}{3}", person.Name, attributes.Gender, attributes.Age, ", ");
-                    found++;
-                  }
-                }
-              }
-              if (found > 0) {
-                MessageBox.Show(String.Format("Name{0}: {1}", (found > 1 ? "s" : ""), names.Substring(0, names.Length - 2)));
-              } else {
-                MessageBox.Show("No match found for this person");
+        var groups = await App.Instance.GetPersonGroupsAsync();
+        var group = groups.Where(g => g.Name == "First Test").FirstOrDefault();
+        if (group == null) {
+          faceCaptured = false;
+          return;
+        }
+        var faces = await App.Instance.DetectAsync(fStream);
+        if (faces == null || faces.Length == 0) {
+          MessageBox.Show("No face found");
+        } else {
+          var identifyResults = await App.Instance.IdentifyAsync(group.PersonGroupId, faces.Select(f => f.FaceId).ToArray());
+          var found = 0;
+          var names = "";
+          foreach (var result in identifyResults) {
+            foreach (var candidate in result.Candidates) {
+              if (candidate.Confidence > 0.5) {
+                var person = await App.Instance.GetPersonAsync(group.PersonGroupId, candidate.PersonId);
+                var attributes = faces.Where(f => f.FaceId == result.FaceId).Select(f => f.Attributes).FirstOrDefault();
+                names += String.Format("{0}, ", person.Name);
+                found++;
               }
             }
           }
+          if (found > 0) {
+            matchName.Content = String.Format("Name{0}: {1}", (found > 1 ? "s" : ""), names.Substring(0, names.Length - 2));
+          } else {
+            matchName.Content = "No match found for this person";
+          }
         }
-
       }
     }
 
@@ -488,6 +478,22 @@
       foreach (System.Windows.Shapes.Ellipse ellipse in savedDots) {
         canvas.Children.Add(ellipse);
       }
+    }
+
+    public static System.Drawing.Bitmap ScaleImage(System.Drawing.Bitmap image, int maxWidth, int maxHeight) {
+      var ratioX = (double)maxWidth / image.Width;
+      var ratioY = (double)maxHeight / image.Height;
+      var ratio = Math.Min(ratioX, ratioY);
+
+      var newWidth = (int)(image.Width * ratio);
+      var newHeight = (int)(image.Height * ratio);
+
+      var newImage = new System.Drawing.Bitmap(newWidth, newHeight);
+
+      using (var graphics = System.Drawing.Graphics.FromImage(newImage))
+        graphics.DrawImage(image, 0, 0, newWidth, newHeight);
+
+      return newImage;
     }
 
   }
