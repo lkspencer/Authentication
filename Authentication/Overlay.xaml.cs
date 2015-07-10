@@ -6,7 +6,7 @@
   using System.ComponentModel;
   using System.IO;
   using System.Linq;
-  using System.Threading;
+  using System.Threading.Tasks;
   using System.Web.Script.Serialization;
   using System.Windows;
   using System.Windows.Controls;
@@ -31,6 +31,8 @@
     private IReadOnlyList<CameraSpacePoint> defaultVertices;
     private CameraSpacePoint tempVertice = new CameraSpacePoint();
     private float tollerance = 0.005f;
+    // Color Variables
+    private WriteableBitmap colorImage;
     // Saved HD Face Variables
     private List<System.Windows.Shapes.Ellipse> savedDots = new List<System.Windows.Shapes.Ellipse>();
     private CameraSpacePoint[] savedVertices = null;
@@ -68,6 +70,9 @@
       FrameDescription depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
       this.depthBitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
       depthVertices = new CameraSpacePoint[depthFrameDescription.Width * depthFrameDescription.Height];
+
+      FrameDescription colorFrameDescription = this.kinectSensor.ColorFrameSource.FrameDescription;
+      colorImage = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
 
       // start with default alignment
       this.highdefinitionFaceAlignment = new FaceAlignment();
@@ -110,7 +115,6 @@
       depthCanvasImage.Source = this.depthBitmap;
       canvas.Children.Add(depthCanvasImage);
 
-      LoadSavedFaceMesh(@"data\kirk.fml");
       if (File.Exists("key.txt")) {
         this.key = File.ReadAllText("key.txt");
       }
@@ -177,65 +181,20 @@
         var bottom = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Bottom + 150;
         var width = right - left;
         var height = bottom - top;
-        var wb = new WriteableBitmap(colorFrame.FrameDescription.Width, colorFrame.FrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
-        if ((colorFrame.FrameDescription.Width == wb.PixelWidth) && (colorFrame.FrameDescription.Height == wb.PixelHeight)) {
-          colorFrame.CopyConvertedFrameDataToIntPtr(
-              wb.BackBuffer,
-              (uint)(colorFrame.FrameDescription.Width * colorFrame.FrameDescription.Height * 4),
-              ColorImageFormat.Bgra);
+        using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer()) {
+          this.colorImage.Lock();
+          if ((colorFrame.FrameDescription.Width == this.colorImage.PixelWidth) && (colorFrame.FrameDescription.Height == this.colorImage.PixelHeight)) {
+            colorFrame.CopyConvertedFrameDataToIntPtr(
+                this.colorImage.BackBuffer,
+                (uint)(colorFrame.FrameDescription.Width * colorFrame.FrameDescription.Height * 4),
+                ColorImageFormat.Bgra);
 
-        }
-        Match2D(wb, left, top, width, height);
-      }
-    }
-
-    private async void Match2D(WriteableBitmap wb, int left, int top, int width, int height) {
-      var encoder = new JpegBitmapEncoder();
-      System.Drawing.Bitmap bmp = null;
-      encoder.Frames.Add(BitmapFrame.Create(wb));
-      using (var jpgStream = new MemoryStream()) {
-        encoder.Save(jpgStream);
-        bmp = new System.Drawing.Bitmap(jpgStream);
-        if (bmp == null) {
-          faceCaptured = false;
-          return;
-        }
-        bmp = bmp.Clone(new System.Drawing.Rectangle(left, top, width, height), System.Drawing.Imaging.PixelFormat.DontCare);
-        // scale more to save on bandwidth at the cost of quality/precision
-        bmp = ScaleImage(bmp, 256, 256);
-        bmp.Save(@"data\kirk.png");
-      }
-      using (var fStream = File.OpenRead(@"data\kirk.png")) {
-
-        var groups = await App.Instance.GetPersonGroupsAsync();
-        var group = groups.Where(g => g.Name == "First Test").FirstOrDefault();
-        if (group == null) {
-          faceCaptured = false;
-          return;
-        }
-        var faces = await App.Instance.DetectAsync(fStream);
-        if (faces == null || faces.Length == 0) {
-          MessageBox.Show("No face found");
-        } else {
-          var identifyResults = await App.Instance.IdentifyAsync(group.PersonGroupId, faces.Select(f => f.FaceId).ToArray());
-          var found = 0;
-          var names = "";
-          foreach (var result in identifyResults) {
-            foreach (var candidate in result.Candidates) {
-              if (candidate.Confidence > 0.5) {
-                var person = await App.Instance.GetPersonAsync(group.PersonGroupId, candidate.PersonId);
-                var attributes = faces.Where(f => f.FaceId == result.FaceId).Select(f => f.Attributes).FirstOrDefault();
-                names += String.Format("{0}, ", person.Name);
-                found++;
-              }
-            }
+            this.colorImage.AddDirtyRect(new Int32Rect(0, 0, this.colorImage.PixelWidth, this.colorImage.PixelHeight));
           }
-          if (found > 0) {
-            matchName.Content = String.Format("Name{0}: {1}", (found > 1 ? "s" : ""), names.Substring(0, names.Length - 2));
-          } else {
-            matchName.Content = "No match found for this person";
-          }
+          this.colorImage.Unlock();
         }
+        SaveImage(left, top, width, height);
+        Match2D(left, top, width, height).ConfigureAwait(continueOnCapturedContext: true);
       }
     }
 
@@ -331,7 +290,7 @@
       if (highDefinitionFaceModel == null) return;
 
       var vertices = highDefinitionFaceModel.CalculateVerticesForAlignment(highdefinitionFaceAlignment);
-      if (vertices.Count > 0) {
+      if (vertices.Count > 0 && defaultVertices != null) {
         var matched = 0;
         var count = defaultVertices.Count;
         for (int i = 0; i < count; i++) {
@@ -453,6 +412,8 @@
       return result;
     }
 
+    // Loads the mesh that we think will best fit your face and then we run 3d
+    // comparisons against it and your live face as a 3D facial recognition.
     private void LoadSavedFaceMesh(string path) {
       // load in saved face mesh
       var jss = new JavaScriptSerializer();
@@ -494,6 +455,67 @@
         graphics.DrawImage(image, 0, 0, newWidth, newHeight);
 
       return newImage;
+    }
+
+    private void SaveImage(int left, int top, int width, int height) {
+      var encoder = new JpegBitmapEncoder();
+      System.Drawing.Bitmap bmp = null;
+      encoder.Frames.Add(BitmapFrame.Create(colorImage));
+      using (var jpgStream = new MemoryStream()) {
+        encoder.Save(jpgStream);
+        bmp = new System.Drawing.Bitmap(jpgStream);
+        if (bmp == null) {
+          faceCaptured = false;
+          return;
+        }
+        bmp = bmp.Clone(new System.Drawing.Rectangle(left, top, width, height), System.Drawing.Imaging.PixelFormat.DontCare);
+        // scale more to save on bandwidth at the cost of quality/precision
+        bmp = ScaleImage(bmp, 256, 256);
+        bmp.Save(@"data\kirk.png");
+      }
+    }
+
+    private async Task Match2D(int left, int top, int width, int height) {
+      if (!File.Exists(@"data\kirk.png")) return;
+      using (var fStream = File.OpenRead(@"data\kirk.png")) {
+        var groups = await App.Instance.GetPersonGroupsAsync();
+        var group = groups.Where(g => g.Name == "First Test").FirstOrDefault();
+        if (group == null) {
+          faceCaptured = false;
+          return;
+        }
+        var faces = await App.Instance.DetectAsync(fStream);
+        if (faces == null || faces.Length == 0) {
+          matchName.Content = "No face found";
+          faceCaptured = false;
+          return;
+        } else {
+          var identifyResults = await App.Instance.IdentifyAsync(group.PersonGroupId, faces.Select(f => f.FaceId).ToArray());
+          var found = 0;
+          var names = "";
+          foreach (var result in identifyResults) {
+            foreach (var candidate in result.Candidates) {
+              if (candidate.Confidence > 0.5) {
+                var person = await App.Instance.GetPersonAsync(group.PersonGroupId, candidate.PersonId);
+                var attributes = faces.Where(f => f.FaceId == result.FaceId).Select(f => f.Attributes).FirstOrDefault();
+                names += String.Format("{0}, ", person.Name);
+                found++;
+              }
+            }
+          }
+          if (found > 0) {
+            matchName.Content = String.Format("Name{0}: {1}", (found > 1 ? "s" : ""), names.Substring(0, names.Length - 2));
+            LoadSavedFaceMesh(
+              String.Format(@"data\{0}.fml",
+              names.Split(new string[] { ", " }, StringSplitOptions.None).FirstOrDefault())
+            );
+
+          } else {
+            matchName.Content = "No match found for this person";
+            faceCaptured = false;
+          }
+        }
+      }
     }
 
   }
