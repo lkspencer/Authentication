@@ -91,9 +91,9 @@
 
     protected void OnMouseWheel(object sender, MouseWheelEventArgs e) {
       if (e.Delta > 0)
-        location.Y -= 0.1f;
-      else
         location.Y += 0.1f;
+      else
+        location.Y -= 0.1f;
     }
 
     protected void OnMouseMove(object sender, MouseMoveEventArgs e) {
