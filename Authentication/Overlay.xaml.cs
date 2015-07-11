@@ -15,6 +15,8 @@
   using System.Windows.Media.Imaging;
 
   public partial class Overlay : Window, INotifyPropertyChanged {
+    public delegate void VerticesUpdated(CameraSpacePoint[] vertices);
+    public event VerticesUpdated OnVerticesUpdated;
     // MainWindow Variables
     private KinectSensor kinectSensor = null;
     BodyFrameReader bodyFrameReader = null;
@@ -30,7 +32,7 @@
     private int checkPointMatches = 0;
     private IReadOnlyList<CameraSpacePoint> defaultVertices;
     private CameraSpacePoint tempVertice = new CameraSpacePoint();
-    private float tollerance = 0.005f;
+    private float tollerance = 0.009f;
     // Color Variables
     private WriteableBitmap colorImage;
     private bool isColor = false;
@@ -52,6 +54,9 @@
     private CameraSpacePoint[] depthVertices = null;
     private int depthWidth;
     private int depthHeight;
+    private byte[] pixelData;
+    private int stride;
+
     // Mouse Variables
     private Point mouseOrigin;
     private Point mouseStart;
@@ -71,8 +76,12 @@
       FrameDescription depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
       this.depthBitmap = new WriteableBitmap(depthFrameDescription.Width, depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
       depthVertices = new CameraSpacePoint[depthFrameDescription.Width * depthFrameDescription.Height];
+      depthData = new ushort[depthFrameDescription.Width * depthFrameDescription.Height];
+      pixelData = new byte[depthFrameDescription.Width * depthFrameDescription.Height * (PixelFormats.Bgr32.BitsPerPixel + 7) / 8];
+      stride = depthFrameDescription.Width * PixelFormats.Bgr32.BitsPerPixel / 8;
 
-      FrameDescription colorFrameDescription = this.kinectSensor.ColorFrameSource.FrameDescription;
+
+    FrameDescription colorFrameDescription = this.kinectSensor.ColorFrameSource.FrameDescription;
       colorImage = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
 
       // start with default alignment
@@ -129,7 +138,6 @@
         return;
       }
       App.Initialize(this.key);
-
     }
 
 
@@ -248,6 +256,10 @@
       canvas.RenderTransform = new MatrixTransform(m);
     }
 
+    private void WPFWindow_Loaded(object sender, RoutedEventArgs e) {
+      PointCloudWindow.Start(this);
+    }
+
 
 
     // Methods
@@ -256,13 +268,10 @@
       depthHeight = frame.FrameDescription.Height;
       if (depthWidth == this.depthBitmap.PixelWidth && depthHeight == this.depthBitmap.PixelHeight) {
         this.depthBitmap.Lock();
-        depthData = new ushort[depthWidth * depthHeight];
-        byte[] pixelData = new byte[depthWidth * depthHeight * (PixelFormats.Bgr32.BitsPerPixel + 7) / 8];
-        int stride = depthWidth * PixelFormats.Bgr32.BitsPerPixel / 8;
-
         frame.CopyFrameDataToArray(depthData);
 
         this.kinectSensor.CoordinateMapper.MapDepthFrameToCameraSpace(depthData, depthVertices);
+        if (this.OnVerticesUpdated != null) this.OnVerticesUpdated(depthVertices);
 
         int colorIndex = 0;
         var length = depthData.Length;
@@ -315,11 +324,20 @@
             if (checkPointMatches == 0) {
               // reset dot to blue
               ellipse.Fill = Brushes.Blue;
-              int depthPosition = ((Convert.ToInt32(point.Y) * depthWidth) + Convert.ToInt32(point.X));
+              
+              int depthPosition = (int)((Math.Round(point.Y) * depthWidth) + Math.Round(point.X));
               if (depthPosition >= 0 && depthPosition < depthVertices.Length) {
                 // NOTE: this depthVertice is a depth value from the point cloud converted
                 //       to a CameraSpacePoint (aka vertice).
                 var depthVertice = depthVertices[depthPosition];
+                //* sweet spot tollerance is 0.008???
+                if (VectorDistance(depthVertice, tempVertice) <= 0.008) {
+                  // change dot to red if it's vertice was within the set tollerance for the point on the live face
+                  ellipse.Fill = Brushes.Red;
+                  matched++;
+                }
+                //*/
+                /* old dot comparison logic
                 if (depthVertice.X >= tempVertice.X - tollerance
                     && depthVertice.Y >= tempVertice.Y - tollerance
                     && depthVertice.Z >= tempVertice.Z - tollerance
@@ -330,14 +348,15 @@
                   ellipse.Fill = Brushes.Red;
                   matched++;
                 }
+                //*/
               }
             }
-            System.Windows.Controls.Canvas.SetLeft(ellipse, point.X);
-            System.Windows.Controls.Canvas.SetTop(ellipse, point.Y);
+            Canvas.SetLeft(ellipse, point.X);
+            Canvas.SetTop(ellipse, point.Y);
           }
         }
         if (matched != 0) matchCount.Content = String.Format("Red Dots: {0}", matched);
-        checkPointMatches = ++checkPointMatches % 10;
+        checkPointMatches = ++checkPointMatches % 15;
       }
     }
 
@@ -528,6 +547,5 @@
         }
       }
     }
-
   }
 }

@@ -72,6 +72,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>libs\Microsoft.Kinect.Face.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\OpenTK.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -99,6 +103,7 @@
     <Compile Include="Overlay.xaml.cs">
       <DependentUpon>Overlay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PointCloudWindow.cs" />
     <Compile Include="RecognizeFace.cs" />
     <Page Include="Overlay.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -138,6 +143,9 @@
     <Content Include="key.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="libs\OpenTK.Compatibility.dll" />
+    <Content Include="libs\OpenTK.dll" />
+    <Content Include="libs\OpenTK.GLControl.dll" />
     <Content Include="NuiDatabase\Expression\ExpressionRandomForest.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
