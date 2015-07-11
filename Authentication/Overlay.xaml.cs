@@ -506,7 +506,7 @@
       if (!File.Exists(@"data\face.png")) return;
       using (var fStream = File.OpenRead(@"data\face.png")) {
         var groups = await App.Instance.GetPersonGroupsAsync();
-        var group = groups.Where(g => g.Name == "First Test").FirstOrDefault();
+        var group = groups.Where(g => g.Name == "First Test" || g.Name == "First Test").FirstOrDefault();
         if (group == null) {
           faceCaptured = false;
           return;
