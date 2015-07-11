@@ -16,20 +16,30 @@
     private Vector2 mouseDelta;
     private Vector3 location;
     private Vector3 up = Vector3.UnitY;
-    private float pitch = 0.0f;
-    private float facing = 0.0f;
+    private float pitch = 6.339f;
+    private float facing = 7.859f;
     private bool wdown = false;
     private bool adown = false;
     private bool sdown = false;
     private bool ddown = false;
     private bool escdown = false;
+    private bool updown = false;
+    private bool downdown = false;
+    private bool leftdown = false;
+    private bool rightdown = false;
     private Vector3[] depthVectors;
+    private TextWriter tw;
 
 
 
     public PointCloudWindow(Overlay overlay) : base(1024, 768) {
       GL.Enable(EnableCap.DepthTest);
       overlay.OnVerticesUpdated += Overlay_OnVerticesUpdated;
+      tw = new TextWriter(new Size(1024, 768), new Size(300, 100));
+      tw.AddLine("Camera Angle", new System.Drawing.PointF(10.0f, 10.0f), Brushes.Red);
+      tw.AddLine("facing, pitch", new System.Drawing.PointF(10.0f, 30.0f), Brushes.Red);
+      tw.AddLine("Camera Location", new System.Drawing.PointF(10.0f, 60.0f), Brushes.Blue);
+      tw.AddLine("X: Y: Z", new System.Drawing.PointF(10.0f, 80.0f), Brushes.Blue);
     }
 
 
@@ -40,10 +50,9 @@
       base.OnLoad(e);
       GL.ClearColor(Color.Black);
       GL.PointSize(3f);
-      //CreateVertexBuffer();
 
       cameraMatrix = Matrix4.Identity;
-      location = new Vector3(0f, 0f, 0f);
+      location = new Vector3(-0.0025f, 0f, -0.54f);
       mouseDelta = new Vector2();
 
       // center mouse on the game window
@@ -62,6 +71,10 @@
       if (e.Key == Key.S) sdown = true;
       if (e.Key == Key.D) ddown = true;
       if (e.Key == Key.Escape) escdown = true;
+      if (e.Key == Key.Up) updown = true;
+      if (e.Key == Key.Down) downdown = true;
+      if (e.Key == Key.Left) leftdown = true;
+      if (e.Key == Key.Right) rightdown = true;
     }
 
     protected void OnKeyUp(object sender, KeyboardKeyEventArgs e) {
@@ -70,6 +83,10 @@
       if (e.Key == Key.S) sdown = false;
       if (e.Key == Key.D) ddown = false;
       if (e.Key == Key.Escape) escdown = false;
+      if (e.Key == Key.Up) updown = false;
+      if (e.Key == Key.Down) downdown = false;
+      if (e.Key == Key.Left) leftdown = false;
+      if (e.Key == Key.Right) rightdown = false;
     }
 
     protected void OnMouseWheel(object sender, MouseWheelEventArgs e) {
@@ -96,6 +113,7 @@
       GL.DrawArrays(PrimitiveType.Points, 0, verticeCount);
 
       GL.DisableVertexAttribArray(0);
+      tw.Draw();
 
       SwapBuffers();
     }
@@ -123,6 +141,7 @@
         location.Z += (float)Math.Sin(facing + Math.PI / 2) * 0.01f;
       }
 
+      /*
       mouseSpeed[0] *= 0.9f;
       mouseSpeed[1] *= 0.9f;
       mouseSpeed[0] += mouseDelta.X / 1000f;
@@ -131,9 +150,25 @@
 
       facing += mouseSpeed[0];
       pitch += mouseSpeed[1];
+      //*/
+
+      if (updown) {
+        pitch += 0.01f;
+      }
+      if (downdown) {
+        pitch -= 0.01f;
+      }
+      if (leftdown) {
+        facing -= 0.01f;
+      }
+      if (rightdown) {
+        facing += 0.01f;
+      }
+
       Vector3 lookatPoint = new Vector3((float)Math.Cos(facing), (float)Math.Sin(pitch), (float)Math.Sin(facing));
       cameraMatrix = Matrix4.LookAt(location, location + lookatPoint, up);
-
+      tw.Update(1, String.Format("facing: {0}, pitch: {1}", facing, pitch));
+      tw.Update(3, String.Format("X: {0}, Y: {1}, Z: {2}", location.X, location.Y, location.Z));
       if (escdown) Exit();
       //*/
     }
@@ -150,11 +185,9 @@
 
     private void Overlay_OnVerticesUpdated(CameraSpacePoint[] cameraSpacePoints) {
       var length = cameraSpacePoints.Length;
-      bool first = false;
       if (depthVectors == null) {
         depthVectors = new Vector3[length];
         verticeCount = depthVectors.Length;
-        first = true;
         for (int i = 0; i < length; i++) {
           depthVectors[i] = new Vector3(cameraSpacePoints[i].X, cameraSpacePoints[i].Y, cameraSpacePoints[i].Z);
         }
@@ -173,6 +206,7 @@
         GL.GenBuffers(1, out vbo);
         GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
         //*/
+        // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
         GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
                          IntPtr.Zero,
                          depthVectors, BufferUsageHint.StaticDraw);
@@ -196,16 +230,6 @@
         var vectors = jss.Deserialize<Vector3[]>(data);
         return vectors;
       }
-    }
-
-    private void CreateVertexBuffer() {
-      var vertices = LoadFml(@"data\kirk.fml");
-      verticeCount = vertices.Length;
-      GL.GenBuffers(1, out vbo);
-      GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-      GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
-                             new IntPtr(vertices.Length * Vector3.SizeInBytes),
-                             vertices, BufferUsageHint.StaticDraw);
     }
 
     public static void Start(Overlay overlay) {
