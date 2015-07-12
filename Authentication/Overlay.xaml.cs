@@ -35,6 +35,8 @@
     private IReadOnlyList<CameraSpacePoint> defaultVertices;
     private CameraSpacePoint tempVertice = new CameraSpacePoint();
     private float tollerance = 0.009f;
+    private CameraSpacePoint[] hdFaceVertices;
+    private int[] hdFaceColors;
     // Color Variables
     private WriteableBitmap colorImage;
     private bool isColor = false;
@@ -337,8 +339,6 @@
       }
     }
 
-    CameraSpacePoint[] hdFaceVertices;
-    int[] hdFaceColors;
     private void UpdateFacePoints() {
       if (highDefinitionFaceModel == null) return;
 
