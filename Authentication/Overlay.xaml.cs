@@ -17,8 +17,10 @@
   public partial class Overlay : Window, INotifyPropertyChanged {
     public delegate void VerticesUpdated(CameraSpacePoint[] vertices, int[] colors);
     public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched);
+    public delegate void TwoDMatchFound(string name);
     public event VerticesUpdated OnVerticesUpdated;
     public event HdFaceUpdated OnHdFaceUpdated;
+    public event TwoDMatchFound OnTwoDMatchFound;
     // MainWindow Variables
     private KinectSensor kinectSensor = null;
     BodyFrameReader bodyFrameReader = null;
@@ -586,6 +588,7 @@
           if (found > 0) {
             matchName.Content = String.Format("Name{0}: {1}", (found > 1 ? "s" : ""), names.Substring(0, names.Length - 2));
             var name = names.Split(new string[] { ", " }, StringSplitOptions.None).FirstOrDefault();
+            OnTwoDMatchFound(name);
             var fileName = String.Format(@"data\{0}.fml", name);
             if (File.Exists(fileName)) {
               LoadSavedFaceMesh(fileName);

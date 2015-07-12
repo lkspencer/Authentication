@@ -38,21 +38,30 @@
     private TextWriter tw;
     private bool showMask = true;
     private bool showPointCloud = true;
+    private float hdDotSize = 3.0f;
 
 
 
     public PointCloudWindow(Overlay overlay) : base(1024, 768) {
+      // not exactly sure what this does, but the mask dots don't look right
+      // without this line in here.
       GL.Enable(EnableCap.DepthTest);
+
+      // setup Overlay class' event handlers
       overlay.OnVerticesUpdated += Overlay_OnVerticesUpdated;
       overlay.OnHdFaceUpdated += Overlay_OnHdFaceUpdated;
-      tw = new TextWriter(new Size(1024, 768), new Size(300, 150));
+      overlay.OnTwoDMatchFound += Overlay_OnTwoDMatchFound;
+
+      // setup on screen text
+      tw = new TextWriter(new Size(1024, 768), new Size(300, 180));
       tw.AddLine("Camera Angle", new System.Drawing.PointF(10.0f, 10.0f), Brushes.White);
       tw.AddLine("facing, pitch", new System.Drawing.PointF(10.0f, 30.0f), Brushes.White);
       tw.AddLine("Camera Location", new System.Drawing.PointF(10.0f, 60.0f), Brushes.White);
       tw.AddLine("X: Y: Z", new System.Drawing.PointF(10.0f, 80.0f), Brushes.White);
-      tw.AddLine("Dot Match", new System.Drawing.PointF(10.0f, 110.0f), Brushes.White);
-      tw.AddLine("0", new System.Drawing.PointF(10.0f, 130.0f), Brushes.White);
+      tw.AddLine("Dot Match:", new System.Drawing.PointF(10.0f, 110.0f), Brushes.White);
+      tw.AddLine("Name:", new System.Drawing.PointF(10.0f, 140.0f), Brushes.White);
     }
+
 
 
 
@@ -65,13 +74,13 @@
       GL.ClearColor(Color.Black);
 
       cameraMatrix = Matrix4.Identity;
-      location = new Vector3(-0.0025f, 0f, -0.54f);
+      location = new Vector3(-0.0029f, 0f, -0.5f);
       mouseDelta = new Vector2();
 
       // center mouse on the game window
       //System.Windows.Forms.Cursor.Position = new Point(Bounds.Left + Bounds.Width / 2, Bounds.Top + Bounds.Height / 2);
 
-      // setup event handlers
+      // setup GameWindow event handlers
       MouseWheel += OnMouseWheel;
       MouseMove += OnMouseMove;
       KeyDown += OnKeyDown;
@@ -88,6 +97,28 @@
       if (e.Key == Key.Down) downdown = true;
       if (e.Key == Key.Left) leftdown = true;
       if (e.Key == Key.Right) rightdown = true;
+      if (e.Key == Key.Z) {
+        hdDotSize += 1.0f;
+        hdDotSize = hdDotSize > 10 ? 10 : hdDotSize;
+      }
+      if (e.Key == Key.X) {
+        hdDotSize -= 1.0f;
+        hdDotSize = hdDotSize < 1 ? 1 : hdDotSize;
+      }
+      if (e.Key == Key.Number1) {
+        facing = 7.859f;
+        pitch = 6.339f;
+        location.X = -0.0029f;
+        location.Y = 0.0f;
+        location.Z = -0.5f;
+      }
+      if (e.Key == Key.Number2) {
+        facing = 6.8789f;
+        pitch = 5.7089f;
+        location.X = -4.0382f;
+        location.Y = 2.9999f;
+        location.Z = -0.6394f;
+      }
     }
 
     protected void OnKeyUp(object sender, KeyboardKeyEventArgs e) {
@@ -124,7 +155,7 @@
 
       // Draw hd face
       if (showMask) {
-        GL.PointSize(4.0f);
+        GL.PointSize(hdDotSize);
         GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface_colors);
         GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
         GL.EnableClientState(ArrayCap.ColorArray);
@@ -222,16 +253,14 @@
     }
 
     private void Overlay_OnVerticesUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors) {
+      if (!showPointCloud) return;
       var length = cameraSpacePoints.Length;
       depthColors = colors;
       if (depthVectors == null) {
         depthVectors = new Vector3[length];
-        //depthColors = new int[length];
         depth_verticeCount = length;
         for (int i = 0; i < length; i++) {
           depthVectors[i] = new Vector3(cameraSpacePoints[i].X, cameraSpacePoints[i].Y, cameraSpacePoints[i].Z);
-          // this is in BGR format for some reason
-          //depthColors[i] = 0xaaaaaa;
         }
 
         // start editing   vbo_depth   buffer
@@ -266,7 +295,7 @@
                                new IntPtr(depthVectors.Length * BlittableValueType.StrideOf(depthVectors)),
                                depthVectors, BufferUsageHint.StaticDraw);
 
-        //*
+
         // start editing   vbo_depth_colors   buffer
         GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth_colors);
         // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
@@ -277,22 +306,23 @@
         GL.BufferData(BufferTarget.ArrayBuffer,
                                new IntPtr(depthColors.Length * 4),
                                depthColors, BufferUsageHint.StaticDraw);
-        //*/
       }
     }
 
     private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors, int matched) {
-      if (matched > 0) tw.Update(5, "" + matched);
+      if (!showMask) return;
+      if (matched > 0) tw.Update(4, String.Format("Dot Match: {0}", matched));
       var length = cameraSpacePoints.Length;
       hdFaceColors = colors;
+      // tip of the nose
+      //hdFaceColors[18] = 0x00ffff;
+      // top of the nose
+      //hdFaceColors[24] = 0x00ffff;
       if (hdFaceVectors == null) {
         hdFaceVectors = new Vector3[length];
-        //hdFaceColors = new int[length];
         hdface_verticeCount = length;
         for (int i = 0; i < length; i++) {
           hdFaceVectors[i] = new Vector3(cameraSpacePoints[i].X, cameraSpacePoints[i].Y, cameraSpacePoints[i].Z);
-          // this is in BGR format for some reason
-          //hdFaceColors[i] = 0xff0000;
         }
 
         // start editing   vbo_hdface   buffer
@@ -330,7 +360,7 @@
                                new IntPtr(hdFaceVectors.Length * BlittableValueType.StrideOf(hdFaceVectors)),
                                hdFaceVectors, BufferUsageHint.StaticDraw);
 
-        //*
+
         // start editing   vbo_hdface_colors   buffer
         GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface_colors);
         // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
@@ -341,8 +371,11 @@
         GL.BufferData(BufferTarget.ArrayBuffer,
                                new IntPtr(hdFaceColors.Length * 4),
                                hdFaceColors, BufferUsageHint.StaticDraw);
-        //*/
       }
+    }
+
+    private void Overlay_OnTwoDMatchFound(string name) {
+      tw.Update(5, String.Format("Name: {0}", name));
     }
 
 
