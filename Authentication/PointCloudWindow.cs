@@ -44,10 +44,10 @@
       overlay.OnVerticesUpdated += Overlay_OnVerticesUpdated;
       overlay.OnHdFaceUpdated += Overlay_OnHdFaceUpdated;
       tw = new TextWriter(new Size(1024, 768), new Size(300, 100));
-      tw.AddLine("Camera Angle", new System.Drawing.PointF(10.0f, 10.0f), Brushes.Red);
-      tw.AddLine("facing, pitch", new System.Drawing.PointF(10.0f, 30.0f), Brushes.Red);
-      tw.AddLine("Camera Location", new System.Drawing.PointF(10.0f, 60.0f), Brushes.Red);
-      tw.AddLine("X: Y: Z", new System.Drawing.PointF(10.0f, 80.0f), Brushes.Red);
+      tw.AddLine("Camera Angle", new System.Drawing.PointF(10.0f, 10.0f), Brushes.White);
+      tw.AddLine("facing, pitch", new System.Drawing.PointF(10.0f, 30.0f), Brushes.White);
+      tw.AddLine("Camera Location", new System.Drawing.PointF(10.0f, 60.0f), Brushes.White);
+      tw.AddLine("X: Y: Z", new System.Drawing.PointF(10.0f, 80.0f), Brushes.White);
     }
 
 
@@ -117,7 +117,7 @@
 
 
       // Draw hd face
-      GL.PointSize(3.0f);
+      GL.PointSize(4.0f);
       GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface_colors);
       GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
       GL.EnableClientState(ArrayCap.ColorArray);
@@ -213,14 +213,15 @@
 
     private void Overlay_OnVerticesUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors) {
       var length = cameraSpacePoints.Length;
+      depthColors = colors;
       if (depthVectors == null) {
         depthVectors = new Vector3[length];
-        depthColors = new int[length];
+        //depthColors = new int[length];
         depth_verticeCount = length;
         for (int i = 0; i < length; i++) {
           depthVectors[i] = new Vector3(cameraSpacePoints[i].X, cameraSpacePoints[i].Y, cameraSpacePoints[i].Z);
           // this is in BGR format for some reason
-          depthColors[i] = 0xaaaaaa;
+          //depthColors[i] = 0xaaaaaa;
         }
 
         // start editing   vbo_depth   buffer
@@ -255,7 +256,7 @@
                                new IntPtr(depthVectors.Length * BlittableValueType.StrideOf(depthVectors)),
                                depthVectors, BufferUsageHint.StaticDraw);
 
-        /*
+        //*
         // start editing   vbo_depth_colors   buffer
         GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth_colors);
         // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints

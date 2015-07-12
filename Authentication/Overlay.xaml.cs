@@ -85,6 +85,7 @@
 
       FrameDescription colorFrameDescription = this.kinectSensor.ColorFrameSource.FrameDescription;
       colorImage = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+      imageIntColors = new int[colorFrameDescription.Width * colorFrameDescription.Height];
 
 
       // start with default alignment
@@ -169,7 +170,7 @@
         if (frame != null) {
           using (var depthFrame = frame.DepthFrameReference.AcquireFrame()) {
             if (depthFrame != null) {
-              SimpleDrawDepth(depthFrame);
+              SimpleDrawDepth(depthFrame, null);
             }
           }
           if (frame.IsFaceTracked) {
@@ -268,18 +269,44 @@
 
 
     // Methods
-    private void SimpleDrawDepth(DepthFrame frame) {
+    int[] imageIntColors;
+    private void SimpleDrawDepth(DepthFrame frame, ColorFrame colorFrame) {
       depthWidth = frame.FrameDescription.Width;
       depthHeight = frame.FrameDescription.Height;
       if (depthWidth == this.depthBitmap.PixelWidth && depthHeight == this.depthBitmap.PixelHeight) {
-        this.depthBitmap.Lock();
+        #region 2D Point Cloud
+        //this.depthBitmap.Lock();
+        #endregion
         frame.CopyFrameDataToArray(depthData);
 
         this.kinectSensor.CoordinateMapper.MapDepthFrameToCameraSpace(depthData, depthVertices);
 
-        int colorIndex = 0;
+        //int colorIndex = 0;
         var length = depthData.Length;
         for (int i = 0; i < length; ++i) {
+          #region 3D Point Cloud Settings
+          // This code will set the colors of the point cloud between the
+          // minumum and maximum range
+          ushort z = depthData[i];
+          if (z > this.maxDepth || z < minDepth) {
+            // Set all pixes out of bounds from our min/max range to white
+            imageIntColors[i] = 0xffffff;
+            continue;
+          }
+          int intensity = (int)((z - minDepth) * multiplier);
+          //                       BLUE VALUE                 GREEN VALUE      RED VALUE
+          //imageIntColors[i] = (intensity * 256 * 256) + (intensity * 256) + (intensity);
+          //                     ONLY SETS THE BLUE VALUE
+          //imageIntColors[i] = (intensity * 256 * 256);
+          //                  ONLY SET THE GREEN VALUE This sets a fading green
+          imageIntColors[i] = ((255 - intensity) * 256);
+          // This sets a solid green
+          //imageIntColors[i] = (0xff * 256);
+          #endregion //3D Point Cloud Settings
+
+          #region 2D Point Cloud Settings
+          /* This code was what we were using to set the varius grays for our
+          // 2D representation of the point cloud in the WPF form
           ushort z = depthData[i];
           if (z > this.maxDepth || z < minDepth) {
             pixelData[colorIndex++] = 0; // Blue
@@ -295,13 +322,18 @@
           pixelData[colorIndex++] = intensity; // Red
 
           ++colorIndex;
+          //*/
+          #endregion //2D Point Cloud Settings
         }
-
+        #region 2D Point Cloud
+        /*
         var box = new Int32Rect(0, 0, this.depthBitmap.PixelWidth, this.depthBitmap.PixelHeight);
         this.depthBitmap.WritePixels(box, pixelData, stride, 0);
         this.depthBitmap.AddDirtyRect(box);
         this.depthBitmap.Unlock();
-        if (this.OnVerticesUpdated != null) this.OnVerticesUpdated(depthVertices, null);
+        //*/
+        #endregion
+        if (this.OnVerticesUpdated != null) this.OnVerticesUpdated(depthVertices, imageIntColors);
       }
     }
 
@@ -331,7 +363,7 @@
           hdFaceVertices[i].Y = tempVertice.Y;
           hdFaceVertices[i].Z = tempVertice.Z;
 
-          var ellipse = savedDots[i];
+          //var ellipse = savedDots[i];
           if (isColor) {
             var colorPoint = this.kinectSensor.CoordinateMapper.MapCameraPointToColorSpace(tempVertice);
           } else {
@@ -342,7 +374,7 @@
             if (checkPointMatches == 0) {
               // reset dot to blue
               hdFaceColors[i] = 0xff0000;
-              ellipse.Fill = Brushes.Blue;
+              //ellipse.Fill = Brushes.Blue;
               
               int depthPosition = (int)((Math.Round(point.Y) * depthWidth) + Math.Round(point.X));
               if (depthPosition >= 0 && depthPosition < depthVertices.Length) {
@@ -353,7 +385,7 @@
                 if (VectorDistance(depthVertice, tempVertice) <= 0.008) {
                   // change dot to red if it's vertice was within the set tollerance for the point on the live face
                   hdFaceColors[i] = 0x0000ff;
-                  ellipse.Fill = Brushes.Red;
+                  //ellipse.Fill = Brushes.Red;
                   matched++;
                 }
                 //*/
@@ -371,8 +403,8 @@
                 //*/
               }
             }
-            Canvas.SetLeft(ellipse, point.X);
-            Canvas.SetTop(ellipse, point.Y);
+            //Canvas.SetLeft(ellipse, point.X);
+            //Canvas.SetTop(ellipse, point.Y);
           }
         }
         if (matched != 0) matchCount.Content = String.Format("Red Dots: {0}", matched);
