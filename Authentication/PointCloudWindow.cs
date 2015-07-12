@@ -46,8 +46,8 @@
       tw = new TextWriter(new Size(1024, 768), new Size(300, 100));
       tw.AddLine("Camera Angle", new System.Drawing.PointF(10.0f, 10.0f), Brushes.Red);
       tw.AddLine("facing, pitch", new System.Drawing.PointF(10.0f, 30.0f), Brushes.Red);
-      tw.AddLine("Camera Location", new System.Drawing.PointF(10.0f, 60.0f), Brushes.Blue);
-      tw.AddLine("X: Y: Z", new System.Drawing.PointF(10.0f, 80.0f), Brushes.Blue);
+      tw.AddLine("Camera Location", new System.Drawing.PointF(10.0f, 60.0f), Brushes.Red);
+      tw.AddLine("X: Y: Z", new System.Drawing.PointF(10.0f, 80.0f), Brushes.Red);
     }
 
 
@@ -211,7 +211,7 @@
       GL.LoadMatrix(ref projection);
     }
 
-    private void Overlay_OnVerticesUpdated(CameraSpacePoint[] cameraSpacePoints) {
+    private void Overlay_OnVerticesUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors) {
       var length = cameraSpacePoints.Length;
       if (depthVectors == null) {
         depthVectors = new Vector3[length];
@@ -220,7 +220,7 @@
         for (int i = 0; i < length; i++) {
           depthVectors[i] = new Vector3(cameraSpacePoints[i].X, cameraSpacePoints[i].Y, cameraSpacePoints[i].Z);
           // this is in BGR format for some reason
-          depthColors[i] = 0xffffff;
+          depthColors[i] = 0xaaaaaa;
         }
 
         // start editing   vbo_depth   buffer
@@ -255,6 +255,7 @@
                                new IntPtr(depthVectors.Length * BlittableValueType.StrideOf(depthVectors)),
                                depthVectors, BufferUsageHint.StaticDraw);
 
+        /*
         // start editing   vbo_depth_colors   buffer
         GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth_colors);
         // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
@@ -265,19 +266,21 @@
         GL.BufferData(BufferTarget.ArrayBuffer,
                                new IntPtr(depthColors.Length * 4),
                                depthColors, BufferUsageHint.StaticDraw);
+        //*/
       }
     }
 
-    private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints) {
+    private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors) {
       var length = cameraSpacePoints.Length;
+      hdFaceColors = colors;
       if (hdFaceVectors == null) {
         hdFaceVectors = new Vector3[length];
-        hdFaceColors = new int[length];
+        //hdFaceColors = new int[length];
         hdface_verticeCount = length;
         for (int i = 0; i < length; i++) {
           hdFaceVectors[i] = new Vector3(cameraSpacePoints[i].X, cameraSpacePoints[i].Y, cameraSpacePoints[i].Z);
           // this is in BGR format for some reason
-          hdFaceColors[i] = 0xff0000;
+          //hdFaceColors[i] = 0xff0000;
         }
 
         // start editing   vbo_hdface   buffer
@@ -315,7 +318,7 @@
                                new IntPtr(hdFaceVectors.Length * BlittableValueType.StrideOf(hdFaceVectors)),
                                hdFaceVectors, BufferUsageHint.StaticDraw);
 
-
+        //*
         // start editing   vbo_hdface_colors   buffer
         GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface_colors);
         // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
@@ -326,6 +329,7 @@
         GL.BufferData(BufferTarget.ArrayBuffer,
                                new IntPtr(hdFaceColors.Length * 4),
                                hdFaceColors, BufferUsageHint.StaticDraw);
+        //*/
       }
     }
 

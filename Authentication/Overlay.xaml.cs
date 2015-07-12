@@ -15,8 +15,8 @@
   using System.Windows.Media.Imaging;
 
   public partial class Overlay : Window, INotifyPropertyChanged {
-    public delegate void VerticesUpdated(CameraSpacePoint[] vertices);
-    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices);
+    public delegate void VerticesUpdated(CameraSpacePoint[] vertices, int[] colors);
+    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors);
     public event VerticesUpdated OnVerticesUpdated;
     public event HdFaceUpdated OnHdFaceUpdated;
     // MainWindow Variables
@@ -83,8 +83,9 @@
       stride = depthFrameDescription.Width * PixelFormats.Bgr32.BitsPerPixel / 8;
 
 
-    FrameDescription colorFrameDescription = this.kinectSensor.ColorFrameSource.FrameDescription;
+      FrameDescription colorFrameDescription = this.kinectSensor.ColorFrameSource.FrameDescription;
       colorImage = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
+
 
       // start with default alignment
       this.highdefinitionFaceAlignment = new FaceAlignment();
@@ -183,34 +184,36 @@
       var frame = e.FrameReference.AcquireFrame();
       if (frame != null && frame.FaceFrameResult != null && frame.FaceFrameResult.FaceBoundingBoxInColorSpace != null) {
         if (faceCaptured) return;
-        var colorFrame = frame.ColorFrameReference.AcquireFrame();
-        if (colorFrame == null) return;
-        faceCaptured = true;
-        var left = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Left - 150;
-        left = left < 0 ? 0 : left;
-        var top = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Top - 150;
-        top = top < 0 ? 0 : top;
-        var right = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Right + 150;
-        right = right > colorFrame.FrameDescription.Width ? colorFrame.FrameDescription.Width : right;
-        var bottom = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Bottom + 150;
-        bottom = bottom > colorFrame.FrameDescription.Height ? colorFrame.FrameDescription.Height : bottom;
-        var width = right - left;
-        var height = bottom - top;
-        using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer()) {
-          this.colorImage.Lock();
-          if ((colorFrame.FrameDescription.Width == this.colorImage.PixelWidth) && (colorFrame.FrameDescription.Height == this.colorImage.PixelHeight)) {
-            colorFrame.CopyConvertedFrameDataToIntPtr(
-                this.colorImage.BackBuffer,
-                (uint)(colorFrame.FrameDescription.Width * colorFrame.FrameDescription.Height * 4),
-                ColorImageFormat.Bgra);
+        using (var colorFrame = frame.ColorFrameReference.AcquireFrame()) {
+          if (colorFrame == null) return;
+          faceCaptured = true;
+          var left = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Left - 150;
+          left = left < 0 ? 0 : left;
+          var top = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Top - 150;
+          top = top < 0 ? 0 : top;
+          var right = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Right + 150;
+          right = right > colorFrame.FrameDescription.Width ? colorFrame.FrameDescription.Width : right;
+          var bottom = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Bottom + 150;
+          bottom = bottom > colorFrame.FrameDescription.Height ? colorFrame.FrameDescription.Height : bottom;
+          var width = right - left;
+          var height = bottom - top;
+          using (KinectBuffer colorBuffer = colorFrame.LockRawImageBuffer()) {
+            this.colorImage.Lock();
+            if ((colorFrame.FrameDescription.Width == this.colorImage.PixelWidth) && (colorFrame.FrameDescription.Height == this.colorImage.PixelHeight)) {
+              colorFrame.CopyConvertedFrameDataToIntPtr(
+                  this.colorImage.BackBuffer,
+                  (uint)(colorFrame.FrameDescription.Width * colorFrame.FrameDescription.Height * 4),
+                  ColorImageFormat.Bgra);
 
-            this.colorImage.AddDirtyRect(new Int32Rect(0, 0, this.colorImage.PixelWidth, this.colorImage.PixelHeight));
+              this.colorImage.AddDirtyRect(new Int32Rect(0, 0, this.colorImage.PixelWidth, this.colorImage.PixelHeight));
+            }
+            this.colorImage.Unlock();
           }
-          this.colorImage.Unlock();
+          SaveImage(left, top, width, height);
+          Match2D(left, top, width, height).ConfigureAwait(continueOnCapturedContext: true);
         }
-        SaveImage(left, top, width, height);
-        Match2D(left, top, width, height).ConfigureAwait(continueOnCapturedContext: true);
       }
+
     }
 
     private void uiScaleSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
@@ -273,7 +276,6 @@
         frame.CopyFrameDataToArray(depthData);
 
         this.kinectSensor.CoordinateMapper.MapDepthFrameToCameraSpace(depthData, depthVertices);
-        if (this.OnVerticesUpdated != null) this.OnVerticesUpdated(depthVertices);
 
         int colorIndex = 0;
         var length = depthData.Length;
@@ -299,16 +301,19 @@
         this.depthBitmap.WritePixels(box, pixelData, stride, 0);
         this.depthBitmap.AddDirtyRect(box);
         this.depthBitmap.Unlock();
+        if (this.OnVerticesUpdated != null) this.OnVerticesUpdated(depthVertices, null);
       }
     }
 
     CameraSpacePoint[] hdFaceVertices;
+    int[] hdFaceColors;
     private void UpdateFacePoints() {
       if (highDefinitionFaceModel == null) return;
 
       var vertices = highDefinitionFaceModel.CalculateVerticesForAlignment(highdefinitionFaceAlignment);
       if (hdFaceVertices == null) {
         hdFaceVertices = new CameraSpacePoint[vertices.Count];
+        hdFaceColors = new int[vertices.Count];
         for (int i = 0; i < hdFaceVertices.Length; i++) {
           hdFaceVertices[i] = new CameraSpacePoint();
         }
@@ -336,6 +341,7 @@
 
             if (checkPointMatches == 0) {
               // reset dot to blue
+              hdFaceColors[i] = 0xff0000;
               ellipse.Fill = Brushes.Blue;
               
               int depthPosition = (int)((Math.Round(point.Y) * depthWidth) + Math.Round(point.X));
@@ -346,6 +352,7 @@
                 //* sweet spot tollerance is 0.008???
                 if (VectorDistance(depthVertice, tempVertice) <= 0.008) {
                   // change dot to red if it's vertice was within the set tollerance for the point on the live face
+                  hdFaceColors[i] = 0x0000ff;
                   ellipse.Fill = Brushes.Red;
                   matched++;
                 }
@@ -371,7 +378,7 @@
         if (matched != 0) matchCount.Content = String.Format("Red Dots: {0}", matched);
         checkPointMatches = ++checkPointMatches % 15;
       }
-      if (this.OnHdFaceUpdated != null) this.OnHdFaceUpdated(hdFaceVertices);
+      if (this.OnHdFaceUpdated != null) this.OnHdFaceUpdated(hdFaceVertices, hdFaceColors);
     }
 
     public void NotifyPropertyChanged(string propertyName) {
