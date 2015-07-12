@@ -9,8 +9,12 @@
   using System.Web.Script.Serialization;
 
   public class PointCloudWindow : GameWindow {
-    private int vbo;
-    private int verticeCount;
+    private int vbo_depth;
+    private int vbo_depth_colors;
+    private int vbo_hdface;
+    private int vbo_hdface_colors;
+    private int depth_verticeCount;
+    private int hdface_verticeCount;
     private Matrix4 cameraMatrix;
     private float[] mouseSpeed = new float[2];
     private Vector2 mouseDelta;
@@ -28,6 +32,9 @@
     private bool leftdown = false;
     private bool rightdown = false;
     private Vector3[] depthVectors;
+    private Vector3[] hdFaceVectors;
+    private int[] depthColors;
+    private int[] hdFaceColors;
     private TextWriter tw;
 
 
@@ -108,16 +115,32 @@
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
       GL.LoadMatrix(ref cameraMatrix);
 
-      //GL.EnableVertexAttribArray(0);
-      //GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-      //GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 10, 0);
-      GL.EnableClientState(ArrayCap.VertexArray);
-      GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-      GL.VertexPointer(3, VertexPointerType.Float, Vector3.SizeInBytes, new IntPtr(0));
-      GL.DrawArrays(PrimitiveType.Points, 0, verticeCount);
 
-      //GL.DisableVertexAttribArray(0);
+      // Draw hd face
+      GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface_colors);
+      GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
+      GL.EnableClientState(ArrayCap.ColorArray);
+
+      GL.EnableClientState(ArrayCap.VertexArray);
+      GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface);
+      GL.VertexPointer(3, VertexPointerType.Float, Vector3.SizeInBytes, new IntPtr(0));
+      GL.DrawArrays(PrimitiveType.Points, 0, hdface_verticeCount);
+
+
+      // Draw point cloud
+      GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth_colors);
+      GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
+      GL.EnableClientState(ArrayCap.ColorArray);
+
+      GL.EnableClientState(ArrayCap.VertexArray);
+      GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth);
+      GL.VertexPointer(3, VertexPointerType.Float, Vector3.SizeInBytes, new IntPtr(0));
+      GL.DrawArrays(PrimitiveType.Points, 0, depth_verticeCount);
+
+
+      // Draw text
       tw.Draw();
+
 
       SwapBuffers();
     }
@@ -189,85 +212,138 @@
     private void Overlay_OnVerticesUpdated(CameraSpacePoint[] cameraSpacePoints) {
       var length = cameraSpacePoints.Length;
       if (depthVectors == null) {
+        #region setup
         depthVectors = new Vector3[length];
-        verticeCount = depthVectors.Length;
+        depthColors = new int[length];
+        depth_verticeCount = length;
         for (int i = 0; i < length; i++) {
           depthVectors[i] = new Vector3(cameraSpacePoints[i].X, cameraSpacePoints[i].Y, cameraSpacePoints[i].Z);
+          // this is in BGR format for some reason
+          depthColors[i] = 0xffffff;
         }
-        GL.GenBuffers(1, out vbo);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+        #endregion
+
+        // start editing   vbo_depth   buffer
+        GL.GenBuffers(1, out vbo_depth);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth);
         GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
-                               new IntPtr(depthVectors.Length * Vector3.SizeInBytes),
+                               new IntPtr(depthVectors.Length * BlittableValueType.StrideOf(depthVectors)),
                                depthVectors, BufferUsageHint.StaticDraw);
+
+
+        // start editing   vbo_depth_colors   buffer
+        //*
+        GL.GenBuffers(1, out vbo_depth_colors);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth_colors);
+        GL.BufferData(BufferTarget.ArrayBuffer,
+                      new IntPtr(depthColors.Length * 4),
+                      depthColors, BufferUsageHint.StaticDraw);
+        //*/
       } else {
+        #region asdf
         for (int i = 0; i < length; i++) {
           depthVectors[i].X = cameraSpacePoints[i].X;
           depthVectors[i].Y = cameraSpacePoints[i].Y;
           depthVectors[i].Z = cameraSpacePoints[i].Z;
         }
+
+        // start editing   vbo_depth   buffer
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth);
         // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
         GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
-                         IntPtr.Zero,
-                         depthVectors, BufferUsageHint.StaticDraw);
-        var ptr = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
-        GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
+                               IntPtr.Zero,
+                               depthVectors, BufferUsageHint.StaticDraw);
+        GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
         GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
-                         new IntPtr(depthVectors.Length * Vector3.SizeInBytes),
-                         depthVectors, BufferUsageHint.StaticDraw);
+                               new IntPtr(depthVectors.Length * BlittableValueType.StrideOf(depthVectors)),
+                               depthVectors, BufferUsageHint.StaticDraw);
+
+        // start editing   vbo_depth_colors   buffer
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth_colors);
+        // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
+        GL.BufferData(BufferTarget.ArrayBuffer,
+                               IntPtr.Zero,
+                               depthColors, BufferUsageHint.StaticDraw);
+        GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
+        GL.BufferData(BufferTarget.ArrayBuffer,
+                               new IntPtr(depthColors.Length * 4),
+                               depthColors, BufferUsageHint.StaticDraw);
+        #endregion
       }
     }
 
     private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints) {
       var length = cameraSpacePoints.Length;
-      if (depthVectors == null) {
-        depthVectors = new Vector3[length];
-        verticeCount = depthVectors.Length;
+      if (hdFaceVectors == null) {
+        hdFaceVectors = new Vector3[length];
+        hdFaceColors = new int[length];
+        hdface_verticeCount = length;
         for (int i = 0; i < length; i++) {
-          depthVectors[i] = new Vector3(cameraSpacePoints[i].X, cameraSpacePoints[i].Y, cameraSpacePoints[i].Z);
+          hdFaceVectors[i] = new Vector3(cameraSpacePoints[i].X, cameraSpacePoints[i].Y, cameraSpacePoints[i].Z);
+          // this is in BGR format for some reason
+          hdFaceColors[i] = 0xff0000;
         }
-        GL.GenBuffers(1, out vbo);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+
+        // start editing   vbo_hdface   buffer
+        GL.GenBuffers(1, out vbo_hdface);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface);
         GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
-                               new IntPtr(depthVectors.Length * BlittableValueType.StrideOf(depthVectors)),
-                               depthVectors, BufferUsageHint.StaticDraw);
+                               new IntPtr(hdFaceVectors.Length * BlittableValueType.StrideOf(hdFaceVectors)),
+                               hdFaceVectors, BufferUsageHint.StaticDraw);
+
+
+        // start editing   vbo_hdface_colors   buffer
+        GL.GenBuffers(1, out vbo_hdface_colors);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface_colors);
+        GL.BufferData(BufferTarget.ArrayBuffer,
+                new IntPtr(hdFaceColors.Length * 4),
+                hdFaceColors, BufferUsageHint.StaticDraw);
       } else {
         for (int i = 0; i < length; i++) {
           if (float.IsInfinity(cameraSpacePoints[i].X) || float.IsNaN(cameraSpacePoints[i].X)) continue;
           if (float.IsInfinity(cameraSpacePoints[i].Y) || float.IsNaN(cameraSpacePoints[i].Y)) continue;
           if (float.IsInfinity(cameraSpacePoints[i].Z) || float.IsNaN(cameraSpacePoints[i].Z)) continue;
-          depthVectors[i].X = cameraSpacePoints[i].X;
-          depthVectors[i].Y = cameraSpacePoints[i].Y;
-          depthVectors[i].Z = cameraSpacePoints[i].Z;
+          hdFaceVectors[i].X = cameraSpacePoints[i].X;
+          hdFaceVectors[i].Y = cameraSpacePoints[i].Y;
+          hdFaceVectors[i].Z = cameraSpacePoints[i].Z;
         }
+
+        // start editing   vbo_hdface   buffer
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface);
         // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
         GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
                                IntPtr.Zero,
-                               depthVectors, BufferUsageHint.StaticDraw);
-        var ptr = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
+                               hdFaceVectors, BufferUsageHint.StaticDraw);
+        GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
         GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
-                               new IntPtr(depthVectors.Length * BlittableValueType.StrideOf(depthVectors)),
-                               depthVectors, BufferUsageHint.StaticDraw);
+                               new IntPtr(hdFaceVectors.Length * BlittableValueType.StrideOf(hdFaceVectors)),
+                               hdFaceVectors, BufferUsageHint.StaticDraw);
+
+
+        // start editing   vbo_hdface_colors   buffer
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface_colors);
+        // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
+        GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
+                               IntPtr.Zero,
+                               hdFaceVectors, BufferUsageHint.StaticDraw);
+        GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
+        GL.BufferData(BufferTarget.ArrayBuffer,
+                               new IntPtr(hdFaceColors.Length * 4),
+                               hdFaceColors, BufferUsageHint.StaticDraw);
       }
     }
 
 
 
     // Methods
-    private void LoadFml(string path) {
+    private Vector3[] LoadFml(string path) {
       var jss = new JavaScriptSerializer();
 
-      if (!File.Exists(path)) return;
+      if (!File.Exists(path)) return new Vector3[0];
       using (var file = new StreamReader(path)) {
         var data = file.ReadLine();
-        if (string.IsNullOrWhiteSpace(data)) return;
-        var vectors = jss.Deserialize<Vector3[]>(data);
-
-        GL.GenBuffers(1, out vbo);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-        GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
-                               new IntPtr(vectors.Length * BlittableValueType.StrideOf(vectors)),
-                               depthVectors, BufferUsageHint.StaticDraw);
-
+        if (string.IsNullOrWhiteSpace(data)) return new Vector3[0];
+        return jss.Deserialize<Vector3[]>(data);
       }
     }
 
