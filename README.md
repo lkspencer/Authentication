@@ -1,7 +1,7 @@
 # Authentication
 Software for 3D facial recognition. This project uses a Kinect to gather its information for processing. Please see the list of requirements prior to pulling this project.
 
-![Image of Yaktocat](https://raw.githubusercontent.com/lkspencer/Authentication/master/Images/authentication.png)
+![3D Point Cloud](https://raw.githubusercontent.com/lkspencer/Authentication/master/Images/authentication.png)
 
 ## Requirements
 
