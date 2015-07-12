@@ -16,7 +16,7 @@
 
   public partial class Overlay : Window, INotifyPropertyChanged {
     public delegate void VerticesUpdated(CameraSpacePoint[] vertices, int[] colors);
-    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors);
+    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched);
     public event VerticesUpdated OnVerticesUpdated;
     public event HdFaceUpdated OnHdFaceUpdated;
     // MainWindow Variables
@@ -350,8 +350,8 @@
           hdFaceVertices[i] = new CameraSpacePoint();
         }
       }
+      var matched = 0;
       if (vertices.Count > 0 && defaultVertices != null) {
-        var matched = 0;
         var count = defaultVertices.Count;
         for (int i = 0; i < count; i++) {
           // align saved vertice with live face
@@ -410,7 +410,7 @@
         if (matched != 0) matchCount.Content = String.Format("Red Dots: {0}", matched);
         checkPointMatches = ++checkPointMatches % 15;
       }
-      if (this.OnHdFaceUpdated != null) this.OnHdFaceUpdated(hdFaceVertices, hdFaceColors);
+      if (this.OnHdFaceUpdated != null) this.OnHdFaceUpdated(hdFaceVertices, hdFaceColors, matched);
     }
 
     public void NotifyPropertyChanged(string propertyName) {

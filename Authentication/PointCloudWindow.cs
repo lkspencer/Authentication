@@ -36,6 +36,8 @@
     private int[] depthColors;
     private int[] hdFaceColors;
     private TextWriter tw;
+    private bool showMask = true;
+    private bool showPointCloud = true;
 
 
 
@@ -43,11 +45,13 @@
       GL.Enable(EnableCap.DepthTest);
       overlay.OnVerticesUpdated += Overlay_OnVerticesUpdated;
       overlay.OnHdFaceUpdated += Overlay_OnHdFaceUpdated;
-      tw = new TextWriter(new Size(1024, 768), new Size(300, 100));
+      tw = new TextWriter(new Size(1024, 768), new Size(300, 150));
       tw.AddLine("Camera Angle", new System.Drawing.PointF(10.0f, 10.0f), Brushes.White);
       tw.AddLine("facing, pitch", new System.Drawing.PointF(10.0f, 30.0f), Brushes.White);
       tw.AddLine("Camera Location", new System.Drawing.PointF(10.0f, 60.0f), Brushes.White);
       tw.AddLine("X: Y: Z", new System.Drawing.PointF(10.0f, 80.0f), Brushes.White);
+      tw.AddLine("Dot Match", new System.Drawing.PointF(10.0f, 110.0f), Brushes.White);
+      tw.AddLine("0", new System.Drawing.PointF(10.0f, 130.0f), Brushes.White);
     }
 
 
@@ -96,6 +100,8 @@
       if (e.Key == Key.Down) downdown = false;
       if (e.Key == Key.Left) leftdown = false;
       if (e.Key == Key.Right) rightdown = false;
+      if (e.Key == Key.Q) showMask = !showMask;
+      if (e.Key == Key.E) showPointCloud = !showPointCloud;
     }
 
     protected void OnMouseWheel(object sender, MouseWheelEventArgs e) {
@@ -117,27 +123,31 @@
 
 
       // Draw hd face
-      GL.PointSize(4.0f);
-      GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface_colors);
-      GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
-      GL.EnableClientState(ArrayCap.ColorArray);
+      if (showMask) {
+        GL.PointSize(4.0f);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface_colors);
+        GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
+        GL.EnableClientState(ArrayCap.ColorArray);
 
-      GL.EnableClientState(ArrayCap.VertexArray);
-      GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface);
-      GL.VertexPointer(3, VertexPointerType.Float, Vector3.SizeInBytes, new IntPtr(0));
-      GL.DrawArrays(PrimitiveType.Points, 0, hdface_verticeCount);
+        GL.EnableClientState(ArrayCap.VertexArray);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface);
+        GL.VertexPointer(3, VertexPointerType.Float, Vector3.SizeInBytes, new IntPtr(0));
+        GL.DrawArrays(PrimitiveType.Points, 0, hdface_verticeCount);
+      }
 
 
       // Draw point cloud
-      GL.PointSize(1.0f);
-      GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth_colors);
-      GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
-      GL.EnableClientState(ArrayCap.ColorArray);
+      if (showPointCloud) {
+        GL.PointSize(1.0f);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth_colors);
+        GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
+        GL.EnableClientState(ArrayCap.ColorArray);
 
-      GL.EnableClientState(ArrayCap.VertexArray);
-      GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth);
-      GL.VertexPointer(3, VertexPointerType.Float, Vector3.SizeInBytes, new IntPtr(0));
-      GL.DrawArrays(PrimitiveType.Points, 0, depth_verticeCount);
+        GL.EnableClientState(ArrayCap.VertexArray);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth);
+        GL.VertexPointer(3, VertexPointerType.Float, Vector3.SizeInBytes, new IntPtr(0));
+        GL.DrawArrays(PrimitiveType.Points, 0, depth_verticeCount);
+      }
 
 
       // Draw text
@@ -271,7 +281,8 @@
       }
     }
 
-    private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors) {
+    private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors, int matched) {
+      if (matched > 0) tw.Update(5, "" + matched);
       var length = cameraSpacePoints.Length;
       hdFaceColors = colors;
       if (hdFaceVectors == null) {
