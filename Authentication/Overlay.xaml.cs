@@ -16,7 +16,9 @@
 
   public partial class Overlay : Window, INotifyPropertyChanged {
     public delegate void VerticesUpdated(CameraSpacePoint[] vertices);
+    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices);
     public event VerticesUpdated OnVerticesUpdated;
+    public event HdFaceUpdated OnHdFaceUpdated;
     // MainWindow Variables
     private KinectSensor kinectSensor = null;
     BodyFrameReader bodyFrameReader = null;
@@ -300,10 +302,17 @@
       }
     }
 
+    CameraSpacePoint[] hdFaceVertices;
     private void UpdateFacePoints() {
       if (highDefinitionFaceModel == null) return;
 
       var vertices = highDefinitionFaceModel.CalculateVerticesForAlignment(highdefinitionFaceAlignment);
+      if (hdFaceVertices == null) {
+        hdFaceVertices = new CameraSpacePoint[vertices.Count];
+        for (int i = 0; i < hdFaceVertices.Length; i++) {
+          hdFaceVertices[i] = new CameraSpacePoint();
+        }
+      }
       if (vertices.Count > 0 && defaultVertices != null) {
         var matched = 0;
         var count = defaultVertices.Count;
@@ -312,6 +321,10 @@
           tempVertice.X = savedVertices[i].X - (defaultVertices[i].X - vertices[i].X);
           tempVertice.Y = savedVertices[i].Y - (defaultVertices[i].Y - vertices[i].Y);
           tempVertice.Z = savedVertices[i].Z - (defaultVertices[i].Z - vertices[i].Z);
+
+          hdFaceVertices[i].X = tempVertice.X;
+          hdFaceVertices[i].Y = tempVertice.Y;
+          hdFaceVertices[i].Z = tempVertice.Z;
 
           var ellipse = savedDots[i];
           if (isColor) {
@@ -358,6 +371,7 @@
         if (matched != 0) matchCount.Content = String.Format("Red Dots: {0}", matched);
         checkPointMatches = ++checkPointMatches % 15;
       }
+      if (this.OnHdFaceUpdated != null) this.OnHdFaceUpdated(hdFaceVertices);
     }
 
     public void NotifyPropertyChanged(string propertyName) {

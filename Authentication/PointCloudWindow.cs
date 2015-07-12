@@ -35,12 +35,14 @@
     public PointCloudWindow(Overlay overlay) : base(1024, 768) {
       GL.Enable(EnableCap.DepthTest);
       overlay.OnVerticesUpdated += Overlay_OnVerticesUpdated;
+      //overlay.OnHdFaceUpdated += Overlay_OnHdFaceUpdated;
       tw = new TextWriter(new Size(1024, 768), new Size(300, 100));
       tw.AddLine("Camera Angle", new System.Drawing.PointF(10.0f, 10.0f), Brushes.Red);
       tw.AddLine("facing, pitch", new System.Drawing.PointF(10.0f, 30.0f), Brushes.Red);
       tw.AddLine("Camera Location", new System.Drawing.PointF(10.0f, 60.0f), Brushes.Blue);
       tw.AddLine("X: Y: Z", new System.Drawing.PointF(10.0f, 80.0f), Brushes.Blue);
     }
+
 
 
 
@@ -106,21 +108,23 @@
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
       GL.LoadMatrix(ref cameraMatrix);
 
-      GL.EnableVertexAttribArray(0);
+      //GL.EnableVertexAttribArray(0);
+      //GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+      //GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 10, 0);
+      GL.EnableClientState(ArrayCap.VertexArray);
       GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-      GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 10, 0);
-
+      GL.VertexPointer(3, VertexPointerType.Float, Vector3.SizeInBytes, new IntPtr(0));
       GL.DrawArrays(PrimitiveType.Points, 0, verticeCount);
 
-      GL.DisableVertexAttribArray(0);
+      //GL.DisableVertexAttribArray(0);
       tw.Draw();
 
       SwapBuffers();
     }
 
     protected override void OnUpdateFrame(FrameEventArgs e) {
-      //*
       if (float.IsNaN(facing) || float.IsInfinity(facing)) facing = 0.0f;
+
       if (wdown) {
         location.X += (float)Math.Cos(facing) * 0.01f;
         location.Z += (float)Math.Sin(facing) * 0.01f;
@@ -170,7 +174,6 @@
       tw.Update(1, String.Format("facing: {0}, pitch: {1}", facing, pitch));
       tw.Update(3, String.Format("X: {0}, Y: {1}, Z: {2}", location.X, location.Y, location.Z));
       if (escdown) Exit();
-      //*/
     }
 
     protected override void OnResize(EventArgs e) {
@@ -211,9 +214,47 @@
                          IntPtr.Zero,
                          depthVectors, BufferUsageHint.StaticDraw);
         var ptr = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
+        GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
         GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
                          new IntPtr(depthVectors.Length * Vector3.SizeInBytes),
                          depthVectors, BufferUsageHint.StaticDraw);
+      }
+    }
+
+    private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints) {
+      var length = cameraSpacePoints.Length;
+      if (depthVectors == null) {
+        depthVectors = new Vector3[length];
+        verticeCount = depthVectors.Length;
+        for (int i = 0; i < length; i++) {
+          depthVectors[i] = new Vector3(cameraSpacePoints[i].X, cameraSpacePoints[i].Y, cameraSpacePoints[i].Z);
+        }
+        GL.GenBuffers(1, out vbo);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+        GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
+                               new IntPtr(depthVectors.Length * BlittableValueType.StrideOf(depthVectors)),
+                               depthVectors, BufferUsageHint.StaticDraw);
+      } else {
+        for (int i = 0; i < length; i++) {
+          if (float.IsInfinity(cameraSpacePoints[i].X) || float.IsNaN(cameraSpacePoints[i].X)) continue;
+          if (float.IsInfinity(cameraSpacePoints[i].Y) || float.IsNaN(cameraSpacePoints[i].Y)) continue;
+          if (float.IsInfinity(cameraSpacePoints[i].Z) || float.IsNaN(cameraSpacePoints[i].Z)) continue;
+          depthVectors[i].X = cameraSpacePoints[i].X;
+          depthVectors[i].Y = cameraSpacePoints[i].Y;
+          depthVectors[i].Z = cameraSpacePoints[i].Z;
+        }
+        /*
+        GL.GenBuffers(1, out vbo);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+        //*/
+        // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
+        GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
+                               IntPtr.Zero,
+                               depthVectors, BufferUsageHint.StaticDraw);
+        var ptr = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadWrite);
+        GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
+                               new IntPtr(depthVectors.Length * BlittableValueType.StrideOf(depthVectors)),
+                               depthVectors, BufferUsageHint.StaticDraw);
       }
     }
 
