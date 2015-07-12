@@ -35,7 +35,7 @@
     public PointCloudWindow(Overlay overlay) : base(1024, 768) {
       GL.Enable(EnableCap.DepthTest);
       overlay.OnVerticesUpdated += Overlay_OnVerticesUpdated;
-      //overlay.OnHdFaceUpdated += Overlay_OnHdFaceUpdated;
+      overlay.OnHdFaceUpdated += Overlay_OnHdFaceUpdated;
       tw = new TextWriter(new Size(1024, 768), new Size(300, 100));
       tw.AddLine("Camera Angle", new System.Drawing.PointF(10.0f, 10.0f), Brushes.Red);
       tw.AddLine("facing, pitch", new System.Drawing.PointF(10.0f, 30.0f), Brushes.Red);
@@ -205,10 +205,6 @@
           depthVectors[i].Y = cameraSpacePoints[i].Y;
           depthVectors[i].Z = cameraSpacePoints[i].Z;
         }
-        /*
-        GL.GenBuffers(1, out vbo);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-        //*/
         // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
         GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
                          IntPtr.Zero,
@@ -243,10 +239,6 @@
           depthVectors[i].Y = cameraSpacePoints[i].Y;
           depthVectors[i].Z = cameraSpacePoints[i].Z;
         }
-        /*
-        GL.GenBuffers(1, out vbo);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-        //*/
         // clear out old memory. I think this is what allows us to redraw every time we get a new array of CameraSpacePoints
         GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
                                IntPtr.Zero,
@@ -261,15 +253,21 @@
 
 
     // Methods
-    private Vector3[] LoadFml(string path) {
+    private void LoadFml(string path) {
       var jss = new JavaScriptSerializer();
 
-      if (!File.Exists(path)) return new Vector3[0];
+      if (!File.Exists(path)) return;
       using (var file = new StreamReader(path)) {
         var data = file.ReadLine();
-        if (string.IsNullOrWhiteSpace(data)) return new Vector3[0];
+        if (string.IsNullOrWhiteSpace(data)) return;
         var vectors = jss.Deserialize<Vector3[]>(data);
-        return vectors;
+
+        GL.GenBuffers(1, out vbo);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+        GL.BufferData<Vector3>(BufferTarget.ArrayBuffer,
+                               new IntPtr(vectors.Length * BlittableValueType.StrideOf(vectors)),
+                               depthVectors, BufferUsageHint.StaticDraw);
+
       }
     }
 
