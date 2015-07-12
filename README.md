@@ -1,6 +1,8 @@
 # Authentication
 Software that uses other open source projects for facial recognition. This project uses a Kinect to gather its information for processing. Please see the list of requirements prior to pulling this project.
 
+![Image of Yaktocat](https://raw.githubusercontent.com/lkspencer/Authentication/master/Images/authentication.png)
+
 ## Requirements
 
 There are a few things you will need in order to use this project:
