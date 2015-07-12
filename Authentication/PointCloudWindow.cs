@@ -57,8 +57,8 @@
     // Event Handlers
     protected override void OnLoad(EventArgs e) {
       base.OnLoad(e);
+      // background color
       GL.ClearColor(Color.Black);
-      GL.PointSize(3f);
 
       cameraMatrix = Matrix4.Identity;
       location = new Vector3(-0.0025f, 0f, -0.54f);
@@ -117,6 +117,7 @@
 
 
       // Draw hd face
+      GL.PointSize(3.0f);
       GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_hdface_colors);
       GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
       GL.EnableClientState(ArrayCap.ColorArray);
@@ -128,6 +129,7 @@
 
 
       // Draw point cloud
+      GL.PointSize(1.0f);
       GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth_colors);
       GL.ColorPointer(4, ColorPointerType.UnsignedByte, sizeof(int), IntPtr.Zero);
       GL.EnableClientState(ArrayCap.ColorArray);
@@ -212,7 +214,6 @@
     private void Overlay_OnVerticesUpdated(CameraSpacePoint[] cameraSpacePoints) {
       var length = cameraSpacePoints.Length;
       if (depthVectors == null) {
-        #region setup
         depthVectors = new Vector3[length];
         depthColors = new int[length];
         depth_verticeCount = length;
@@ -221,7 +222,6 @@
           // this is in BGR format for some reason
           depthColors[i] = 0xffffff;
         }
-        #endregion
 
         // start editing   vbo_depth   buffer
         GL.GenBuffers(1, out vbo_depth);
@@ -232,15 +232,12 @@
 
 
         // start editing   vbo_depth_colors   buffer
-        //*
         GL.GenBuffers(1, out vbo_depth_colors);
         GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_depth_colors);
         GL.BufferData(BufferTarget.ArrayBuffer,
                       new IntPtr(depthColors.Length * 4),
                       depthColors, BufferUsageHint.StaticDraw);
-        //*/
       } else {
-        #region asdf
         for (int i = 0; i < length; i++) {
           depthVectors[i].X = cameraSpacePoints[i].X;
           depthVectors[i].Y = cameraSpacePoints[i].Y;
@@ -268,7 +265,6 @@
         GL.BufferData(BufferTarget.ArrayBuffer,
                                new IntPtr(depthColors.Length * 4),
                                depthColors, BufferUsageHint.StaticDraw);
-        #endregion
       }
     }
 
