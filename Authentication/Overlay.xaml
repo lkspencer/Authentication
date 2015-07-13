@@ -2,15 +2,14 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Name="WPFWindow"
-        Title="Overlay" 
-        Width="1675.657" 
-        Height="735.03" 
-        ResizeMode="CanResizeWithGrip" 
+        Title="Overlay"
+        Width="550"
+        Height="400"
+        ResizeMode="CanResizeWithGrip"
         ScrollViewer.CanContentScroll="True" Loaded="WPFWindow_Loaded">
 
   <Grid x:Name="LayoutRoot" >
     <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
@@ -19,79 +18,11 @@
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
-      <Label x:Name="matchCount" Content="count" FontSize="64" Grid.Column="0" />
-      <Label x:Name="matchName" Content="name" FontSize="64" Grid.Column="1" />
+      <Label x:Name="matchCount" Content="count" FontSize="14" Grid.Column="0" />
+      <Label x:Name="matchName" Content="name" FontSize="14" Grid.Column="1" />
     </Grid>
-    <Border Grid.Row="1" Name="border" ClipToBounds="True">
-      <Canvas x:Name="canvas" Width="1364" Height="580" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,100,0,0" ></Canvas>
+    <Border Name="border" ClipToBounds="True">
+      <Canvas Grid.Row="1" x:Name="canvas" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,10,10" Width="100" Height="310" />
     </Border>
-    <Viewport3D  Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" x:Name="viewport3d" RenderTransformOrigin="0.5,0.5" >
-      <Viewport3D.RenderTransform>
-        <ScaleTransform ScaleX="1.0" ScaleY="1.0"></ScaleTransform>
-      </Viewport3D.RenderTransform>
-      <!-- Defines the camera used to view the 3D object. -->
-      <Viewport3D.Camera>
-        <PerspectiveCamera Position="0.0, 0.0, 0.45" LookDirection="0,0, -1"  UpDirection="0,1,0" FieldOfView="70" />
-      </Viewport3D.Camera>
-
-      <!-- The ModelVisual3D children contain the 3D models -->
-      <Viewport3D.Children>
-        <!-- This ModelVisual3D defines the light cast in the scene. Without light, the 3D 
-                    object cannot be seen. Also, the direction of the lights affect shadowing. If desired,
-                    you can create multiple lights with different colors that shine from different directions. -->
-        <ModelVisual3D>
-          <ModelVisual3D.Content>
-            <DirectionalLight Color="#FFFFFF" Direction="-0,-0.5,-0.5" />
-          </ModelVisual3D.Content>
-        </ModelVisual3D>
-        <ModelVisual3D>
-          <ModelVisual3D.Content>
-            <AmbientLight Color="#111" />
-          </ModelVisual3D.Content>
-        </ModelVisual3D>
-        <ModelVisual3D>
-          <ModelVisual3D.Content>
-            <GeometryModel3D>
-
-              <!-- The geometry specifes the shape of the 3D plane. In this sample, a flat sheet is created. -->
-              <GeometryModel3D.Geometry>
-                <MeshGeometry3D x:Name="theGeometry"
-                                   TriangleIndices="0,1,2 3,4,5 "
-                                   Normals="0,0,1 0,0,1 0,0,1 0,0,1 0,0,1 0,0,1 "
-                                   TextureCoordinates="0,0 1,0 1,1 1,1 0,1 0,0 "
-                                   Positions="-0.25,-0.25,-1   0.25,-0.25,-1    0.25,0.25,-1    0.25,0.25,-1    -0.25,0.25,-1    -0.25,-0.25,-1 " />
-              </GeometryModel3D.Geometry>
-
-              <!-- The material specifies the material applied to the 3D object. In this sample a linear gradient covers the surface of the 3D object.-->
-              <GeometryModel3D.Material>
-                <MaterialGroup>
-                  <DiffuseMaterial x:Name="theMaterial">
-                    <DiffuseMaterial.Brush>
-                      <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                        <LinearGradientBrush.GradientStops>
-                          <GradientStop Color="Yellow" Offset="0" />
-                          <GradientStop Color="Red" Offset="0.25" />
-                          <GradientStop Color="Blue" Offset="0.75" />
-                          <GradientStop Color="#777" Offset="1" />
-                        </LinearGradientBrush.GradientStops>
-                      </LinearGradientBrush>
-                    </DiffuseMaterial.Brush>
-                  </DiffuseMaterial>
-                </MaterialGroup>
-              </GeometryModel3D.Material>
-
-              <!-- Apply a transform to the object. In this sample, a rotation transform is applied, rendering the 3D object rotated. -->
-              <GeometryModel3D.Transform>
-                <RotateTransform3D>
-                  <RotateTransform3D.Rotation>
-                    <AxisAngleRotation3D Axis="0,1,0" x:Name="rotation" Angle="20" />
-                  </RotateTransform3D.Rotation>
-                </RotateTransform3D>
-              </GeometryModel3D.Transform>
-            </GeometryModel3D>
-          </ModelVisual3D.Content>
-        </ModelVisual3D>
-      </Viewport3D.Children>
-    </Viewport3D>
   </Grid>
 </Window>

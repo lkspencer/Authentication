@@ -52,7 +52,7 @@
     // Depth Variables
     private DepthFrameReader depthFrameReader = null;
     private ushort minDepth = 500;
-    private ushort maxDepth = 1000;
+    private ushort maxDepth = 750;
     private double multiplier;
     private ushort[] depthData;
     private Image depthCanvasImage = new Image();
