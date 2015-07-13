@@ -99,6 +99,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DetectFace.cs" />
     <Compile Include="Extensions\CameraSpacePointExtensions.cs" />
     <Compile Include="OpenTK\TextWriter.cs" />
     <Compile Include="Overlay.xaml.cs">
