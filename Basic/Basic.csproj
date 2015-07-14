@@ -142,6 +142,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Resource Include="haarcascade\haarcascade_eye.xml" />
+    <Resource Include="haarcascade\haarcascade_frontalface_default.xml" />
     <Content Include="libs\OpenTK.Compatibility.dll" />
     <Content Include="libs\OpenTK.dll" />
     <Content Include="libs\OpenTK.GLControl.dll" />

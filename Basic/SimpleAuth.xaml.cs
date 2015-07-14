@@ -5,7 +5,7 @@ using System.Windows.Media.Imaging;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System;
-using System.IO;
+using System.Drawing;
 
 namespace Basic
 {
@@ -15,6 +15,8 @@ namespace Basic
         KinectSensor _sensor;
         MultiSourceFrameReader _reader;
         PixelFormat format = PixelFormats.Bgr32;
+        Image<Bgr, Byte> imageForCV;
+        Rectangle[] rectArray;
 
         public SimpleAuth()
         {
@@ -27,6 +29,7 @@ namespace Basic
             }
             _reader = _sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Color);
             _reader.MultiSourceFrameArrived += Reader_MultiSourceFrameArrived;
+
         }
 
         void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
@@ -37,11 +40,8 @@ namespace Basic
                 if (frame != null)
                 {
                     Photo.Source = ToBitmap(frame);
-                    Image<Bgr, Byte> imageForCV = ToImage(frame);
-                    imageForCV.Save(@"data\face.png");
-
-                    
-
+                    imageForCV = ToImage(frame);
+                    rectArray = DetectFace.Detect(imageForCV,)
 
                 }
             }
