@@ -4,5 +4,6 @@
         Title="Test" Height="300" Width="300">
     <Grid>
         <Image Name="Photo" />
+        <Image Name="Face" />
     </Grid>
 </Window>
