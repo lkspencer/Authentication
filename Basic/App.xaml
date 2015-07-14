@@ -1,7 +1,7 @@
 ﻿<Application x:Class="Basic.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="Test.xaml">
+             StartupUri="SimpleAuth.xaml">
     <!--StartupUri="basicauth.xaml">-->
     
 
