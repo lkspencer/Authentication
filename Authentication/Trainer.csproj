@@ -99,6 +99,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BasicAuth.xaml.cs">
+      <DependentUpon>BasicAuth.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ColorBitmapGenerator.cs" />
     <Compile Include="DetectFace.cs" />
     <Compile Include="Extensions\CameraSpacePointExtensions.cs" />
     <Compile Include="OpenTK\TextWriter.cs" />
@@ -107,6 +111,10 @@
     </Compile>
     <Compile Include="PointCloudWindow.cs" />
     <Compile Include="RecognizeFace.cs" />
+    <Page Include="BasicAuth.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Overlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
