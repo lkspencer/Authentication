@@ -9,13 +9,13 @@ using System;
 namespace Basic
 {
 
-    public partial class Test : Window
+    public partial class SimpleAuth : Window
     {
         KinectSensor _sensor;
         MultiSourceFrameReader _reader;
         PixelFormat format = PixelFormats.Bgr32;
 
-        public Test()
+        public SimpleAuth()
         {
             InitializeComponent();
             _sensor = KinectSensor.GetDefault();
@@ -37,7 +37,7 @@ namespace Basic
                 if (frame != null)
                 {
                     Photo.Source = ToBitmap(frame);
-                    Image<Bgr, Byte> imageForCV = (Image<Bgr, Byte>)ToImage(frame);
+                    Image<Bgr, Byte> imageForCV = ToImage(frame);
 
                 }
             }
@@ -64,7 +64,7 @@ namespace Basic
             return BitmapSource.Create(width, height, 96, 96, format, null, pixels, stride);
         }
 
-        public static Image<Bgra, byte> ToImage(this ColorFrame frame)
+        private Image<Bgr, Byte> ToImage(ColorFrame frame)
         {
             int width = frame.FrameDescription.Width;
             int height = frame.FrameDescription.Height;
@@ -81,12 +81,11 @@ namespace Basic
                 frame.CopyConvertedFrameDataToArray(pixels, ColorImageFormat.Bgra);
             }
 
-            Image<Bgra, byte> img = new Image<Bgra, byte>(width, height);
+            Image<Bgr, Byte> img = new Image<Bgr, Byte>(width, height);
             img.Bytes = pixels;
 
             return img;
         }
-
     }
 }
 

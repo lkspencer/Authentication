@@ -104,8 +104,8 @@
     <Compile Include="Extensions\CameraSpacePointExtensions.cs" />
     <Compile Include="OpenTK\TextWriter.cs" />
     <Compile Include="RecognizeFace.cs" />
-    <Compile Include="Test.xaml.cs">
-      <DependentUpon>Test.xaml</DependentUpon>
+    <Compile Include="SimpleAuth.xaml.cs">
+      <DependentUpon>SimpleAuth.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -119,7 +119,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Test.xaml">
+    <Page Include="SimpleAuth.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
