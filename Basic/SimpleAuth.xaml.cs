@@ -5,6 +5,7 @@ using System.Windows.Media.Imaging;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System;
+using System.IO;
 
 namespace Basic
 {
@@ -26,7 +27,6 @@ namespace Basic
             }
             _reader = _sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Color);
             _reader.MultiSourceFrameArrived += Reader_MultiSourceFrameArrived;
-
         }
 
         void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
@@ -38,6 +38,10 @@ namespace Basic
                 {
                     Photo.Source = ToBitmap(frame);
                     Image<Bgr, Byte> imageForCV = ToImage(frame);
+                    imageForCV.Save(@"data\face.png");
+
+                    
+
 
                 }
             }
