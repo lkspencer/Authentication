@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientLibrary", "ClientLibr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{F1D2E3D1-FBF0-4A8B-A7C0-AA94DF2E8BCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicAuth", "BasicAuth\BasicAuth.csproj", "{B7F2B3A5-7099-4CA6-A1CC-298C5A0CB6DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic", "Basic\Basic.csproj", "{F7D95780-1943-4718-A68E-42D5BF340725}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{F1D2E3D1-FBF0-4A8B-A7C0-AA94DF2E8BCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1D2E3D1-FBF0-4A8B-A7C0-AA94DF2E8BCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1D2E3D1-FBF0-4A8B-A7C0-AA94DF2E8BCE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B7F2B3A5-7099-4CA6-A1CC-298C5A0CB6DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B7F2B3A5-7099-4CA6-A1CC-298C5A0CB6DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B7F2B3A5-7099-4CA6-A1CC-298C5A0CB6DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B7F2B3A5-7099-4CA6-A1CC-298C5A0CB6DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7D95780-1943-4718-A68E-42D5BF340725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7D95780-1943-4718-A68E-42D5BF340725}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7D95780-1943-4718-A68E-42D5BF340725}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7D95780-1943-4718-A68E-42D5BF340725}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
