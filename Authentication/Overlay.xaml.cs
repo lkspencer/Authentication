@@ -44,8 +44,9 @@
     private bool isColor = false;
     int[] imageIntColors;
     // Saved HD Face Variables
-    private List<System.Windows.Shapes.Ellipse> savedDots = new List<System.Windows.Shapes.Ellipse>();
-    private CameraSpacePoint[] savedVertices = null;
+    //private List<System.Windows.Shapes.Ellipse> savedDots = new List<System.Windows.Shapes.Ellipse>();
+    //private CameraSpacePoint[] savedVertices = null;
+    private FaceModelLayout fml = null;
     // Face Frame Variables
     private FaceFrameSource faceFrameSource = null;
     private FaceFrameReader faceFrameReader = null;
@@ -426,9 +427,9 @@
         var count = defaultVertices.Count;
         for (int i = 0; i < count; i++) {
           // align saved vertice with live face
-          tempVertice.X = savedVertices[i].X - (defaultVertices[i].X - vertices[i].X);
-          tempVertice.Y = savedVertices[i].Y - (defaultVertices[i].Y - vertices[i].Y);
-          tempVertice.Z = savedVertices[i].Z - (defaultVertices[i].Z - vertices[i].Z);
+          tempVertice.X = fml.SavedVertices[i].X - (defaultVertices[i].X - vertices[i].X);
+          tempVertice.Y = fml.SavedVertices[i].Y - (defaultVertices[i].Y - vertices[i].Y);
+          tempVertice.Z = fml.SavedVertices[i].Z - (defaultVertices[i].Z - vertices[i].Z);
 
           hdFaceVertices[i].X = tempVertice.X;
           hdFaceVertices[i].Y = tempVertice.Y;
@@ -698,14 +699,15 @@
       var jss = new JavaScriptSerializer();
       using (var file = new System.IO.StreamReader(path)) {
         var data = file.ReadLine();
-        savedVertices = jss.Deserialize<CameraSpacePoint[]>(data);
+        fml = jss.Deserialize<FaceModelLayout>(data);
+        //savedVertices = jss.Deserialize<CameraSpacePoint[]>(data);
       }
 
       var averageModel = new FaceModel();
       var defaultAlignment = new FaceAlignment();
       defaultVertices = averageModel.CalculateVerticesForAlignment(defaultAlignment);
-
-      var length = savedVertices.Length;
+      /*
+      var length = fml.SavedVertices.Length;
       for (int i = 0; i < length; i++) {
         System.Windows.Shapes.Ellipse ellipse = null;
         ellipse = new System.Windows.Shapes.Ellipse {
@@ -718,6 +720,7 @@
       foreach (System.Windows.Shapes.Ellipse ellipse in savedDots) {
         canvas.Children.Add(ellipse);
       }
+      */
     }
 
     public static System.Drawing.Bitmap ScaleImage(System.Drawing.Bitmap image, int maxWidth, int maxHeight) {
