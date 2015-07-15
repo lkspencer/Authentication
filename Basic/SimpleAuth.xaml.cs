@@ -71,7 +71,8 @@ namespace Basic
                         r = rectArray[0];
 
                         Mat roi = new Mat(imageForCV.Mat, r);
-                        Face.Source = roi.ToImage<>();
+                        Bitmap roiBitmap = roi.Bitmap;
+                        Face.Source = loadBitmap(roiBitmap);
 
                         //bm = CropBitmap(p, r.X, r.Y, r.Width, r.Height);
                         //Face.Source = loadBitmap(bm);
