@@ -213,12 +213,18 @@
                 var uriSource = new Uri("kirk1.jpg", UriKind.Relative);
                 person.Source = new BitmapImage(uriSource);
                 trainedPersonLabel.Content = "Employee Authenticated";
+                status.Content = "Employee";
+                office.Content = "Dallas";
+                jobTitle.Content = "EUC Analyst";
             }
             else if(pressed == Key.D)
             {
                 var uriSource = new Uri("Delvin1.jpg", UriKind.Relative);
                 person.Source = new BitmapImage(uriSource);
                 trainedPersonLabel.Content = "Employee Authenticated";
+                status.Content = "Visitor";
+                office.Content = "Dallas";
+                jobTitle.Content = "EUC Analyst";
             }
         }
 
