@@ -18,6 +18,7 @@ namespace Basic
         PixelFormat format = PixelFormats.Bgr32;
         Image<Bgr, Byte> imageForCV;
         Rectangle[] rectArray;
+        bool authenticating = false;
 
         public SimpleAuth()
         {
@@ -35,36 +36,52 @@ namespace Basic
 
         void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
+
             var reference = e.FrameReference.AcquireFrame();
             using (var frame = reference.ColorFrameReference.AcquireFrame())
             {
-                if (frame != null)
+                if (frame == null)
                 {
-                    Bitmap p = BitmapFromSource(ToBitmap(frame));
-                    Photo.Source = ToImageSource(frame);
+                    return;
+                }
+                Bitmap p = BitmapFromSource(ToBitmap(frame));
+                Photo.Source = ToImageSource(frame);
+
+                if (!authenticating)
+                {
+                    
                     imageForCV = ToImage(frame);
-                    //imageForCV.Save(@"data\face.png");
-                   
 
                     Rectangle[] rectArray;
-                    //Mat matImage = new Mat(@"data\face.png", Emgu.CV.CvEnum.LoadImageType.Grayscale);
                     rectArray = DetectFace.Detect(imageForCV.Mat, @"haarcascade\haarcascade_eye.xml", @"haarcascade\haarcascade_frontalface_default.xml");
 
                     if (rectArray.Length > 0)
                     {
+                        authenticating = true;
                         Rectangle r = rectArray[0];
-                        //var resizedbitmap1 = Bitmap.createBitmap(bmp, 0,0,yourwidth, yourheight);
 
+                        Bitmap bm = CropBitmap(p, r.X, r.Y, r.Width, r.Height);
+                        Face.Source = loadBitmap(bm);
+                        //authenticating = false;
 
-                        Bitmap croppedBitmap = p.Clone(r, p.PixelFormat);
-                        
-                        byte[] pixels = new byte[400 * 400 * ((PixelFormats.Bgr32.BitsPerPixel + 7) / 8)];
-                        int stride = 400 * format.BitsPerPixel / 8;
-                        var bms = BitmapSource.Create(400, 400, 96, 96, format, null, pixels, stride);
-
-                        Face.Source = bms;
                     }
                 }
+            }
+        }
+
+        public static BitmapSource loadBitmap(System.Drawing.Bitmap source)
+        {
+            return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(source.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty,
+                System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+        }
+
+        public Bitmap CropBitmap(Bitmap bitmap, int cropX, int cropY, int cropWidth, int cropHeight)
+        {
+            Rectangle rect = new Rectangle(cropX, cropY, cropWidth, cropHeight);
+            using (Bitmap bmpImage = new Bitmap(bitmap))
+            {
+                Bitmap cropped = bmpImage.Clone(rect, bmpImage.PixelFormat);
+                return cropped;
             }
         }
 
