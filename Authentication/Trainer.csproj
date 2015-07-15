@@ -104,6 +104,7 @@
     </Compile>
     <Compile Include="ColorBitmapGenerator.cs" />
     <Compile Include="DetectFace.cs" />
+    <Compile Include="DistanceWeightTolerance.cs" />
     <Compile Include="Extensions\CameraSpacePointExtensions.cs" />
     <Compile Include="OpenTK\TextWriter.cs" />
     <Compile Include="Overlay.xaml.cs">
@@ -288,6 +289,8 @@
     <Content Include="data\bj.fml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="data\kirk.dwt" />
+    <None Include="data\kirk2.dwt" />
     <None Include="data\zac.fml" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
