@@ -349,9 +349,17 @@
 
           if (checkPointMatches == 0) {
             // reset dot to blue
-            hdFaceColors[i] = 0xff0000;
-            //ellipse.Fill = Brushes.Blue;
+            /*
+            if (i == 210 || i == 469 || i == 843 || i == 1117 || i == 140 || i == 758 || i == 18 || i == 14 || i == 156 || i == 783 || i == 24 || i == 151 || i == 772) {
+              hdFaceColors[i] = 0x00ffff;
+              //ellipse.Fill = Brushes.Blue;
+            } else {
+              hdFaceColors[i] = 0xff0000;
+              //ellipse.Fill = Brushes.Blue;
+            }
+            //*/
 
+            hdFaceColors[i] = 0xff0000;
             int depthPosition = (int)((Math.Round(point.Y) * depthWidth) + Math.Round(point.X));
             if (depthPosition >= 0 && depthPosition < depthVertices.Length) {
               // NOTE: this depthVertice is a depth value from the point cloud converted
@@ -393,28 +401,12 @@
 
 
 
-      // face points that we will use for 3D authentication
-      //      HighDetailFacePoints_EyeLeft = 0,
       //HighDetailFacePoints_LefteyeInnercorner = 210,
       //HighDetailFacePoints_LefteyeOutercorner = 469,
-      //----HighDetailFacePoints_LefteyeMidtop = 241,
-      //----HighDetailFacePoints_LefteyeMidbottom = 1104,
       //HighDetailFacePoints_RighteyeInnercorner = 843,
       //HighDetailFacePoints_RighteyeOutercorner = 1117,
-      //----HighDetailFacePoints_RighteyeMidtop = 731,
-      //----HighDetailFacePoints_RighteyeMidbottom = 1090,
-      //----HighDetailFacePoints_LefteyebrowInner = 346,
       //HighDetailFacePoints_LefteyebrowOuter = 140,
-      //----HighDetailFacePoints_LefteyebrowCenter = 222,
-      //----HighDetailFacePoints_RighteyebrowInner = 803,
       //HighDetailFacePoints_RighteyebrowOuter = 758,
-      //----HighDetailFacePoints_RighteyebrowCenter = 849,
-      //----HighDetailFacePoints_MouthLeftcorner = 91,
-      //----HighDetailFacePoints_MouthRightcorner = 687,
-      //----HighDetailFacePoints_MouthUpperlipMidtop = 19,
-      //----HighDetailFacePoints_MouthUpperlipMidbottom = 1072,
-      //----HighDetailFacePoints_MouthLowerlipMidtop = 10,
-      //----HighDetailFacePoints_MouthLowerlipMidbottom = 8,
       //HighDetailFacePoints_NoseTip = 18,
       //HighDetailFacePoints_NoseBottom = 14,
       //HighDetailFacePoints_NoseBottomleft = 156,
@@ -422,58 +414,49 @@
       //HighDetailFacePoints_NoseTop = 24,
       //HighDetailFacePoints_NoseTopleft = 151,
       //HighDetailFacePoints_NoseTopright = 772,
-      //----HighDetailFacePoints_ForeheadCenter = 28,
-      //----HighDetailFacePoints_LeftcheekCenter = 412,
-      //----HighDetailFacePoints_RightcheekCenter = 933,
-      //----HighDetailFacePoints_Leftcheekbone = 458,
-      //----HighDetailFacePoints_Rightcheekbone = 674,
-      //----HighDetailFacePoints_ChinCenter = 4,
-      //----HighDetailFacePoints_LowerjawLeftend = 1307,
-      //----HighDetailFacePoints_LowerjawRightend = 1327
 
+      d1.Enqueue(GetMaskPointDistance(18, 24));
+      d2.Enqueue(GetMaskPointDistance(18, 469));
+      d3.Enqueue(GetMaskPointDistance(24, 469));
+      if (d1.Count > 100) {
+        d1.Dequeue();
+        d2.Dequeue();
+        d3.Dequeue();
+      }
+      if (this.OnHdFaceUpdated != null) {
+        this.OnHdFaceUpdated(
+          hdFaceVertices,
+          hdFaceColors,
+          matched,
+          d1.Average(),
+          d2.Average(),
+          d3.Average(),
+          highdefinitionFaceAlignment.FaceOrientation.Z);
+      }
+    }
+
+    public double GetMaskPointDistance(int i1, int i2) {
       bool goodFrame = true;
-      var p18 = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(hdFaceVertices[18]);
-      if (float.IsInfinity(p18.X) || float.IsInfinity(p18.Y)) {
-        p18.X = 0;
-        p18.Y = 0;
+      var p1 = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(hdFaceVertices[i1]);
+      if (float.IsInfinity(p1.X) || float.IsInfinity(p1.Y)) {
+        p1.X = 0;
+        p1.Y = 0;
         goodFrame = false;
       }
-      int depthIndex18 = (int)((Math.Round(p18.Y) * depthWidth) + Math.Round(p18.X));
-      var p24 = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(hdFaceVertices[24]);
-      if (float.IsInfinity(p24.X) || float.IsInfinity(p24.Y)) {
-        p24.X = 0;
-        p24.Y = 0;
+      int depthIndex1 = (int)((Math.Round(p1.Y) * depthWidth) + Math.Round(p1.X));
+      var p2 = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(hdFaceVertices[i2]);
+      if (float.IsInfinity(p2.X) || float.IsInfinity(p2.Y)) {
+        p2.X = 0;
+        p2.Y = 0;
         goodFrame = false;
       }
-      int depthIndex24 = (int)((Math.Round(p24.Y) * depthWidth) + Math.Round(p24.X));
-      var p469 = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(hdFaceVertices[469]);
-      if (float.IsInfinity(p469.X) || float.IsInfinity(p469.Y)) {
-        p469.X = 0;
-        p469.Y = 0;
-        goodFrame = false;
-      }
-      int depthIndex469 = (int)((Math.Round(p469.Y) * depthWidth) + Math.Round(p469.X));
+      int depthIndex2 = (int)((Math.Round(p2.Y) * depthWidth) + Math.Round(p2.X));
 
       if (goodFrame) {
-        d1.Enqueue(VectorDistance(depthVertices[depthIndex18], depthVertices[depthIndex24]));
-        d2.Enqueue(VectorDistance(depthVertices[depthIndex18], depthVertices[depthIndex469]));
-        d3.Enqueue(VectorDistance(depthVertices[depthIndex24], depthVertices[depthIndex469]));
-        if (d1.Count > 100) {
-          d1.Dequeue();
-          d2.Dequeue();
-          d3.Dequeue();
-        }
-        if (this.OnHdFaceUpdated != null) {
-          this.OnHdFaceUpdated(
-            hdFaceVertices,
-            hdFaceColors,
-            matched,
-            d1.Average(),
-            d2.Average(),
-            d3.Average(),
-            highdefinitionFaceAlignment.FaceOrientation.Z);
-        }
+        return Math.Floor(VectorDistance(depthVertices[depthIndex1], depthVertices[depthIndex2]) * 10000) / 10000;
       }
+
+      return 0;
     }
 
     public void NotifyPropertyChanged(string propertyName) {
