@@ -316,13 +316,14 @@
       }
     }
 
-    private Vector4 orientation;
+    //private Vector4 orientation;
     List<List<DistanceWeightTolerance>> distances = new List<List<DistanceWeightTolerance>>();
+    private bool dwtSaved = false;
     private void UpdateFacePoints() {
       if (highDefinitionFaceModel == null) return;
 
       var vertices = highDefinitionFaceModel.CalculateVerticesForAlignment(highdefinitionFaceAlignment);
-      orientation = highdefinitionFaceAlignment.FaceOrientation;
+      //orientation = highdefinitionFaceAlignment.FaceOrientation;
       if (hdFaceVertices == null) {
         hdFaceVertices = new CameraSpacePoint[vertices.Count];
         hdFaceColors = new int[vertices.Count];
@@ -344,23 +345,12 @@
           hdFaceVertices[i].Y = tempVertice.Y;
           hdFaceVertices[i].Z = tempVertice.Z;
 
-          //var ellipse = savedDots[i];
           var point = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(tempVertice);
           // do nothing if we cannot properly map the vertice to 2D space
           if (float.IsInfinity(point.X) || float.IsInfinity(point.Y)) continue;
 
           if (checkPointMatches == 0) {
             // reset dot to blue
-            /*
-            if (i == 210 || i == 469 || i == 843 || i == 1117 || i == 140 || i == 758 || i == 18 || i == 14 || i == 156 || i == 783 || i == 24 || i == 151 || i == 772) {
-              hdFaceColors[i] = 0x00ffff;
-              //ellipse.Fill = Brushes.Blue;
-            } else {
-              hdFaceColors[i] = 0xff0000;
-              //ellipse.Fill = Brushes.Blue;
-            }
-            //*/
-
             hdFaceColors[i] = 0xff0000;
             int depthPosition = (int)((Math.Round(point.Y) * depthWidth) + Math.Round(point.X));
             if (depthPosition >= 0 && depthPosition < depthVertices.Length) {
@@ -371,154 +361,119 @@
               if (VectorDistance(depthVertice, tempVertice) <= 0.008) {
                 // change dot to red if it's vertice was within the set tollerance for the point on the live face
                 hdFaceColors[i] = 0x0000ff;
-                //ellipse.Fill = Brushes.Red;
                 matched++;
               }
-              //*/
-              /* old dot comparison logic
-              if (depthVertice.X >= tempVertice.X - tollerance
-                  && depthVertice.Y >= tempVertice.Y - tollerance
-                  && depthVertice.Z >= tempVertice.Z - tollerance
-                  && depthVertice.X <= tempVertice.X + tollerance
-                  && depthVertice.Y <= tempVertice.Y + tollerance
-                  && depthVertice.Z <= tempVertice.Z + tollerance) {
-                // change dot to red if it's vertice was within the set tollerance for the point on the live face
-                ellipse.Fill = Brushes.Red;
-                matched++;
-              }
-              //*/
             }
           }
-          //Canvas.SetLeft(ellipse, point.X);
-          //Canvas.SetTop(ellipse, point.Y);
         }
         if (matched != 0) matchCount.Content = String.Format("Red Dots: {0}", matched);
         checkPointMatches = ++checkPointMatches % 15;
       }
 
+      if (distances.Count < 1000) {
+        var distanceList = new List<DistanceWeightTolerance>();
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 210) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 469) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 843) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 1117) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 140) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 758) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 14) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 156) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 783) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 24) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 151) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 772) });
 
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 469) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 843) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 1117) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 140) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 758) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 14) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 156) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 783) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 24) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 151) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 772) });
 
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 843) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 1117) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 140) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 758) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 14) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 156) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 783) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 24) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 151) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 772) });
 
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 1117) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 140) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 758) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 14) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 156) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 783) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 24) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 151) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 772) });
 
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 140) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 758) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 14) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 156) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 783) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 24) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 151) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 772) });
 
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 758) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 14) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 156) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 783) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 24) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 151) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 772) });
 
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 14) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 156) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 783) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 24) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 151) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 772) });
 
-      //HighDetailFacePoints_LefteyeInnercorner = 210,
-      //HighDetailFacePoints_LefteyeOutercorner = 469,
-      //HighDetailFacePoints_RighteyeInnercorner = 843,
-      //HighDetailFacePoints_RighteyeOutercorner = 1117,
-      //HighDetailFacePoints_LefteyebrowOuter = 140,
-      //HighDetailFacePoints_RighteyebrowOuter = 758,
-      //HighDetailFacePoints_NoseTip = 18,
-      //HighDetailFacePoints_NoseBottom = 14,
-      //HighDetailFacePoints_NoseBottomleft = 156,
-      //HighDetailFacePoints_NoseBottomright = 783,
-      //HighDetailFacePoints_NoseTop = 24,
-      //HighDetailFacePoints_NoseTopleft = 151,
-      //HighDetailFacePoints_NoseTopright = 772,
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(14, 156) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(14, 783) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(14, 24) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(14, 151) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(14, 772) });
 
-      var distanceList = new List<DistanceWeightTolerance>();
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 210) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 469) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 843) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 1117) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 140) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 758) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 14) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 156) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 783) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 24) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 151) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 772) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(156, 783) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(156, 24) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(156, 151) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(156, 772) });
 
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 469) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 843) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 1117) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 140) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 758) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 14) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 156) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 783) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 24) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 151) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(210, 772) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(783, 24) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(783, 151) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(783, 772) });
 
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 843) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 1117) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 140) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 758) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 14) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 156) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 783) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 24) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 151) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(469, 772) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(24, 151) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(24, 772) });
 
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 1117) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 140) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 758) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 14) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 156) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 783) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 24) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 151) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(843, 772) });
+        distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(151, 772) });
 
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 140) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 758) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 14) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 156) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 783) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 24) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 151) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(1117, 772) });
-
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 758) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 14) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 156) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 783) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 24) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 151) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(140, 772) });
-
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 14) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 156) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 783) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 24) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 151) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(758, 772) });
-
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(14, 156) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(14, 783) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(14, 24) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(14, 151) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(14, 772) });
-
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(156, 783) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(156, 24) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(156, 151) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(156, 772) });
-
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(783, 24) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(783, 151) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(783, 772) });
-
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(24, 151) });
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(24, 772) });
-
-      distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(151, 772) });
-
-      distances.Add(distanceList);
-      if (distances.Count == 1000) {
-        var jss = new JavaScriptSerializer();
-        using (var file = new System.IO.StreamWriter(@"data\kirk3.dwt")) {
-          foreach (var d in distances) {
-            var data = jss.Serialize(d);
-            file.WriteLine(data);
+        distances.Add(distanceList);
+      } else {
+        if (!dwtSaved) {
+          dwtSaved = true;
+          var jss = new JavaScriptSerializer();
+          using (var file = new System.IO.StreamWriter(@"data\kirk3.dwt")) {
+            foreach (var d in distances) {
+              var data = jss.Serialize(d);
+              file.WriteLine(data);
+            }
           }
         }
-        var asdf = 0;
-        asdf++;
       }
       if (this.OnHdFaceUpdated != null) {
         this.OnHdFaceUpdated(
