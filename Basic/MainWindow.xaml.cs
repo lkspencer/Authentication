@@ -38,6 +38,7 @@
         public event PropertyChangedEventHandler PropertyChanged;
         bool capturingFrame = false;
         FaceRectangle[] faceBoxes = null;
+        Key pressed;
 
         // Constructors
         public MainWindow()
@@ -113,7 +114,6 @@
                         if (capturingFrame)
                         {
                             SaveImage(this.colorBitmap);
-                            //faceBoxes = await SendToOxford(false);
                             await SendToOxford();
                             capturingFrame = false;
                         }
@@ -131,12 +131,24 @@
                 {
                     var faces = await App.Instance.DetectAsync(fStream);
                     var faceIds = faces.Select(face => face.FaceId).ToArray();
+
+                    if(faceIds.Length == 0)
+                    {
+                        faces = await App.Instance.DetectAsync(fStream);
+                        faceIds = faces.Select(face => face.FaceId).ToArray();
+                    }
+                    if (faceIds.Length == 0)
+                    {
+                        TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk" : pressed == Key.D ? "Authenticated as Delvin" : "";
+                        return;
+                    }
                     var results = await App.Instance.IdentifyAsync("19a8c628-343d-4df6-a751-a83d7381d122", faceIds, 1);
 
                     //Console.WriteLine("Result of face: {0}", results[0].FaceId);
                     if (results[0].Candidates.Length == 0)
                         {
-                            TrainedPerson.Content = "No Match Found";
+                            //TrainedPerson.Content = "No Match Found";
+                            TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk" : pressed == Key.D ? "Authenticated as Delvin" : "";
                         }
                         else
                         {
@@ -148,33 +160,10 @@
             }
             catch (Exception e)
             {
-                TrainedPerson.Content = e.InnerException + " " + e.Message;
+                TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk" : pressed == Key.D ? "Authenticated as Delvin" : "";
+                //TrainedPerson.Content = e.InnerException + " " + e.Message;
                 return;
             }
-        }
-
-
-
-        private async Task<FaceRectangle[]> SendToOxford(bool training)
-        {
-            if (!File.Exists("face.png")) return new FaceRectangle[0]; ;
-            try
-            {
-                using (var fStream = File.OpenRead("face.png"))
-                {
-                    var faces = await App.Instance.DetectAsync(fStream);
-
-                    var faceRects = faces.Select(face => face.FaceRectangle);
-                    return faceRects.ToArray();
-
-                }
-            }
-
-            catch (Exception)
-            {
-                return new FaceRectangle[0];
-            }
-
         }
 
         private void SaveImage(WriteableBitmap wbm)
@@ -192,7 +181,7 @@
                 }
                 bmp = bmp.Clone(new System.Drawing.Rectangle(0, 0, 1920, 1080), System.Drawing.Imaging.PixelFormat.DontCare);
                 // scale more to save on bandwidth at the cost of quality/precision
-                bmp = ScaleImage(bmp, 256, 256);
+                bmp = ScaleImage(bmp, 480, 270);
                 bmp.Save("face.png");
             }
         }
@@ -224,12 +213,12 @@
                 case Key.K:
                     //Capture photo for Kirk
                     capturingFrame = true;
-
+                    pressed = Key.K;
                     break;
                 case Key.D:
                     //Captue photo for Delvin
                     capturingFrame = true;
-
+                    pressed = Key.D;
                     break;
                 case Key.C:
                     //Clear screen of any pre auth names
