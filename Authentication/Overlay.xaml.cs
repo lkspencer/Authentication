@@ -72,10 +72,98 @@
     // Oxford Variables
     private string key = "";
 
+    private List<Tuple<int, int>> linePoints = new List<Tuple<int, int>>();
 
 
     // Constructors
     public Overlay() {
+        linePoints.Add(new Tuple<int, int>(18, 210));
+        linePoints.Add(new Tuple<int, int>(18, 469));
+        linePoints.Add(new Tuple<int, int>(18, 843));
+        linePoints.Add(new Tuple<int, int>(18, 1117));
+        linePoints.Add(new Tuple<int, int>(18, 140));
+        linePoints.Add(new Tuple<int, int>(18, 758));
+        linePoints.Add(new Tuple<int, int>(18, 14));
+        linePoints.Add(new Tuple<int, int>(18, 156));
+        linePoints.Add(new Tuple<int, int>(18, 783));
+        linePoints.Add(new Tuple<int, int>(18, 24));
+        linePoints.Add(new Tuple<int, int>(18, 151));
+        linePoints.Add(new Tuple<int, int>(18, 772));
+        linePoints.Add(new Tuple<int, int>(210, 469));
+        linePoints.Add(new Tuple<int, int>(210, 843));
+        linePoints.Add(new Tuple<int, int>(210, 1117));
+        linePoints.Add(new Tuple<int, int>(210, 140));
+        linePoints.Add(new Tuple<int, int>(210, 758));
+        linePoints.Add(new Tuple<int, int>(210, 14));
+        linePoints.Add(new Tuple<int, int>(210, 156));
+        linePoints.Add(new Tuple<int, int>(210, 783));
+        linePoints.Add(new Tuple<int, int>(210, 24));
+        linePoints.Add(new Tuple<int, int>(210, 151));
+        linePoints.Add(new Tuple<int, int>(210, 772));
+        linePoints.Add(new Tuple<int, int>(469, 843));
+        linePoints.Add(new Tuple<int, int>(469, 1117));
+        linePoints.Add(new Tuple<int, int>(469, 140));
+        linePoints.Add(new Tuple<int, int>(469, 758));
+        linePoints.Add(new Tuple<int, int>(469, 14));
+        linePoints.Add(new Tuple<int, int>(469, 156));
+        linePoints.Add(new Tuple<int, int>(469, 783));
+        linePoints.Add(new Tuple<int, int>(469, 24));
+        linePoints.Add(new Tuple<int, int>(469, 151));
+        linePoints.Add(new Tuple<int, int>(469, 772));
+        linePoints.Add(new Tuple<int, int>(843, 1117));
+        linePoints.Add(new Tuple<int, int>(843, 140));
+        linePoints.Add(new Tuple<int, int>(843, 758));
+        linePoints.Add(new Tuple<int, int>(843, 14));
+        linePoints.Add(new Tuple<int, int>(843, 156));
+        linePoints.Add(new Tuple<int, int>(843, 783));
+        linePoints.Add(new Tuple<int, int>(843, 24));
+        linePoints.Add(new Tuple<int, int>(843, 151));
+        linePoints.Add(new Tuple<int, int>(843, 772));
+        linePoints.Add(new Tuple<int, int>(1117, 140));
+        linePoints.Add(new Tuple<int, int>(1117, 758));
+        linePoints.Add(new Tuple<int, int>(1117, 14));
+        linePoints.Add(new Tuple<int, int>(1117, 156));
+        linePoints.Add(new Tuple<int, int>(1117, 783));
+        linePoints.Add(new Tuple<int, int>(1117, 24));
+        linePoints.Add(new Tuple<int, int>(1117, 151));
+        linePoints.Add(new Tuple<int, int>(1117, 772));
+        linePoints.Add(new Tuple<int, int>(140, 758));
+        linePoints.Add(new Tuple<int, int>(140, 14));
+        linePoints.Add(new Tuple<int, int>(140, 156));
+        linePoints.Add(new Tuple<int, int>(140, 783));
+        linePoints.Add(new Tuple<int, int>(140, 24));
+        linePoints.Add(new Tuple<int, int>(140, 151));
+        linePoints.Add(new Tuple<int, int>(140, 772));
+        linePoints.Add(new Tuple<int, int>(758, 14));
+        linePoints.Add(new Tuple<int, int>(758, 156));
+        linePoints.Add(new Tuple<int, int>(758, 783));
+        linePoints.Add(new Tuple<int, int>(758, 24));
+        linePoints.Add(new Tuple<int, int>(758, 151));
+        linePoints.Add(new Tuple<int, int>(758, 772));
+        linePoints.Add(new Tuple<int, int>(14, 156));
+        linePoints.Add(new Tuple<int, int>(14, 783));
+        linePoints.Add(new Tuple<int, int>(14, 24));
+        linePoints.Add(new Tuple<int, int>(14, 151));
+        linePoints.Add(new Tuple<int, int>(14, 772));
+        linePoints.Add(new Tuple<int, int>(156, 783));
+        linePoints.Add(new Tuple<int, int>(156, 24));
+        linePoints.Add(new Tuple<int, int>(156, 151));
+        linePoints.Add(new Tuple<int, int>(156, 772));
+        linePoints.Add(new Tuple<int, int>(783, 24));
+        linePoints.Add(new Tuple<int, int>(783, 151));
+        linePoints.Add(new Tuple<int, int>(783, 772));
+        linePoints.Add(new Tuple<int, int>(24, 151));
+        linePoints.Add(new Tuple<int, int>(24, 772));
+        linePoints.Add(new Tuple<int, int>(151, 772));
+
+
+
+
+
+
+
+
+
       Emgu.CV.Capture capture = new Emgu.CV.Capture();
       // get the kinectSensor object
       this.kinectSensor = KinectSensor.GetDefault();
@@ -317,7 +405,8 @@
     }
 
     //private Vector4 orientation;
-    List<List<DistanceWeightTolerance>> distances = new List<List<DistanceWeightTolerance>>();
+    //List<List<DistanceWeightTolerance>> distances = new List<List<DistanceWeightTolerance>>();
+    List<Queue<double>> distances = new List<Queue<double>>();
     private bool dwtSaved = false;
     private void UpdateFacePoints() {
       if (highDefinitionFaceModel == null) return;
@@ -370,6 +459,21 @@
         checkPointMatches = ++checkPointMatches % 15;
       }
 
+
+
+      if (distances.Count == 0) {
+        for (int i = 0; i < 78; i++) {
+          distances.Add(new Queue<double>());
+        }
+      }
+
+      for (int i = 0; i < 78; i++) {
+        distances[i].Enqueue(GetMaskPointDistance(linePoints[i].Item1, linePoints[i].Item2));
+        if (distances[i].Count == 30) distances[i].Dequeue();
+      }
+
+
+      /*
       if (distances.Count < 1000) {
         var distanceList = new List<DistanceWeightTolerance>();
         distanceList.Add(new DistanceWeightTolerance { Distance = GetMaskPointDistance(18, 210) });
@@ -475,6 +579,7 @@
           }
         }
       }
+      */
       if (this.OnHdFaceUpdated != null) {
         this.OnHdFaceUpdated(
           hdFaceVertices,
