@@ -483,7 +483,7 @@
             totalMatchCount++;
           }
         }
-        if (totalMatchCount >= 62) {
+        if (totalMatchCount >= 60) {
           name = "Kirk Spencer";
         }
       }
