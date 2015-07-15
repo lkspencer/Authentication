@@ -27,7 +27,6 @@ namespace Basic
 
         public SimpleAuth()
         {
-            Rectangle[] rectArray;
             InitializeComponent();
             _sensor = KinectSensor.GetDefault();
 
@@ -71,8 +70,11 @@ namespace Basic
                         authenticating = true;
                         r = rectArray[0];
 
-                        bm = CropBitmap(p, r.X, r.Y, r.Width, r.Height);
-                        Face.Source = loadBitmap(bm);
+                        Mat roi = new Mat(imageForCV.Mat, r);
+                        Face.Source = roi.ToImage<>();
+
+                        //bm = CropBitmap(p, r.X, r.Y, r.Width, r.Height);
+                        //Face.Source = loadBitmap(bm);
                         //authenticating = false;
 
                     }
@@ -96,7 +98,7 @@ namespace Basic
 
         //        if (!authenticating)
         //        {
-                    
+
         //            imageForCV = ToImage(frame);
 
 
