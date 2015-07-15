@@ -12,9 +12,11 @@
     using System.Windows.Media.Imaging;
     using System.Linq;
     using System.Drawing;
+    using System.Windows.Media.Animation;
 
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        private Storyboard sb;
         // MainWindow Variables
         private KinectSensor kinectSensor = null;
         /// <summary>
@@ -58,6 +60,7 @@
             // wire handlers for frame arrivals
             this.colorFrameReader.FrameArrived += this.Reader_ColorFrameArrived;
 
+
             // open the sensor
             this.kinectSensor.Open();
 
@@ -66,6 +69,7 @@
             this.DataContext = this;
             InitializeComponent();
 
+            //this.trainedPersonLabel.Loaded += this.blink;
             if (File.Exists("key.txt"))
             {
                 this.key = File.ReadAllText("key.txt");
@@ -85,6 +89,13 @@
 
         }
 
+        //void blink(object sender, EventArgs e)
+        //{
+        //    sb = this.FindResource("FlashBlockTextStoryBoard") as Storyboard;
+        //    Storyboard.SetTargetName(sb, "trainedPersonLabel");
+        //    sb.Begin();
+
+        //}
         private async void Reader_ColorFrameArrived(object sender, ColorFrameArrivedEventArgs e)
         {
             // ColorFrame is IDisposable
@@ -209,8 +220,8 @@
         {
             if(pressed == Key.K)
             {
-                //var uriSource = new Uri("kirk1.jpg", UriKind.Relative);
-                //person.Source = new BitmapImage(uriSource);
+                var uriSource = new Uri("kirk1.jpg", UriKind.Relative);
+                person.Source = new BitmapImage(uriSource);
                 trainedPersonLabel.Content = "Employee Authenticated";
                 status.Content = "Status: Employee";
                 office.Content = "Tempe Operation Center";
@@ -218,8 +229,8 @@
             }
             else if(pressed == Key.D)
             {
-                //var uriSource = new Uri("Delvin1.jpg", UriKind.Relative);
-                //person.Source = new BitmapImage(uriSource);
+                var uriSource = new Uri("Delvin1.jpg", UriKind.Relative);
+                person.Source = new BitmapImage(uriSource);
                 trainedPersonLabel.Content = "Employee Authenticated";
                 status.Content = "Status: Visitor";
                 office.Content = "Dallas Operation Center";

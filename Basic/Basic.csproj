@@ -149,6 +149,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Resource Include="Delvin1.jpg" />
     <Content Include="haarcascade\haarcascade_eye.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -158,6 +159,7 @@
     <Content Include="key.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="kirk1.jpg" />
     <Content Include="libs\OpenTK.Compatibility.dll" />
     <Content Include="libs\OpenTK.dll" />
     <Content Include="libs\OpenTK.GLControl.dll" />
