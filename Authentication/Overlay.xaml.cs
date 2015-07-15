@@ -16,7 +16,7 @@
 
   public partial class Overlay : Window, INotifyPropertyChanged {
     public delegate void VerticesUpdated(CameraSpacePoint[] vertices, int[] colors);
-    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched, float w, float x, float y, float z);
+    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched, double w, double x, double y, double z);
     public delegate void TwoDMatchFound(string name);
     public event VerticesUpdated OnVerticesUpdated;
     public event HdFaceUpdated OnHdFaceUpdated;
@@ -286,6 +286,9 @@
         //int colorIndex = 0;
         var length = depthData.Length;
         for (int i = 0; i < length; ++i) {
+          //depthVertices[i].X += 1;
+          //depthVertices[i].Y += 1;
+          //depthVertices[i].Z += 1;
           // This code will set the colors of the point cloud between the
           // minumum and maximum range
           ushort z = depthData[i];
@@ -309,11 +312,15 @@
       }
     }
 
+    private Vector4 orientation;
+    Queue<double> d1 = new Queue<double>(100);
+    Queue<double> d2 = new Queue<double>(100);
+    Queue<double> d3 = new Queue<double>(100);
     private void UpdateFacePoints() {
       if (highDefinitionFaceModel == null) return;
 
       var vertices = highDefinitionFaceModel.CalculateVerticesForAlignment(highdefinitionFaceAlignment);
-      //highdefinitionFaceAlignment.FaceOrientation
+      orientation = highdefinitionFaceAlignment.FaceOrientation;
       if (hdFaceVertices == null) {
         hdFaceVertices = new CameraSpacePoint[vertices.Count];
         hdFaceColors = new int[vertices.Count];
@@ -321,6 +328,7 @@
           hdFaceVertices[i] = new CameraSpacePoint();
         }
       }
+
       var matched = 0;
       if (vertices.Count > 0 && defaultVertices != null) {
         var count = defaultVertices.Count;
@@ -377,11 +385,53 @@
         if (matched != 0) matchCount.Content = String.Format("Red Dots: {0}", matched);
         checkPointMatches = ++checkPointMatches % 15;
       }
-      if (this.OnHdFaceUpdated != null) this.OnHdFaceUpdated(hdFaceVertices, hdFaceColors, matched,
-        highdefinitionFaceAlignment.FaceOrientation.W,
-        highdefinitionFaceAlignment.FaceOrientation.X,
-        highdefinitionFaceAlignment.FaceOrientation.Y,
-        highdefinitionFaceAlignment.FaceOrientation.Z);
+
+
+
+
+      bool goodFrame = true;
+      var p18 = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(hdFaceVertices[18]);
+      if (float.IsInfinity(p18.X) || float.IsInfinity(p18.Y)) {
+        p18.X = 0;
+        p18.Y = 0;
+        goodFrame = false;
+      }
+      int depthIndex18 = (int)((Math.Round(p18.Y) * depthWidth) + Math.Round(p18.X));
+      var p24 = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(hdFaceVertices[24]);
+      if (float.IsInfinity(p24.X) || float.IsInfinity(p24.Y)) {
+        p24.X = 0;
+        p24.Y = 0;
+        goodFrame = false;
+      }
+      int depthIndex24 = (int)((Math.Round(p24.Y) * depthWidth) + Math.Round(p24.X));
+      var p469 = this.kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(hdFaceVertices[469]);
+      if (float.IsInfinity(p469.X) || float.IsInfinity(p469.Y)) {
+        p469.X = 0;
+        p469.Y = 0;
+        goodFrame = false;
+      }
+      int depthIndex469 = (int)((Math.Round(p469.Y) * depthWidth) + Math.Round(p469.X));
+
+      if (goodFrame) {
+        d1.Enqueue(VectorDistance(depthVertices[depthIndex18], depthVertices[depthIndex24]));
+        d2.Enqueue(VectorDistance(depthVertices[depthIndex18], depthVertices[depthIndex469]));
+        d3.Enqueue(VectorDistance(depthVertices[depthIndex24], depthVertices[depthIndex469]));
+        if (d1.Count > 100) {
+          d1.Dequeue();
+          d2.Dequeue();
+          d3.Dequeue();
+        }
+        if (this.OnHdFaceUpdated != null) {
+          this.OnHdFaceUpdated(
+            hdFaceVertices,
+            hdFaceColors,
+            matched,
+            d1.Average(),
+            d2.Average(),
+            d3.Average(),
+            highdefinitionFaceAlignment.FaceOrientation.Z);
+        }
+      }
     }
 
     public void NotifyPropertyChanged(string propertyName) {

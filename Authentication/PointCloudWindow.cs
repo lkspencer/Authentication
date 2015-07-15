@@ -310,7 +310,7 @@
       }
     }
 
-    private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors, int matched, float w, float x, float y, float z) {
+    private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors, int matched, double w, double x, double y, double z) {
       if (!showMask) return;
       if (matched > 0) tw.Update(4, String.Format("Dot Match: {0}", matched));
       var length = cameraSpacePoints.Length;
