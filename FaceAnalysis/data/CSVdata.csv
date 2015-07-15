@@ -1,0 +1,1283 @@
+d1 number of elements:  1000
+	First Element: 0.0465479015435666
+	Sorted
+	First Sorted Distance: 0.0436262405906764
+	Clustering Elements
+Cluster Count: 9	Start Value: 0.04362624	End Value: 0.04462624
+Cluster Count: 28	Start Value: 0.04462624	End Value: 0.04562624
+Cluster Count: 112	Start Value: 0.04562624	End Value: 0.04662624
+Cluster Count: 153	Start Value: 0.04662624	End Value: 0.04762624
+Cluster Count: 197	Start Value: 0.04762624	End Value: 0.04862624
+Cluster Count: 199	Start Value: 0.04862624	End Value: 0.04962624
+Cluster Count: 142	Start Value: 0.04962624	End Value: 0.05062624
+Cluster Count: 96	Start Value: 0.05062624	End Value: 0.05162624
+Cluster Count: 44	Start Value: 0.05162624	End Value: 0.05262624
+Cluster Count: 16	Start Value: 0.05262624	End Value: 0.05362624
+Cluster Count: 3	Start Value: 0.05362624	End Value: 0.05462624
+Cluster Count: 1	Start Value: 0.05462624	End Value: 0.05562624
+d2 number of elements:  1000
+	First Element: 0.0634482264938759
+	Sorted
+	First Sorted Distance: 0.0575954154653273
+	Clustering Elements
+Cluster Count: 3	Start Value: 0.05759542	End Value: 0.05859542
+Cluster Count: 3	Start Value: 0.05859542	End Value: 0.05959542
+Cluster Count: 22	Start Value: 0.05959542	End Value: 0.06059542
+Cluster Count: 78	Start Value: 0.06059542	End Value: 0.06159541
+Cluster Count: 153	Start Value: 0.06159541	End Value: 0.06259541
+Cluster Count: 218	Start Value: 0.06259541	End Value: 0.06359541
+Cluster Count: 204	Start Value: 0.06359541	End Value: 0.06459542
+Cluster Count: 183	Start Value: 0.06459542	End Value: 0.06559542
+Cluster Count: 97	Start Value: 0.06559542	End Value: 0.06659541
+Cluster Count: 27	Start Value: 0.06659541	End Value: 0.06759541
+Cluster Count: 10	Start Value: 0.06759541	End Value: 0.06859542
+Cluster Count: 2	Start Value: 0.06859542	End Value: 0.06959542
+d3 number of elements:  1000
+	First Element: 0.0491664852073363
+	Sorted
+	First Sorted Distance: 0.0431799619741187
+	Clustering Elements
+Cluster Count: 3	Start Value: 0.04317996	End Value: 0.04417996
+Cluster Count: 9	Start Value: 0.04417996	End Value: 0.04517996
+Cluster Count: 38	Start Value: 0.04517996	End Value: 0.04617996
+Cluster Count: 111	Start Value: 0.04617996	End Value: 0.04717996
+Cluster Count: 151	Start Value: 0.04717996	End Value: 0.04817996
+Cluster Count: 229	Start Value: 0.04817996	End Value: 0.04917996
+Cluster Count: 237	Start Value: 0.04917996	End Value: 0.05017996
+Cluster Count: 122	Start Value: 0.05017996	End Value: 0.05117996
+Cluster Count: 74	Start Value: 0.05117996	End Value: 0.05217996
+Cluster Count: 21	Start Value: 0.05217996	End Value: 0.05317996
+Cluster Count: 4	Start Value: 0.05317996	End Value: 0.05417996
+Cluster Count: 1	Start Value: 0.05417996	End Value: 0.05517996
+d4 number of elements:  1000
+	First Element: 0.0656805581238976
+	Sorted
+	First Sorted Distance: 0.0558801016413537
+	Clustering Elements
+Cluster Count: 1	Start Value: 0.0558801	End Value: 0.0568801
+Cluster Count: 2	Start Value: 0.0568801	End Value: 0.0578801
+Cluster Count: 6	Start Value: 0.0578801	End Value: 0.0588801
+Cluster Count: 12	Start Value: 0.0588801	End Value: 0.0598801
+Cluster Count: 20	Start Value: 0.0598801	End Value: 0.0608801
+Cluster Count: 54	Start Value: 0.0608801	End Value: 0.0618801
+Cluster Count: 89	Start Value: 0.0618801	End Value: 0.0628801
+Cluster Count: 149	Start Value: 0.0628801	End Value: 0.0638801
+Cluster Count: 180	Start Value: 0.0638801	End Value: 0.0648801
+Cluster Count: 165	Start Value: 0.0648801	End Value: 0.0658801
+Cluster Count: 150	Start Value: 0.0658801	End Value: 0.0668801
+Cluster Count: 67	Start Value: 0.0668801	End Value: 0.0678801
+Cluster Count: 49	Start Value: 0.0678801	End Value: 0.0688801
+Cluster Count: 25	Start Value: 0.0688801	End Value: 0.06988011
+Cluster Count: 13	Start Value: 0.06988011	End Value: 0.0708801
+Cluster Count: 12	Start Value: 0.0708801	End Value: 0.0718801
+Cluster Count: 4	Start Value: 0.0718801	End Value: 0.0728801
+Cluster Count: 2	Start Value: 0.0728801	End Value: 0.07388011
+d5 number of elements:  1000
+	First Element: 0.0853373800125213
+	Sorted
+	First Sorted Distance: 0.0794939802231451
+	Clustering Elements
+Cluster Count: 4	Start Value: 0.07949398	End Value: 0.08049398
+Cluster Count: 2	Start Value: 0.08049398	End Value: 0.08149398
+Cluster Count: 16	Start Value: 0.08149398	End Value: 0.08249398
+Cluster Count: 65	Start Value: 0.08249398	End Value: 0.08349398
+Cluster Count: 115	Start Value: 0.08349398	End Value: 0.08449398
+Cluster Count: 180	Start Value: 0.08449398	End Value: 0.08549398
+Cluster Count: 209	Start Value: 0.08549398	End Value: 0.08649398
+Cluster Count: 167	Start Value: 0.08649398	End Value: 0.08749398
+Cluster Count: 100	Start Value: 0.08749398	End Value: 0.08849398
+Cluster Count: 75	Start Value: 0.08849398	End Value: 0.08949398
+Cluster Count: 42	Start Value: 0.08949398	End Value: 0.09049398
+Cluster Count: 17	Start Value: 0.09049398	End Value: 0.09149398
+Cluster Count: 7	Start Value: 0.09149398	End Value: 0.09249398
+Cluster Count: 1	Start Value: 0.09249398	End Value: 0.09349398
+d6 number of elements:  1000
+	First Element: 0.0912954265453582
+	Sorted
+	First Sorted Distance: 0.0830208719932703
+	Clustering Elements
+Cluster Count: 6	Start Value: 0.08302087	End Value: 0.08402088
+Cluster Count: 11	Start Value: 0.08402088	End Value: 0.08502087
+Cluster Count: 43	Start Value: 0.08502087	End Value: 0.08602087
+Cluster Count: 76	Start Value: 0.08602087	End Value: 0.08702087
+Cluster Count: 130	Start Value: 0.08702087	End Value: 0.08802087
+Cluster Count: 121	Start Value: 0.08802087	End Value: 0.08902087
+Cluster Count: 134	Start Value: 0.08902087	End Value: 0.09002087
+Cluster Count: 133	Start Value: 0.09002087	End Value: 0.09102087
+Cluster Count: 132	Start Value: 0.09102087	End Value: 0.09202087
+Cluster Count: 108	Start Value: 0.09202087	End Value: 0.09302087
+Cluster Count: 65	Start Value: 0.09302087	End Value: 0.09402087
+Cluster Count: 26	Start Value: 0.09402087	End Value: 0.09502088
+Cluster Count: 7	Start Value: 0.09502088	End Value: 0.09602087
+Cluster Count: 7	Start Value: 0.09602087	End Value: 0.09702087
+Cluster Count: 0	Start Value: 0.09702087	End Value: 0.09802087
+Cluster Count: 0	Start Value: 0.09802087	End Value: 0.09902088
+Cluster Count: 0	Start Value: 0.09902088	End Value: 0.1000209
+Cluster Count: 1	Start Value: 0.1000209	End Value: 0.1010209
+d7 number of elements:  1000
+	First Element: 0.0290694497430243
+	Sorted
+	First Sorted Distance: 0.0134441051283956
+	Clustering Elements
+Cluster Count: 1	Start Value: 0.01344411	End Value: 0.01444411
+Cluster Count: 1	Start Value: 0.01444411	End Value: 0.01544411
+Cluster Count: 2	Start Value: 0.01544411	End Value: 0.01644411
+Cluster Count: 9	Start Value: 0.01644411	End Value: 0.01744411
+Cluster Count: 9	Start Value: 0.01744411	End Value: 0.01844411
+Cluster Count: 30	Start Value: 0.01844411	End Value: 0.01944411
+Cluster Count: 39	Start Value: 0.01944411	End Value: 0.02044411
+Cluster Count: 63	Start Value: 0.02044411	End Value: 0.0214441
+Cluster Count: 78	Start Value: 0.0214441	End Value: 0.0224441
+Cluster Count: 111	Start Value: 0.0224441	End Value: 0.0234441
+Cluster Count: 138	Start Value: 0.0234441	End Value: 0.02444411
+Cluster Count: 167	Start Value: 0.02444411	End Value: 0.02544411
+Cluster Count: 130	Start Value: 0.02544411	End Value: 0.02644411
+Cluster Count: 96	Start Value: 0.02644411	End Value: 0.02744411
+Cluster Count: 55	Start Value: 0.02744411	End Value: 0.02844411
+Cluster Count: 34	Start Value: 0.02844411	End Value: 0.02944411
+Cluster Count: 16	Start Value: 0.02944411	End Value: 0.03044411
+Cluster Count: 9	Start Value: 0.03044411	End Value: 0.03144411
+Cluster Count: 8	Start Value: 0.03144411	End Value: 0.0324441
+Cluster Count: 3	Start Value: 0.0324441	End Value: 0.03344411
+Cluster Count: 1	Start Value: 0.03344411	End Value: 0.0344441
+d8 number of elements:  1000
+	First Element: 0.0343599197867924
+	Sorted
+	First Sorted Distance: 0.0232894920767905
+	Clustering Elements
+Cluster Count: 4	Start Value: 0.02328949	End Value: 0.02428949
+Cluster Count: 1	Start Value: 0.02428949	End Value: 0.02528949
+Cluster Count: 12	Start Value: 0.02528949	End Value: 0.02628949
+Cluster Count: 17	Start Value: 0.02628949	End Value: 0.02728949
+Cluster Count: 40	Start Value: 0.02728949	End Value: 0.02828949
+Cluster Count: 61	Start Value: 0.02828949	End Value: 0.02928949
+Cluster Count: 93	Start Value: 0.02928949	End Value: 0.03028949
+Cluster Count: 146	Start Value: 0.03028949	End Value: 0.03128949
+Cluster Count: 152	Start Value: 0.03128949	End Value: 0.03228949
+Cluster Count: 162	Start Value: 0.03228949	End Value: 0.03328949
+Cluster Count: 122	Start Value: 0.03328949	End Value: 0.03428949
+Cluster Count: 92	Start Value: 0.03428949	End Value: 0.03528949
+Cluster Count: 64	Start Value: 0.03528949	End Value: 0.03628949
+Cluster Count: 24	Start Value: 0.03628949	End Value: 0.03728949
+Cluster Count: 7	Start Value: 0.03728949	End Value: 0.03828949
+Cluster Count: 2	Start Value: 0.03828949	End Value: 0.03928949
+Cluster Count: 1	Start Value: 0.03928949	End Value: 0.04028949
+d9 number of elements:  1000
+	First Element: 0.0334846284360201
+	Sorted
+	First Sorted Distance: 0.0206220220018276
+	Clustering Elements
+Cluster Count: 1	Start Value: 0.02062202	End Value: 0.02162202
+Cluster Count: 2	Start Value: 0.02162202	End Value: 0.02262202
+Cluster Count: 1	Start Value: 0.02262202	End Value: 0.02362202
+Cluster Count: 12	Start Value: 0.02362202	End Value: 0.02462202
+Cluster Count: 21	Start Value: 0.02462202	End Value: 0.02562202
+Cluster Count: 39	Start Value: 0.02562202	End Value: 0.02662202
+Cluster Count: 52	Start Value: 0.02662202	End Value: 0.02762202
+Cluster Count: 49	Start Value: 0.02762202	End Value: 0.02862202
+Cluster Count: 105	Start Value: 0.02862202	End Value: 0.02962202
+Cluster Count: 135	Start Value: 0.02962202	End Value: 0.03062202
+Cluster Count: 149	Start Value: 0.03062202	End Value: 0.03162202
+Cluster Count: 139	Start Value: 0.03162202	End Value: 0.03262202
+Cluster Count: 112	Start Value: 0.03262202	End Value: 0.03362202
+Cluster Count: 87	Start Value: 0.03362202	End Value: 0.03462202
+Cluster Count: 64	Start Value: 0.03462202	End Value: 0.03562202
+Cluster Count: 19	Start Value: 0.03562202	End Value: 0.03662202
+Cluster Count: 10	Start Value: 0.03662202	End Value: 0.03762202
+Cluster Count: 2	Start Value: 0.03762202	End Value: 0.03862202
+Cluster Count: 1	Start Value: 0.03862202	End Value: 0.03962202
+d10 number of elements:  1000
+	First Element: 0.0411480875716248
+	Sorted
+	First Sorted Distance: 0.0393417011174495
+	Clustering Elements
+Cluster Count: 8	Start Value: 0.0393417	End Value: 0.0403417
+Cluster Count: 111	Start Value: 0.0403417	End Value: 0.0413417
+Cluster Count: 311	Start Value: 0.0413417	End Value: 0.0423417
+Cluster Count: 283	Start Value: 0.0423417	End Value: 0.0433417
+Cluster Count: 195	Start Value: 0.0433417	End Value: 0.0443417
+Cluster Count: 77	Start Value: 0.0443417	End Value: 0.0453417
+Cluster Count: 13	Start Value: 0.0453417	End Value: 0.0463417
+Cluster Count: 2	Start Value: 0.0463417	End Value: 0.0473417
+d11 number of elements:  1000
+	First Element: 0.0425966295410164
+	Sorted
+	First Sorted Distance: 0.0368810626143256
+	Clustering Elements
+Cluster Count: 7	Start Value: 0.03688106	End Value: 0.03788106
+Cluster Count: 22	Start Value: 0.03788106	End Value: 0.03888106
+Cluster Count: 47	Start Value: 0.03888106	End Value: 0.03988106
+Cluster Count: 103	Start Value: 0.03988106	End Value: 0.04088106
+Cluster Count: 137	Start Value: 0.04088106	End Value: 0.04188106
+Cluster Count: 174	Start Value: 0.04188106	End Value: 0.04288106
+Cluster Count: 181	Start Value: 0.04288106	End Value: 0.04388106
+Cluster Count: 157	Start Value: 0.04388106	End Value: 0.04488106
+Cluster Count: 91	Start Value: 0.04488106	End Value: 0.04588106
+Cluster Count: 50	Start Value: 0.04588106	End Value: 0.04688106
+Cluster Count: 27	Start Value: 0.04688106	End Value: 0.04788106
+Cluster Count: 4	Start Value: 0.04788106	End Value: 0.04888106
+d12 number of elements:  1000
+	First Element: 0.0443542480985206
+	Sorted
+	First Sorted Distance: 0.0361414592929367
+	Clustering Elements
+Cluster Count: 7	Start Value: 0.03614146	End Value: 0.03714146
+Cluster Count: 13	Start Value: 0.03714146	End Value: 0.03814146
+Cluster Count: 34	Start Value: 0.03814146	End Value: 0.03914146
+Cluster Count: 74	Start Value: 0.03914146	End Value: 0.04014146
+Cluster Count: 136	Start Value: 0.04014146	End Value: 0.04114146
+Cluster Count: 146	Start Value: 0.04114146	End Value: 0.04214146
+Cluster Count: 152	Start Value: 0.04214146	End Value: 0.04314146
+Cluster Count: 176	Start Value: 0.04314146	End Value: 0.04414146
+Cluster Count: 117	Start Value: 0.04414146	End Value: 0.04514146
+Cluster Count: 85	Start Value: 0.04514146	End Value: 0.04614146
+Cluster Count: 42	Start Value: 0.04614146	End Value: 0.04714146
+Cluster Count: 13	Start Value: 0.04714146	End Value: 0.04814146
+Cluster Count: 3	Start Value: 0.04814146	End Value: 0.04914146
+Cluster Count: 2	Start Value: 0.04914146	End Value: 0.05014146
+d13 number of elements:  1000
+	First Element: 0.0252519299238125
+	Sorted
+	First Sorted Distance: 0.0211497522081436
+	Clustering Elements
+Cluster Count: 52	Start Value: 0.02114975	End Value: 0.02214975
+Cluster Count: 31	Start Value: 0.02214975	End Value: 0.02314975
+Cluster Count: 396	Start Value: 0.02314975	End Value: 0.02414975
+Cluster Count: 309	Start Value: 0.02414975	End Value: 0.02514975
+Cluster Count: 148	Start Value: 0.02514975	End Value: 0.02614975
+Cluster Count: 51	Start Value: 0.02614975	End Value: 0.02714975
+Cluster Count: 13	Start Value: 0.02714975	End Value: 0.02814975
+d14 number of elements:  1000
+	First Element: 0.0305135826828212
+	Sorted
+	First Sorted Distance: 0.0302359848173299
+	Clustering Elements
+Cluster Count: 98	Start Value: 0.03023599	End Value: 0.03123599
+Cluster Count: 38	Start Value: 0.03123599	End Value: 0.03223598
+Cluster Count: 692	Start Value: 0.03223598	End Value: 0.03323599
+Cluster Count: 145	Start Value: 0.03323599	End Value: 0.03423598
+Cluster Count: 27	Start Value: 0.03423598	End Value: 0.03523599
+d15 number of elements:  1000
+	First Element: 0.0546414415887544
+	Sorted
+	First Sorted Distance: 0.0529214833973865
+	Clustering Elements
+Cluster Count: 15	Start Value: 0.05292149	End Value: 0.05392148
+Cluster Count: 81	Start Value: 0.05392148	End Value: 0.05492148
+Cluster Count: 130	Start Value: 0.05492148	End Value: 0.05592148
+Cluster Count: 361	Start Value: 0.05592148	End Value: 0.05692148
+Cluster Count: 266	Start Value: 0.05692148	End Value: 0.05792148
+Cluster Count: 126	Start Value: 0.05792148	End Value: 0.05892148
+Cluster Count: 21	Start Value: 0.05892148	End Value: 0.05992148
+d16 number of elements:  1000
+	First Element: 0.0448684514569059
+	Sorted
+	First Sorted Distance: 0.0374494998724215
+	Clustering Elements
+Cluster Count: 4	Start Value: 0.0374495	End Value: 0.0384495
+Cluster Count: 19	Start Value: 0.0384495	End Value: 0.0394495
+Cluster Count: 34	Start Value: 0.0394495	End Value: 0.0404495
+Cluster Count: 103	Start Value: 0.0404495	End Value: 0.0414495
+Cluster Count: 160	Start Value: 0.0414495	End Value: 0.0424495
+Cluster Count: 168	Start Value: 0.0424495	End Value: 0.0434495
+Cluster Count: 173	Start Value: 0.0434495	End Value: 0.0444495
+Cluster Count: 125	Start Value: 0.0444495	End Value: 0.0454495
+Cluster Count: 97	Start Value: 0.0454495	End Value: 0.0464495
+Cluster Count: 60	Start Value: 0.0464495	End Value: 0.0474495
+Cluster Count: 32	Start Value: 0.0474495	End Value: 0.0484495
+Cluster Count: 14	Start Value: 0.0484495	End Value: 0.0494495
+Cluster Count: 8	Start Value: 0.0494495	End Value: 0.0504495
+Cluster Count: 0	Start Value: 0.0504495	End Value: 0.0514495
+Cluster Count: 3	Start Value: 0.0514495	End Value: 0.0524495
+d17 number of elements:  1000
+	First Element: 0.0746104920520279
+	Sorted
+	First Sorted Distance: 0.0703955874360683
+	Clustering Elements
+Cluster Count: 12	Start Value: 0.07039559	End Value: 0.07139559
+Cluster Count: 58	Start Value: 0.07139559	End Value: 0.07239559
+Cluster Count: 73	Start Value: 0.07239559	End Value: 0.07339559
+Cluster Count: 120	Start Value: 0.07339559	End Value: 0.07439559
+Cluster Count: 149	Start Value: 0.07439559	End Value: 0.07539558
+Cluster Count: 182	Start Value: 0.07539558	End Value: 0.07639559
+Cluster Count: 145	Start Value: 0.07639559	End Value: 0.07739559
+Cluster Count: 89	Start Value: 0.07739559	End Value: 0.07839559
+Cluster Count: 72	Start Value: 0.07839559	End Value: 0.07939558
+Cluster Count: 36	Start Value: 0.07939558	End Value: 0.08039559
+Cluster Count: 25	Start Value: 0.08039559	End Value: 0.08139559
+Cluster Count: 21	Start Value: 0.08139559	End Value: 0.08239559
+Cluster Count: 9	Start Value: 0.08239559	End Value: 0.08339559
+Cluster Count: 7	Start Value: 0.08339559	End Value: 0.08439559
+Cluster Count: 2	Start Value: 0.08439559	End Value: 0.08539559
+d18 number of elements:  1000
+	First Element: 0.0463778615454781
+	Sorted
+	First Sorted Distance: 0.0455657867242368
+	Clustering Elements
+Cluster Count: 17	Start Value: 0.04556579	End Value: 0.04656579
+Cluster Count: 54	Start Value: 0.04656579	End Value: 0.04756579
+Cluster Count: 167	Start Value: 0.04756579	End Value: 0.04856579
+Cluster Count: 230	Start Value: 0.04856579	End Value: 0.04956579
+Cluster Count: 275	Start Value: 0.04956579	End Value: 0.05056579
+Cluster Count: 168	Start Value: 0.05056579	End Value: 0.05156579
+Cluster Count: 75	Start Value: 0.05156579	End Value: 0.05256579
+Cluster Count: 12	Start Value: 0.05256579	End Value: 0.05356579
+Cluster Count: 2	Start Value: 0.05356579	End Value: 0.05456579
+d19 number of elements:  1000
+	First Element: 0.0424073973755615
+	Sorted
+	First Sorted Distance: 0.0404156198388071
+	Clustering Elements
+Cluster Count: 7	Start Value: 0.04041562	End Value: 0.04141562
+Cluster Count: 102	Start Value: 0.04141562	End Value: 0.04241562
+Cluster Count: 157	Start Value: 0.04241562	End Value: 0.04341562
+Cluster Count: 272	Start Value: 0.04341562	End Value: 0.04441562
+Cluster Count: 363	Start Value: 0.04441562	End Value: 0.04541562
+Cluster Count: 58	Start Value: 0.04541562	End Value: 0.04641562
+Cluster Count: 38	Start Value: 0.04641562	End Value: 0.04741562
+Cluster Count: 3	Start Value: 0.04741562	End Value: 0.04841562
+d20 number of elements:  1000
+	First Element: 0.0509635507726242
+	Sorted
+	First Sorted Distance: 0.0495912056573977
+	Clustering Elements
+Cluster Count: 7	Start Value: 0.04959121	End Value: 0.0505912
+Cluster Count: 51	Start Value: 0.0505912	End Value: 0.05159121
+Cluster Count: 213	Start Value: 0.05159121	End Value: 0.0525912
+Cluster Count: 263	Start Value: 0.0525912	End Value: 0.05359121
+Cluster Count: 295	Start Value: 0.05359121	End Value: 0.0545912
+Cluster Count: 147	Start Value: 0.0545912	End Value: 0.05559121
+Cluster Count: 22	Start Value: 0.05559121	End Value: 0.05659121
+Cluster Count: 2	Start Value: 0.05659121	End Value: 0.05759121
+d21 number of elements:  1000
+	First Element: 0.0236265667959302
+	Sorted
+	First Sorted Distance: 0.0172192111699596
+	Clustering Elements
+Cluster Count: 5	Start Value: 0.01721921	End Value: 0.01821921
+Cluster Count: 9	Start Value: 0.01821921	End Value: 0.01921921
+Cluster Count: 33	Start Value: 0.01921921	End Value: 0.02021921
+Cluster Count: 122	Start Value: 0.02021921	End Value: 0.02121921
+Cluster Count: 210	Start Value: 0.02121921	End Value: 0.02221921
+Cluster Count: 236	Start Value: 0.02221921	End Value: 0.02321921
+Cluster Count: 198	Start Value: 0.02321921	End Value: 0.02421921
+Cluster Count: 114	Start Value: 0.02421921	End Value: 0.02521921
+Cluster Count: 64	Start Value: 0.02521921	End Value: 0.02621921
+Cluster Count: 6	Start Value: 0.02621921	End Value: 0.02721921
+Cluster Count: 3	Start Value: 0.02721921	End Value: 0.02821921
+d22 number of elements:  1000
+	First Element: 0.00561428363684256
+	Sorted
+	First Sorted Distance: 0.00330088519071614
+	Clustering Elements
+Cluster Count: 9	Start Value: 0.003300885	End Value: 0.004300885
+Cluster Count: 54	Start Value: 0.004300885	End Value: 0.005300885
+Cluster Count: 160	Start Value: 0.005300885	End Value: 0.006300885
+Cluster Count: 200	Start Value: 0.006300885	End Value: 0.007300885
+Cluster Count: 258	Start Value: 0.007300885	End Value: 0.008300886
+Cluster Count: 174	Start Value: 0.008300886	End Value: 0.009300886
+Cluster Count: 82	Start Value: 0.009300886	End Value: 0.01030089
+Cluster Count: 35	Start Value: 0.01030089	End Value: 0.01130089
+Cluster Count: 21	Start Value: 0.01130089	End Value: 0.01230089
+Cluster Count: 6	Start Value: 0.01230089	End Value: 0.01330089
+Cluster Count: 1	Start Value: 0.01330089	End Value: 0.01430089
+d23 number of elements:  1000
+	First Element: 0.025960406917619
+	Sorted
+	First Sorted Distance: 0.0248573857296804
+	Clustering Elements
+Cluster Count: 74	Start Value: 0.02485739	End Value: 0.02585739
+Cluster Count: 279	Start Value: 0.02585739	End Value: 0.02685739
+Cluster Count: 116	Start Value: 0.02685739	End Value: 0.02785739
+Cluster Count: 473	Start Value: 0.02785739	End Value: 0.02885739
+Cluster Count: 53	Start Value: 0.02885739	End Value: 0.02985739
+Cluster Count: 4	Start Value: 0.02985739	End Value: 0.03085739
+Cluster Count: 1	Start Value: 0.03085739	End Value: 0.03185739
+d24 number of elements:  1000
+	First Element: 0.0549005356442982
+	Sorted
+	First Sorted Distance: 0.0535435067263986
+	Clustering Elements
+Cluster Count: 38	Start Value: 0.05354351	End Value: 0.05454351
+Cluster Count: 131	Start Value: 0.05454351	End Value: 0.05554351
+Cluster Count: 470	Start Value: 0.05554351	End Value: 0.05654351
+Cluster Count: 229	Start Value: 0.05654351	End Value: 0.05754351
+Cluster Count: 112	Start Value: 0.05754351	End Value: 0.05854351
+Cluster Count: 20	Start Value: 0.05854351	End Value: 0.05954351
+d25 number of elements:  1000
+	First Element: 0.0780965472829238
+	Sorted
+	First Sorted Distance: 0.0754297817712241
+	Clustering Elements
+Cluster Count: 2	Start Value: 0.07542978	End Value: 0.07642978
+Cluster Count: 29	Start Value: 0.07642978	End Value: 0.07742978
+Cluster Count: 132	Start Value: 0.07742978	End Value: 0.07842978
+Cluster Count: 153	Start Value: 0.07842978	End Value: 0.07942978
+Cluster Count: 425	Start Value: 0.07942978	End Value: 0.08042978
+Cluster Count: 205	Start Value: 0.08042978	End Value: 0.08142978
+Cluster Count: 53	Start Value: 0.08142978	End Value: 0.08242978
+Cluster Count: 0	Start Value: 0.08242978	End Value: 0.08342978
+Cluster Count: 1	Start Value: 0.08342978	End Value: 0.08442979
+d26 number of elements:  1000
+	First Element: 0.0219966103123248
+	Sorted
+	First Sorted Distance: 0.0161423972975274
+	Clustering Elements
+Cluster Count: 4	Start Value: 0.0161424	End Value: 0.0171424
+Cluster Count: 16	Start Value: 0.0171424	End Value: 0.0181424
+Cluster Count: 32	Start Value: 0.0181424	End Value: 0.0191424
+Cluster Count: 81	Start Value: 0.0191424	End Value: 0.0201424
+Cluster Count: 121	Start Value: 0.0201424	End Value: 0.0211424
+Cluster Count: 192	Start Value: 0.0211424	End Value: 0.0221424
+Cluster Count: 171	Start Value: 0.0221424	End Value: 0.0231424
+Cluster Count: 134	Start Value: 0.0231424	End Value: 0.0241424
+Cluster Count: 82	Start Value: 0.0241424	End Value: 0.0251424
+Cluster Count: 86	Start Value: 0.0251424	End Value: 0.0261424
+Cluster Count: 36	Start Value: 0.0261424	End Value: 0.0271424
+Cluster Count: 28	Start Value: 0.0271424	End Value: 0.0281424
+Cluster Count: 7	Start Value: 0.0281424	End Value: 0.0291424
+Cluster Count: 9	Start Value: 0.0291424	End Value: 0.0301424
+Cluster Count: 1	Start Value: 0.0301424	End Value: 0.0311424
+d27 number of elements:  1000
+	First Element: 0.0952126805281356
+	Sorted
+	First Sorted Distance: 0.0931708168359688
+	Clustering Elements
+Cluster Count: 27	Start Value: 0.09317081	End Value: 0.09417082
+Cluster Count: 136	Start Value: 0.09417082	End Value: 0.09517082
+Cluster Count: 197	Start Value: 0.09517082	End Value: 0.09617082
+Cluster Count: 155	Start Value: 0.09617082	End Value: 0.09717081
+Cluster Count: 222	Start Value: 0.09717081	End Value: 0.09817082
+Cluster Count: 120	Start Value: 0.09817082	End Value: 0.09917082
+Cluster Count: 63	Start Value: 0.09917082	End Value: 0.1001708
+Cluster Count: 40	Start Value: 0.1001708	End Value: 0.1011708
+Cluster Count: 23	Start Value: 0.1011708	End Value: 0.1021708
+Cluster Count: 15	Start Value: 0.1021708	End Value: 0.1031708
+Cluster Count: 1	Start Value: 0.1031708	End Value: 0.1041708
+Cluster Count: 1	Start Value: 0.1041708	End Value: 0.1051708
+d28 number of elements:  1000
+	First Element: 0.0605212381121197
+	Sorted
+	First Sorted Distance: 0.0561966975266222
+	Clustering Elements
+Cluster Count: 4	Start Value: 0.0561967	End Value: 0.0571967
+Cluster Count: 8	Start Value: 0.0571967	End Value: 0.0581967
+Cluster Count: 15	Start Value: 0.0581967	End Value: 0.0591967
+Cluster Count: 51	Start Value: 0.0591967	End Value: 0.0601967
+Cluster Count: 100	Start Value: 0.0601967	End Value: 0.0611967
+Cluster Count: 179	Start Value: 0.0611967	End Value: 0.0621967
+Cluster Count: 249	Start Value: 0.0621967	End Value: 0.0631967
+Cluster Count: 211	Start Value: 0.0631967	End Value: 0.0641967
+Cluster Count: 129	Start Value: 0.0641967	End Value: 0.0651967
+Cluster Count: 46	Start Value: 0.0651967	End Value: 0.06619669
+Cluster Count: 8	Start Value: 0.06619669	End Value: 0.0671967
+d29 number of elements:  1000
+	First Element: 0.050717808809824
+	Sorted
+	First Sorted Distance: 0.0455814276919943
+	Clustering Elements
+Cluster Count: 3	Start Value: 0.04558143	End Value: 0.04658143
+Cluster Count: 8	Start Value: 0.04658143	End Value: 0.04758143
+Cluster Count: 21	Start Value: 0.04758143	End Value: 0.04858143
+Cluster Count: 90	Start Value: 0.04858143	End Value: 0.04958143
+Cluster Count: 146	Start Value: 0.04958143	End Value: 0.05058143
+Cluster Count: 250	Start Value: 0.05058143	End Value: 0.05158143
+Cluster Count: 268	Start Value: 0.05158143	End Value: 0.05258143
+Cluster Count: 164	Start Value: 0.05258143	End Value: 0.05358143
+Cluster Count: 37	Start Value: 0.05358143	End Value: 0.05458143
+Cluster Count: 11	Start Value: 0.05458143	End Value: 0.05558143
+Cluster Count: 2	Start Value: 0.05558143	End Value: 0.05658143
+d30 number of elements:  1000
+	First Element: 0.0697313114182438
+	Sorted
+	First Sorted Distance: 0.0655191989125495
+	Clustering Elements
+Cluster Count: 2	Start Value: 0.0655192	End Value: 0.0665192
+Cluster Count: 27	Start Value: 0.0665192	End Value: 0.0675192
+Cluster Count: 49	Start Value: 0.0675192	End Value: 0.0685192
+Cluster Count: 150	Start Value: 0.0685192	End Value: 0.0695192
+Cluster Count: 321	Start Value: 0.0695192	End Value: 0.0705192
+Cluster Count: 239	Start Value: 0.0705192	End Value: 0.0715192
+Cluster Count: 176	Start Value: 0.0715192	End Value: 0.0725192
+Cluster Count: 32	Start Value: 0.0725192	End Value: 0.0735192
+Cluster Count: 4	Start Value: 0.0735192	End Value: 0.0745192
+d31 number of elements:  1000
+	First Element: 0.0459444376232906
+	Sorted
+	First Sorted Distance: 0.0401796640931302
+	Clustering Elements
+Cluster Count: 6	Start Value: 0.04017966	End Value: 0.04117966
+Cluster Count: 34	Start Value: 0.04117966	End Value: 0.04217966
+Cluster Count: 106	Start Value: 0.04217966	End Value: 0.04317966
+Cluster Count: 199	Start Value: 0.04317966	End Value: 0.04417966
+Cluster Count: 236	Start Value: 0.04417966	End Value: 0.04517967
+Cluster Count: 199	Start Value: 0.04517967	End Value: 0.04617966
+Cluster Count: 127	Start Value: 0.04617966	End Value: 0.04717967
+Cluster Count: 65	Start Value: 0.04717967	End Value: 0.04817966
+Cluster Count: 20	Start Value: 0.04817966	End Value: 0.04917967
+Cluster Count: 5	Start Value: 0.04917967	End Value: 0.05017966
+Cluster Count: 3	Start Value: 0.05017966	End Value: 0.05117967
+d32 number of elements:  1000
+	First Element: 0.0305986282246379
+	Sorted
+	First Sorted Distance: 0.0264519759513244
+	Clustering Elements
+Cluster Count: 21	Start Value: 0.02645198	End Value: 0.02745198
+Cluster Count: 36	Start Value: 0.02745198	End Value: 0.02845198
+Cluster Count: 154	Start Value: 0.02845198	End Value: 0.02945198
+Cluster Count: 181	Start Value: 0.02945198	End Value: 0.03045198
+Cluster Count: 333	Start Value: 0.03045198	End Value: 0.03145198
+Cluster Count: 179	Start Value: 0.03145198	End Value: 0.03245198
+Cluster Count: 69	Start Value: 0.03245198	End Value: 0.03345198
+Cluster Count: 15	Start Value: 0.03345198	End Value: 0.03445198
+Cluster Count: 8	Start Value: 0.03445198	End Value: 0.03545197
+Cluster Count: 3	Start Value: 0.03545197	End Value: 0.03645198
+Cluster Count: 1	Start Value: 0.03645198	End Value: 0.03745198
+d33 number of elements:  1000
+	First Element: 0.0508117639392344
+	Sorted
+	First Sorted Distance: 0.0483042245107288
+	Clustering Elements
+Cluster Count: 29	Start Value: 0.04830423	End Value: 0.04930422
+Cluster Count: 116	Start Value: 0.04930422	End Value: 0.05030422
+Cluster Count: 254	Start Value: 0.05030422	End Value: 0.05130422
+Cluster Count: 436	Start Value: 0.05130422	End Value: 0.05230422
+Cluster Count: 117	Start Value: 0.05230422	End Value: 0.05330423
+Cluster Count: 43	Start Value: 0.05330423	End Value: 0.05430422
+Cluster Count: 5	Start Value: 0.05430422	End Value: 0.05530423
+d34 number of elements:  1000
+	First Element: 0.0245152246074137
+	Sorted
+	First Sorted Distance: 0.0197366885872489
+	Clustering Elements
+Cluster Count: 1	Start Value: 0.01973669	End Value: 0.02073669
+Cluster Count: 23	Start Value: 0.02073669	End Value: 0.02173669
+Cluster Count: 66	Start Value: 0.02173669	End Value: 0.02273669
+Cluster Count: 167	Start Value: 0.02273669	End Value: 0.02373669
+Cluster Count: 330	Start Value: 0.02373669	End Value: 0.02473669
+Cluster Count: 211	Start Value: 0.02473669	End Value: 0.02573669
+Cluster Count: 102	Start Value: 0.02573669	End Value: 0.02673669
+Cluster Count: 66	Start Value: 0.02673669	End Value: 0.02773669
+Cluster Count: 14	Start Value: 0.02773669	End Value: 0.02873669
+Cluster Count: 14	Start Value: 0.02873669	End Value: 0.02973669
+Cluster Count: 6	Start Value: 0.02973669	End Value: 0.03073669
+d35 number of elements:  1000
+	First Element: 0.0717269947476564
+	Sorted
+	First Sorted Distance: 0.0691611137881406
+	Clustering Elements
+Cluster Count: 10	Start Value: 0.06916112	End Value: 0.07016111
+Cluster Count: 92	Start Value: 0.07016111	End Value: 0.07116111
+Cluster Count: 154	Start Value: 0.07116111	End Value: 0.07216112
+Cluster Count: 230	Start Value: 0.07216112	End Value: 0.07316111
+Cluster Count: 201	Start Value: 0.07316111	End Value: 0.07416111
+Cluster Count: 148	Start Value: 0.07416111	End Value: 0.07516111
+Cluster Count: 94	Start Value: 0.07516111	End Value: 0.07616112
+Cluster Count: 47	Start Value: 0.07616112	End Value: 0.07716111
+Cluster Count: 17	Start Value: 0.07716111	End Value: 0.07816111
+Cluster Count: 3	Start Value: 0.07816111	End Value: 0.07916111
+Cluster Count: 4	Start Value: 0.07916111	End Value: 0.08016112
+d36 number of elements:  1000
+	First Element: 0.0472114113660721
+	Sorted
+	First Sorted Distance: 0.0397657169401959
+	Clustering Elements
+Cluster Count: 8	Start Value: 0.03976572	End Value: 0.04076572
+Cluster Count: 25	Start Value: 0.04076572	End Value: 0.04176572
+Cluster Count: 37	Start Value: 0.04176572	End Value: 0.04276572
+Cluster Count: 69	Start Value: 0.04276572	End Value: 0.04376572
+Cluster Count: 104	Start Value: 0.04376572	End Value: 0.04476572
+Cluster Count: 133	Start Value: 0.04476572	End Value: 0.04576572
+Cluster Count: 119	Start Value: 0.04576572	End Value: 0.04676572
+Cluster Count: 168	Start Value: 0.04676572	End Value: 0.04776572
+Cluster Count: 129	Start Value: 0.04776572	End Value: 0.04876572
+Cluster Count: 72	Start Value: 0.04876572	End Value: 0.04976572
+Cluster Count: 51	Start Value: 0.04976572	End Value: 0.05076572
+Cluster Count: 31	Start Value: 0.05076572	End Value: 0.05176572
+Cluster Count: 22	Start Value: 0.05176572	End Value: 0.05276572
+Cluster Count: 14	Start Value: 0.05276572	End Value: 0.05376572
+Cluster Count: 14	Start Value: 0.05376572	End Value: 0.05476572
+Cluster Count: 3	Start Value: 0.05476572	End Value: 0.05576572
+Cluster Count: 1	Start Value: 0.05576572	End Value: 0.05676572
+d37 number of elements:  1000
+	First Element: 0.0485592697834598
+	Sorted
+	First Sorted Distance: 0.0448212489796758
+	Clustering Elements
+Cluster Count: 13	Start Value: 0.04482125	End Value: 0.04582125
+Cluster Count: 28	Start Value: 0.04582125	End Value: 0.04682125
+Cluster Count: 72	Start Value: 0.04682125	End Value: 0.04782125
+Cluster Count: 173	Start Value: 0.04782125	End Value: 0.04882125
+Cluster Count: 240	Start Value: 0.04882125	End Value: 0.04982125
+Cluster Count: 251	Start Value: 0.04982125	End Value: 0.05082125
+Cluster Count: 174	Start Value: 0.05082125	End Value: 0.05182125
+Cluster Count: 39	Start Value: 0.05182125	End Value: 0.05282125
+Cluster Count: 8	Start Value: 0.05282125	End Value: 0.05382125
+Cluster Count: 1	Start Value: 0.05382125	End Value: 0.05482125
+Cluster Count: 1	Start Value: 0.05482125	End Value: 0.05582125
+d38 number of elements:  1000
+	First Element: 0.0535022526825952
+	Sorted
+	First Sorted Distance: 0.0503914042292969
+	Clustering Elements
+Cluster Count: 10	Start Value: 0.05039141	End Value: 0.0513914
+Cluster Count: 72	Start Value: 0.0513914	End Value: 0.05239141
+Cluster Count: 161	Start Value: 0.05239141	End Value: 0.0533914
+Cluster Count: 253	Start Value: 0.0533914	End Value: 0.0543914
+Cluster Count: 328	Start Value: 0.0543914	End Value: 0.0553914
+Cluster Count: 137	Start Value: 0.0553914	End Value: 0.0563914
+Cluster Count: 29	Start Value: 0.0563914	End Value: 0.05739141
+Cluster Count: 10	Start Value: 0.05739141	End Value: 0.0583914
+d39 number of elements:  1000
+	First Element: 0.0424723862040064
+	Sorted
+	First Sorted Distance: 0.0397132426478989
+	Clustering Elements
+Cluster Count: 23	Start Value: 0.03971324	End Value: 0.04071324
+Cluster Count: 26	Start Value: 0.04071324	End Value: 0.04171324
+Cluster Count: 237	Start Value: 0.04171324	End Value: 0.04271324
+Cluster Count: 172	Start Value: 0.04271324	End Value: 0.04371324
+Cluster Count: 343	Start Value: 0.04371324	End Value: 0.04471324
+Cluster Count: 180	Start Value: 0.04471324	End Value: 0.04571324
+Cluster Count: 10	Start Value: 0.04571324	End Value: 0.04671324
+Cluster Count: 9	Start Value: 0.04671324	End Value: 0.04771324
+d40 number of elements:  1000
+	First Element: 0.0257253789371783
+	Sorted
+	First Sorted Distance: 0.0182296559958145
+	Clustering Elements
+Cluster Count: 5	Start Value: 0.01822966	End Value: 0.01922966
+Cluster Count: 10	Start Value: 0.01922966	End Value: 0.02022966
+Cluster Count: 53	Start Value: 0.02022966	End Value: 0.02122966
+Cluster Count: 122	Start Value: 0.02122966	End Value: 0.02222966
+Cluster Count: 221	Start Value: 0.02222966	End Value: 0.02322966
+Cluster Count: 222	Start Value: 0.02322966	End Value: 0.02422966
+Cluster Count: 211	Start Value: 0.02422966	End Value: 0.02522966
+Cluster Count: 125	Start Value: 0.02522966	End Value: 0.02622966
+Cluster Count: 27	Start Value: 0.02622966	End Value: 0.02722966
+Cluster Count: 3	Start Value: 0.02722966	End Value: 0.02822966
+Cluster Count: 0	Start Value: 0.02822966	End Value: 0.02922966
+Cluster Count: 1	Start Value: 0.02922966	End Value: 0.03022966
+d41 number of elements:  1000
+	First Element: 0.0260182143067094
+	Sorted
+	First Sorted Distance: 0.0242158286290291
+	Clustering Elements
+Cluster Count: 9	Start Value: 0.02421583	End Value: 0.02521583
+Cluster Count: 194	Start Value: 0.02521583	End Value: 0.02621583
+Cluster Count: 229	Start Value: 0.02621583	End Value: 0.02721583
+Cluster Count: 287	Start Value: 0.02721583	End Value: 0.02821583
+Cluster Count: 264	Start Value: 0.02821583	End Value: 0.02921583
+Cluster Count: 16	Start Value: 0.02921583	End Value: 0.03021583
+Cluster Count: 1	Start Value: 0.03021583	End Value: 0.03121583
+d42 number of elements:  1000
+	First Element: 0.00580185084610157
+	Sorted
+	First Sorted Distance: 0.00328811854979633
+	Clustering Elements
+Cluster Count: 9	Start Value: 0.003288119	End Value: 0.004288119
+Cluster Count: 41	Start Value: 0.004288119	End Value: 0.005288118
+Cluster Count: 146	Start Value: 0.005288118	End Value: 0.006288119
+Cluster Count: 229	Start Value: 0.006288119	End Value: 0.007288119
+Cluster Count: 205	Start Value: 0.007288119	End Value: 0.008288119
+Cluster Count: 180	Start Value: 0.008288119	End Value: 0.009288119
+Cluster Count: 104	Start Value: 0.009288119	End Value: 0.01028812
+Cluster Count: 49	Start Value: 0.01028812	End Value: 0.01128812
+Cluster Count: 20	Start Value: 0.01128812	End Value: 0.01228812
+Cluster Count: 11	Start Value: 0.01228812	End Value: 0.01328812
+Cluster Count: 2	Start Value: 0.01328812	End Value: 0.01428812
+Cluster Count: 4	Start Value: 0.01428812	End Value: 0.01528812
+d43 number of elements:  1000
+	First Element: 0.0929556916577291
+	Sorted
+	First Sorted Distance: 0.0914845415851683
+	Clustering Elements
+Cluster Count: 32	Start Value: 0.09148454	End Value: 0.09248454
+Cluster Count: 171	Start Value: 0.09248454	End Value: 0.09348454
+Cluster Count: 111	Start Value: 0.09348454	End Value: 0.09448455
+Cluster Count: 296	Start Value: 0.09448455	End Value: 0.09548454
+Cluster Count: 307	Start Value: 0.09548454	End Value: 0.09648454
+Cluster Count: 53	Start Value: 0.09648454	End Value: 0.09748454
+Cluster Count: 21	Start Value: 0.09748454	End Value: 0.09848454
+Cluster Count: 9	Start Value: 0.09848454	End Value: 0.09948454
+d44 number of elements:  1000
+	First Element: 0.0259137758789958
+	Sorted
+	First Sorted Distance: 0.017846531810135
+	Clustering Elements
+Cluster Count: 8	Start Value: 0.01784653	End Value: 0.01884653
+Cluster Count: 34	Start Value: 0.01884653	End Value: 0.01984653
+Cluster Count: 38	Start Value: 0.01984653	End Value: 0.02084653
+Cluster Count: 68	Start Value: 0.02084653	End Value: 0.02184653
+Cluster Count: 90	Start Value: 0.02184653	End Value: 0.02284653
+Cluster Count: 96	Start Value: 0.02284653	End Value: 0.02384653
+Cluster Count: 98	Start Value: 0.02384653	End Value: 0.02484653
+Cluster Count: 139	Start Value: 0.02484653	End Value: 0.02584653
+Cluster Count: 120	Start Value: 0.02584653	End Value: 0.02684653
+Cluster Count: 110	Start Value: 0.02684653	End Value: 0.02784653
+Cluster Count: 60	Start Value: 0.02784653	End Value: 0.02884653
+Cluster Count: 43	Start Value: 0.02884653	End Value: 0.02984653
+Cluster Count: 38	Start Value: 0.02984653	End Value: 0.03084653
+Cluster Count: 26	Start Value: 0.03084653	End Value: 0.03184653
+Cluster Count: 17	Start Value: 0.03184653	End Value: 0.03284653
+Cluster Count: 11	Start Value: 0.03284653	End Value: 0.03384653
+Cluster Count: 3	Start Value: 0.03384653	End Value: 0.03484653
+Cluster Count: 1	Start Value: 0.03484653	End Value: 0.03584653
+d45 number of elements:  1000
+	First Element: 0.0625881016868587
+	Sorted
+	First Sorted Distance: 0.0553477984084329
+	Clustering Elements
+Cluster Count: 2	Start Value: 0.0553478	End Value: 0.0563478
+Cluster Count: 5	Start Value: 0.0563478	End Value: 0.0573478
+Cluster Count: 10	Start Value: 0.0573478	End Value: 0.0583478
+Cluster Count: 23	Start Value: 0.0583478	End Value: 0.0593478
+Cluster Count: 36	Start Value: 0.0593478	End Value: 0.0603478
+Cluster Count: 97	Start Value: 0.0603478	End Value: 0.0613478
+Cluster Count: 153	Start Value: 0.0613478	End Value: 0.0623478
+Cluster Count: 201	Start Value: 0.0623478	End Value: 0.0633478
+Cluster Count: 184	Start Value: 0.0633478	End Value: 0.0643478
+Cluster Count: 152	Start Value: 0.0643478	End Value: 0.0653478
+Cluster Count: 89	Start Value: 0.0653478	End Value: 0.0663478
+Cluster Count: 34	Start Value: 0.0663478	End Value: 0.0673478
+Cluster Count: 12	Start Value: 0.0673478	End Value: 0.0683478
+Cluster Count: 2	Start Value: 0.0683478	End Value: 0.0693478
+d46 number of elements:  1000
+	First Element: 0.0710467300941786
+	Sorted
+	First Sorted Distance: 0.0652151847715374
+	Clustering Elements
+Cluster Count: 2	Start Value: 0.06521519	End Value: 0.06621519
+Cluster Count: 8	Start Value: 0.06621519	End Value: 0.06721518
+Cluster Count: 18	Start Value: 0.06721518	End Value: 0.06821518
+Cluster Count: 34	Start Value: 0.06821518	End Value: 0.06921519
+Cluster Count: 124	Start Value: 0.06921519	End Value: 0.07021519
+Cluster Count: 187	Start Value: 0.07021519	End Value: 0.07121518
+Cluster Count: 281	Start Value: 0.07121518	End Value: 0.07221518
+Cluster Count: 223	Start Value: 0.07221518	End Value: 0.07321519
+Cluster Count: 91	Start Value: 0.07321519	End Value: 0.07421519
+Cluster Count: 26	Start Value: 0.07421519	End Value: 0.07521518
+Cluster Count: 5	Start Value: 0.07521518	End Value: 0.07621519
+Cluster Count: 1	Start Value: 0.07621519	End Value: 0.07721519
+d47 number of elements:  1000
+	First Element: 0.0507331736031666
+	Sorted
+	First Sorted Distance: 0.0451630760624767
+	Clustering Elements
+Cluster Count: 6	Start Value: 0.04516308	End Value: 0.04616307
+Cluster Count: 4	Start Value: 0.04616307	End Value: 0.04716308
+Cluster Count: 18	Start Value: 0.04716308	End Value: 0.04816308
+Cluster Count: 45	Start Value: 0.04816308	End Value: 0.04916308
+Cluster Count: 82	Start Value: 0.04916308	End Value: 0.05016308
+Cluster Count: 173	Start Value: 0.05016308	End Value: 0.05116308
+Cluster Count: 241	Start Value: 0.05116308	End Value: 0.05216308
+Cluster Count: 219	Start Value: 0.05216308	End Value: 0.05316308
+Cluster Count: 134	Start Value: 0.05316308	End Value: 0.05416308
+Cluster Count: 57	Start Value: 0.05416308	End Value: 0.05516308
+Cluster Count: 20	Start Value: 0.05516308	End Value: 0.05616308
+Cluster Count: 1	Start Value: 0.05616308	End Value: 0.05716308
+d48 number of elements:  1000
+	First Element: 0.0477534412819477
+	Sorted
+	First Sorted Distance: 0.0398772594187517
+	Clustering Elements
+Cluster Count: 5	Start Value: 0.03987726	End Value: 0.04087726
+Cluster Count: 5	Start Value: 0.04087726	End Value: 0.04187726
+Cluster Count: 24	Start Value: 0.04187726	End Value: 0.04287726
+Cluster Count: 53	Start Value: 0.04287726	End Value: 0.04387726
+Cluster Count: 126	Start Value: 0.04387726	End Value: 0.04487726
+Cluster Count: 173	Start Value: 0.04487726	End Value: 0.04587726
+Cluster Count: 200	Start Value: 0.04587726	End Value: 0.04687726
+Cluster Count: 202	Start Value: 0.04687726	End Value: 0.04787726
+Cluster Count: 125	Start Value: 0.04787726	End Value: 0.04887726
+Cluster Count: 48	Start Value: 0.04887726	End Value: 0.04987726
+Cluster Count: 28	Start Value: 0.04987726	End Value: 0.05087726
+Cluster Count: 10	Start Value: 0.05087726	End Value: 0.05187726
+Cluster Count: 1	Start Value: 0.05187726	End Value: 0.05287726
+d49 number of elements:  1000
+	First Element: 0.0503204505796649
+	Sorted
+	First Sorted Distance: 0.0467340984732062
+	Clustering Elements
+Cluster Count: 5	Start Value: 0.0467341	End Value: 0.0477341
+Cluster Count: 18	Start Value: 0.0477341	End Value: 0.0487341
+Cluster Count: 63	Start Value: 0.0487341	End Value: 0.0497341
+Cluster Count: 178	Start Value: 0.0497341	End Value: 0.0507341
+Cluster Count: 291	Start Value: 0.0507341	End Value: 0.0517341
+Cluster Count: 254	Start Value: 0.0517341	End Value: 0.0527341
+Cluster Count: 129	Start Value: 0.0527341	End Value: 0.0537341
+Cluster Count: 49	Start Value: 0.0537341	End Value: 0.0547341
+Cluster Count: 12	Start Value: 0.0547341	End Value: 0.0557341
+Cluster Count: 1	Start Value: 0.0557341	End Value: 0.0567341
+d50 number of elements:  1000
+	First Element: 0.0298132598975732
+	Sorted
+	First Sorted Distance: 0.025475892148712
+	Clustering Elements
+Cluster Count: 7	Start Value: 0.02547589	End Value: 0.02647589
+Cluster Count: 14	Start Value: 0.02647589	End Value: 0.02747589
+Cluster Count: 33	Start Value: 0.02747589	End Value: 0.02847589
+Cluster Count: 113	Start Value: 0.02847589	End Value: 0.02947589
+Cluster Count: 174	Start Value: 0.02947589	End Value: 0.03047589
+Cluster Count: 245	Start Value: 0.03047589	End Value: 0.03147589
+Cluster Count: 155	Start Value: 0.03147589	End Value: 0.03247589
+Cluster Count: 143	Start Value: 0.03247589	End Value: 0.03347589
+Cluster Count: 80	Start Value: 0.03347589	End Value: 0.03447589
+Cluster Count: 26	Start Value: 0.03447589	End Value: 0.03547589
+Cluster Count: 5	Start Value: 0.03547589	End Value: 0.03647589
+Cluster Count: 3	Start Value: 0.03647589	End Value: 0.03747589
+Cluster Count: 1	Start Value: 0.03747589	End Value: 0.03847589
+Cluster Count: 1	Start Value: 0.03847589	End Value: 0.03947589
+d51 number of elements:  1000
+	First Element: 0.106037165271774
+	Sorted
+	First Sorted Distance: 0.104732754245005
+	Clustering Elements
+Cluster Count: 13	Start Value: 0.1047328	End Value: 0.1057328
+Cluster Count: 58	Start Value: 0.1057328	End Value: 0.1067328
+Cluster Count: 210	Start Value: 0.1067328	End Value: 0.1077328
+Cluster Count: 350	Start Value: 0.1077328	End Value: 0.1087328
+Cluster Count: 175	Start Value: 0.1087328	End Value: 0.1097328
+Cluster Count: 115	Start Value: 0.1097328	End Value: 0.1107328
+Cluster Count: 56	Start Value: 0.1107328	End Value: 0.1117328
+Cluster Count: 21	Start Value: 0.1117328	End Value: 0.1127328
+Cluster Count: 1	Start Value: 0.1127328	End Value: 0.1137328
+Cluster Count: 1	Start Value: 0.1137328	End Value: 0.1147328
+d52 number of elements:  1000
+	First Element: 0.079865949157661
+	Sorted
+	First Sorted Distance: 0.0764529878782276
+	Clustering Elements
+Cluster Count: 4	Start Value: 0.07645299	End Value: 0.07745299
+Cluster Count: 8	Start Value: 0.07745299	End Value: 0.07845299
+Cluster Count: 18	Start Value: 0.07845299	End Value: 0.07945299
+Cluster Count: 36	Start Value: 0.07945299	End Value: 0.08045299
+Cluster Count: 78	Start Value: 0.08045299	End Value: 0.08145299
+Cluster Count: 140	Start Value: 0.08145299	End Value: 0.08245299
+Cluster Count: 205	Start Value: 0.08245299	End Value: 0.08345298
+Cluster Count: 204	Start Value: 0.08345298	End Value: 0.08445299
+Cluster Count: 157	Start Value: 0.08445299	End Value: 0.08545299
+Cluster Count: 97	Start Value: 0.08545299	End Value: 0.08645299
+Cluster Count: 39	Start Value: 0.08645299	End Value: 0.08745299
+Cluster Count: 9	Start Value: 0.08745299	End Value: 0.08845299
+Cluster Count: 5	Start Value: 0.08845299	End Value: 0.08945299
+d53 number of elements:  1000
+	First Element: 0.0691711791006032
+	Sorted
+	First Sorted Distance: 0.0652117223767232
+	Clustering Elements
+Cluster Count: 6	Start Value: 0.06521172	End Value: 0.06621172
+Cluster Count: 19	Start Value: 0.06621172	End Value: 0.06721172
+Cluster Count: 24	Start Value: 0.06721172	End Value: 0.06821172
+Cluster Count: 78	Start Value: 0.06821172	End Value: 0.06921172
+Cluster Count: 145	Start Value: 0.06921172	End Value: 0.07021172
+Cluster Count: 202	Start Value: 0.07021172	End Value: 0.07121173
+Cluster Count: 232	Start Value: 0.07121173	End Value: 0.07221172
+Cluster Count: 157	Start Value: 0.07221172	End Value: 0.07321172
+Cluster Count: 89	Start Value: 0.07321172	End Value: 0.07421172
+Cluster Count: 41	Start Value: 0.07421172	End Value: 0.07521173
+Cluster Count: 7	Start Value: 0.07521173	End Value: 0.07621172
+d54 number of elements:  1000
+	First Element: 0.0889734242632116
+	Sorted
+	First Sorted Distance: 0.084827765450367
+	Clustering Elements
+Cluster Count: 5	Start Value: 0.08482777	End Value: 0.08582777
+Cluster Count: 4	Start Value: 0.08582777	End Value: 0.08682776
+Cluster Count: 29	Start Value: 0.08682776	End Value: 0.08782776
+Cluster Count: 105	Start Value: 0.08782776	End Value: 0.08882777
+Cluster Count: 205	Start Value: 0.08882777	End Value: 0.08982777
+Cluster Count: 209	Start Value: 0.08982777	End Value: 0.09082776
+Cluster Count: 196	Start Value: 0.09082776	End Value: 0.09182777
+Cluster Count: 125	Start Value: 0.09182777	End Value: 0.09282777
+Cluster Count: 80	Start Value: 0.09282777	End Value: 0.09382777
+Cluster Count: 31	Start Value: 0.09382777	End Value: 0.09482776
+Cluster Count: 9	Start Value: 0.09482776	End Value: 0.09582777
+Cluster Count: 2	Start Value: 0.09582777	End Value: 0.09682777
+d55 number of elements:  1000
+	First Element: 0.0651621149089679
+	Sorted
+	First Sorted Distance: 0.0564864287117451
+	Clustering Elements
+Cluster Count: 4	Start Value: 0.05648643	End Value: 0.05748643
+Cluster Count: 7	Start Value: 0.05748643	End Value: 0.05848643
+Cluster Count: 19	Start Value: 0.05848643	End Value: 0.05948643
+Cluster Count: 54	Start Value: 0.05948643	End Value: 0.06048643
+Cluster Count: 124	Start Value: 0.06048643	End Value: 0.06148643
+Cluster Count: 154	Start Value: 0.06148643	End Value: 0.06248643
+Cluster Count: 141	Start Value: 0.06248643	End Value: 0.06348643
+Cluster Count: 144	Start Value: 0.06348643	End Value: 0.06448643
+Cluster Count: 92	Start Value: 0.06448643	End Value: 0.06548643
+Cluster Count: 76	Start Value: 0.06548643	End Value: 0.06648643
+Cluster Count: 58	Start Value: 0.06648643	End Value: 0.06748643
+Cluster Count: 60	Start Value: 0.06748643	End Value: 0.06848643
+Cluster Count: 39	Start Value: 0.06848643	End Value: 0.06948643
+Cluster Count: 16	Start Value: 0.06948643	End Value: 0.07048643
+Cluster Count: 6	Start Value: 0.07048643	End Value: 0.07148643
+Cluster Count: 1	Start Value: 0.07148643	End Value: 0.07248643
+Cluster Count: 4	Start Value: 0.07248643	End Value: 0.07348643
+Cluster Count: 1	Start Value: 0.07348643	End Value: 0.07448643
+d56 number of elements:  1000
+	First Element: 0.0503543817982152
+	Sorted
+	First Sorted Distance: 0.0444702380157796
+	Clustering Elements
+Cluster Count: 6	Start Value: 0.04447024	End Value: 0.04547024
+Cluster Count: 18	Start Value: 0.04547024	End Value: 0.04647024
+Cluster Count: 55	Start Value: 0.04647024	End Value: 0.04747024
+Cluster Count: 90	Start Value: 0.04747024	End Value: 0.04847024
+Cluster Count: 168	Start Value: 0.04847024	End Value: 0.04947024
+Cluster Count: 184	Start Value: 0.04947024	End Value: 0.05047024
+Cluster Count: 179	Start Value: 0.05047024	End Value: 0.05147024
+Cluster Count: 106	Start Value: 0.05147024	End Value: 0.05247024
+Cluster Count: 55	Start Value: 0.05247024	End Value: 0.05347024
+Cluster Count: 59	Start Value: 0.05347024	End Value: 0.05447024
+Cluster Count: 28	Start Value: 0.05447024	End Value: 0.05547024
+Cluster Count: 30	Start Value: 0.05547024	End Value: 0.05647024
+Cluster Count: 10	Start Value: 0.05647024	End Value: 0.05747024
+Cluster Count: 8	Start Value: 0.05747024	End Value: 0.05847024
+Cluster Count: 1	Start Value: 0.05847024	End Value: 0.05947024
+Cluster Count: 3	Start Value: 0.05947024	End Value: 0.06047024
+d57 number of elements:  1000
+	First Element: 0.0686441863066227
+	Sorted
+	First Sorted Distance: 0.0649726769344079
+	Clustering Elements
+Cluster Count: 6	Start Value: 0.06497268	End Value: 0.06597268
+Cluster Count: 38	Start Value: 0.06597268	End Value: 0.06697268
+Cluster Count: 127	Start Value: 0.06697268	End Value: 0.06797267
+Cluster Count: 187	Start Value: 0.06797267	End Value: 0.06897268
+Cluster Count: 242	Start Value: 0.06897268	End Value: 0.06997268
+Cluster Count: 163	Start Value: 0.06997268	End Value: 0.07097267
+Cluster Count: 97	Start Value: 0.07097267	End Value: 0.07197268
+Cluster Count: 81	Start Value: 0.07197268	End Value: 0.07297268
+Cluster Count: 38	Start Value: 0.07297268	End Value: 0.07397268
+Cluster Count: 14	Start Value: 0.07397268	End Value: 0.07497267
+Cluster Count: 4	Start Value: 0.07497267	End Value: 0.07597268
+Cluster Count: 3	Start Value: 0.07597268	End Value: 0.07697268
+d58 number of elements:  1000
+	First Element: 0.0848669798264403
+	Sorted
+	First Sorted Distance: 0.0777237973383842
+	Clustering Elements
+Cluster Count: 1	Start Value: 0.07772379	End Value: 0.0787238
+Cluster Count: 0	Start Value: 0.0787238	End Value: 0.0797238
+Cluster Count: 7	Start Value: 0.0797238	End Value: 0.0807238
+Cluster Count: 17	Start Value: 0.0807238	End Value: 0.08172379
+Cluster Count: 49	Start Value: 0.08172379	End Value: 0.0827238
+Cluster Count: 102	Start Value: 0.0827238	End Value: 0.0837238
+Cluster Count: 139	Start Value: 0.0837238	End Value: 0.0847238
+Cluster Count: 135	Start Value: 0.0847238	End Value: 0.08572379
+Cluster Count: 179	Start Value: 0.08572379	End Value: 0.0867238
+Cluster Count: 164	Start Value: 0.0867238	End Value: 0.0877238
+Cluster Count: 116	Start Value: 0.0877238	End Value: 0.0887238
+Cluster Count: 61	Start Value: 0.0887238	End Value: 0.0897238
+Cluster Count: 23	Start Value: 0.0897238	End Value: 0.0907238
+Cluster Count: 4	Start Value: 0.0907238	End Value: 0.0917238
+Cluster Count: 2	Start Value: 0.0917238	End Value: 0.0927238
+Cluster Count: 1	Start Value: 0.0927238	End Value: 0.0937238
+d59 number of elements:  1000
+	First Element: 0.0927049464936301
+	Sorted
+	First Sorted Distance: 0.0870495659017686
+	Clustering Elements
+Cluster Count: 1	Start Value: 0.08704957	End Value: 0.08804957
+Cluster Count: 1	Start Value: 0.08804957	End Value: 0.08904956
+Cluster Count: 32	Start Value: 0.08904956	End Value: 0.09004956
+Cluster Count: 83	Start Value: 0.09004956	End Value: 0.09104957
+Cluster Count: 120	Start Value: 0.09104957	End Value: 0.09204957
+Cluster Count: 166	Start Value: 0.09204957	End Value: 0.09304956
+Cluster Count: 178	Start Value: 0.09304956	End Value: 0.09404957
+Cluster Count: 197	Start Value: 0.09404957	End Value: 0.09504957
+Cluster Count: 107	Start Value: 0.09504957	End Value: 0.09604957
+Cluster Count: 53	Start Value: 0.09604957	End Value: 0.09704956
+Cluster Count: 40	Start Value: 0.09704956	End Value: 0.09804957
+Cluster Count: 19	Start Value: 0.09804957	End Value: 0.09904957
+Cluster Count: 3	Start Value: 0.09904957	End Value: 0.1000496
+d60 number of elements:  1000
+	First Element: 0.0726320973258947
+	Sorted
+	First Sorted Distance: 0.0671401125847712
+	Clustering Elements
+Cluster Count: 4	Start Value: 0.06714011	End Value: 0.06814011
+Cluster Count: 9	Start Value: 0.06814011	End Value: 0.06914011
+Cluster Count: 22	Start Value: 0.06914011	End Value: 0.07014012
+Cluster Count: 62	Start Value: 0.07014012	End Value: 0.07114011
+Cluster Count: 132	Start Value: 0.07114011	End Value: 0.07214011
+Cluster Count: 164	Start Value: 0.07214011	End Value: 0.07314011
+Cluster Count: 178	Start Value: 0.07314011	End Value: 0.07414012
+Cluster Count: 167	Start Value: 0.07414012	End Value: 0.07514011
+Cluster Count: 147	Start Value: 0.07514011	End Value: 0.07614011
+Cluster Count: 74	Start Value: 0.07614011	End Value: 0.07714012
+Cluster Count: 35	Start Value: 0.07714012	End Value: 0.07814011
+Cluster Count: 6	Start Value: 0.07814011	End Value: 0.07914011
+d61 number of elements:  1000
+	First Element: 0.0704898926702925
+	Sorted
+	First Sorted Distance: 0.060295278391606
+	Clustering Elements
+Cluster Count: 4	Start Value: 0.06029528	End Value: 0.06129528
+Cluster Count: 10	Start Value: 0.06129528	End Value: 0.06229528
+Cluster Count: 31	Start Value: 0.06229528	End Value: 0.06329527
+Cluster Count: 63	Start Value: 0.06329527	End Value: 0.06429528
+Cluster Count: 87	Start Value: 0.06429528	End Value: 0.06529528
+Cluster Count: 89	Start Value: 0.06529528	End Value: 0.06629528
+Cluster Count: 129	Start Value: 0.06629528	End Value: 0.06729528
+Cluster Count: 121	Start Value: 0.06729528	End Value: 0.06829528
+Cluster Count: 140	Start Value: 0.06829528	End Value: 0.06929528
+Cluster Count: 105	Start Value: 0.06929528	End Value: 0.07029528
+Cluster Count: 66	Start Value: 0.07029528	End Value: 0.07129528
+Cluster Count: 49	Start Value: 0.07129528	End Value: 0.07229528
+Cluster Count: 29	Start Value: 0.07229528	End Value: 0.07329528
+Cluster Count: 26	Start Value: 0.07329528	End Value: 0.07429528
+Cluster Count: 31	Start Value: 0.07429528	End Value: 0.07529528
+Cluster Count: 12	Start Value: 0.07529528	End Value: 0.07629528
+Cluster Count: 5	Start Value: 0.07629528	End Value: 0.07729528
+Cluster Count: 3	Start Value: 0.07729528	End Value: 0.07829528
+d62 number of elements:  1000
+	First Element: 0.0713190247262959
+	Sorted
+	First Sorted Distance: 0.0664826019521308
+	Clustering Elements
+Cluster Count: 6	Start Value: 0.0664826	End Value: 0.06748261
+Cluster Count: 25	Start Value: 0.06748261	End Value: 0.0684826
+Cluster Count: 86	Start Value: 0.0684826	End Value: 0.0694826
+Cluster Count: 127	Start Value: 0.0694826	End Value: 0.0704826
+Cluster Count: 159	Start Value: 0.0704826	End Value: 0.0714826
+Cluster Count: 166	Start Value: 0.0714826	End Value: 0.0724826
+Cluster Count: 154	Start Value: 0.0724826	End Value: 0.0734826
+Cluster Count: 124	Start Value: 0.0734826	End Value: 0.0744826
+Cluster Count: 46	Start Value: 0.0744826	End Value: 0.0754826
+Cluster Count: 34	Start Value: 0.0754826	End Value: 0.0764826
+Cluster Count: 33	Start Value: 0.0764826	End Value: 0.0774826
+Cluster Count: 16	Start Value: 0.0774826	End Value: 0.07848261
+Cluster Count: 13	Start Value: 0.07848261	End Value: 0.0794826
+Cluster Count: 5	Start Value: 0.0794826	End Value: 0.0804826
+Cluster Count: 5	Start Value: 0.0804826	End Value: 0.0814826
+Cluster Count: 1	Start Value: 0.0814826	End Value: 0.08248261
+d63 number of elements:  1000
+	First Element: 0.052880312925113
+	Sorted
+	First Sorted Distance: 0.0460299099282103
+	Clustering Elements
+Cluster Count: 3	Start Value: 0.04602991	End Value: 0.04702991
+Cluster Count: 3	Start Value: 0.04702991	End Value: 0.04802991
+Cluster Count: 16	Start Value: 0.04802991	End Value: 0.04902991
+Cluster Count: 46	Start Value: 0.04902991	End Value: 0.05002991
+Cluster Count: 86	Start Value: 0.05002991	End Value: 0.05102991
+Cluster Count: 107	Start Value: 0.05102991	End Value: 0.05202991
+Cluster Count: 137	Start Value: 0.05202991	End Value: 0.05302991
+Cluster Count: 152	Start Value: 0.05302991	End Value: 0.05402991
+Cluster Count: 132	Start Value: 0.05402991	End Value: 0.05502991
+Cluster Count: 104	Start Value: 0.05502991	End Value: 0.05602991
+Cluster Count: 72	Start Value: 0.05602991	End Value: 0.05702991
+Cluster Count: 43	Start Value: 0.05702991	End Value: 0.05802991
+Cluster Count: 41	Start Value: 0.05802991	End Value: 0.05902991
+Cluster Count: 19	Start Value: 0.05902991	End Value: 0.06002991
+Cluster Count: 17	Start Value: 0.06002991	End Value: 0.06102991
+Cluster Count: 7	Start Value: 0.06102991	End Value: 0.06202991
+Cluster Count: 5	Start Value: 0.06202991	End Value: 0.06302991
+Cluster Count: 4	Start Value: 0.06302991	End Value: 0.06402991
+Cluster Count: 3	Start Value: 0.06402991	End Value: 0.06502991
+Cluster Count: 3	Start Value: 0.06502991	End Value: 0.06602991
+d64 number of elements:  1000
+	First Element: 0.0146831635255407
+	Sorted
+	First Sorted Distance: 0.0116105131444856
+	Clustering Elements
+Cluster Count: 2	Start Value: 0.01161051	End Value: 0.01261051
+Cluster Count: 7	Start Value: 0.01261051	End Value: 0.01361051
+Cluster Count: 73	Start Value: 0.01361051	End Value: 0.01461051
+Cluster Count: 160	Start Value: 0.01461051	End Value: 0.01561051
+Cluster Count: 295	Start Value: 0.01561051	End Value: 0.01661051
+Cluster Count: 272	Start Value: 0.01661051	End Value: 0.01761051
+Cluster Count: 108	Start Value: 0.01761051	End Value: 0.01861051
+Cluster Count: 72	Start Value: 0.01861051	End Value: 0.01961051
+Cluster Count: 9	Start Value: 0.01961051	End Value: 0.02061051
+Cluster Count: 2	Start Value: 0.02061051	End Value: 0.02161051
+d65 number of elements:  1000
+	First Element: 0.016576996088624
+	Sorted
+	First Sorted Distance: 0.0112920350451537
+	Clustering Elements
+Cluster Count: 12	Start Value: 0.01129203	End Value: 0.01229203
+Cluster Count: 12	Start Value: 0.01229203	End Value: 0.01329204
+Cluster Count: 157	Start Value: 0.01329204	End Value: 0.01429204
+Cluster Count: 232	Start Value: 0.01429204	End Value: 0.01529204
+Cluster Count: 180	Start Value: 0.01529204	End Value: 0.01629204
+Cluster Count: 281	Start Value: 0.01629204	End Value: 0.01729204
+Cluster Count: 94	Start Value: 0.01729204	End Value: 0.01829204
+Cluster Count: 24	Start Value: 0.01829204	End Value: 0.01929204
+Cluster Count: 8	Start Value: 0.01929204	End Value: 0.02029204
+d66 number of elements:  1000
+	First Element: 0.0527069301540442
+	Sorted
+	First Sorted Distance: 0.0485536276248406
+	Clustering Elements
+Cluster Count: 16	Start Value: 0.04855363	End Value: 0.04955363
+Cluster Count: 53	Start Value: 0.04955363	End Value: 0.05055363
+Cluster Count: 435	Start Value: 0.05055363	End Value: 0.05155363
+Cluster Count: 170	Start Value: 0.05155363	End Value: 0.05255363
+Cluster Count: 273	Start Value: 0.05255363	End Value: 0.05355363
+Cluster Count: 49	Start Value: 0.05355363	End Value: 0.05455363
+Cluster Count: 4	Start Value: 0.05455363	End Value: 0.05555363
+d67 number of elements:  1000
+	First Element: 0.0428819745528683
+	Sorted
+	First Sorted Distance: 0.0400333529167062
+	Clustering Elements
+Cluster Count: 5	Start Value: 0.04003335	End Value: 0.04103335
+Cluster Count: 29	Start Value: 0.04103335	End Value: 0.04203335
+Cluster Count: 115	Start Value: 0.04203335	End Value: 0.04303335
+Cluster Count: 288	Start Value: 0.04303335	End Value: 0.04403335
+Cluster Count: 281	Start Value: 0.04403335	End Value: 0.04503335
+Cluster Count: 182	Start Value: 0.04503335	End Value: 0.04603335
+Cluster Count: 79	Start Value: 0.04603335	End Value: 0.04703335
+Cluster Count: 20	Start Value: 0.04703335	End Value: 0.04803335
+Cluster Count: 1	Start Value: 0.04803335	End Value: 0.04903335
+d68 number of elements:  1000
+	First Element: 0.044473952358873
+	Sorted
+	First Sorted Distance: 0.039901457678198
+	Clustering Elements
+Cluster Count: 14	Start Value: 0.03990146	End Value: 0.04090146
+Cluster Count: 39	Start Value: 0.04090146	End Value: 0.04190146
+Cluster Count: 97	Start Value: 0.04190146	End Value: 0.04290146
+Cluster Count: 267	Start Value: 0.04290146	End Value: 0.04390146
+Cluster Count: 287	Start Value: 0.04390146	End Value: 0.04490146
+Cluster Count: 164	Start Value: 0.04490146	End Value: 0.04590146
+Cluster Count: 107	Start Value: 0.04590146	End Value: 0.04690146
+Cluster Count: 24	Start Value: 0.04690146	End Value: 0.04790146
+Cluster Count: 1	Start Value: 0.04790146	End Value: 0.04890146
+d69 number of elements:  1000
+	First Element: 0.0305848990203085
+	Sorted
+	First Sorted Distance: 0.0275551182834754
+	Clustering Elements
+Cluster Count: 193	Start Value: 0.02755512	End Value: 0.02855512
+Cluster Count: 83	Start Value: 0.02855512	End Value: 0.02955512
+Cluster Count: 429	Start Value: 0.02955512	End Value: 0.03055512
+Cluster Count: 252	Start Value: 0.03055512	End Value: 0.03155512
+Cluster Count: 32	Start Value: 0.03155512	End Value: 0.03255512
+Cluster Count: 11	Start Value: 0.03255512	End Value: 0.03355512
+d70 number of elements:  1000
+	First Element: 0.0539583547281921
+	Sorted
+	First Sorted Distance: 0.0489824587677138
+	Clustering Elements
+Cluster Count: 5	Start Value: 0.04898246	End Value: 0.04998246
+Cluster Count: 36	Start Value: 0.04998246	End Value: 0.05098246
+Cluster Count: 191	Start Value: 0.05098246	End Value: 0.05198246
+Cluster Count: 285	Start Value: 0.05198246	End Value: 0.05298246
+Cluster Count: 348	Start Value: 0.05298246	End Value: 0.05398246
+Cluster Count: 110	Start Value: 0.05398246	End Value: 0.05498246
+Cluster Count: 24	Start Value: 0.05498246	End Value: 0.05598246
+Cluster Count: 1	Start Value: 0.05598246	End Value: 0.05698246
+d71 number of elements:  1000
+	First Element: 0.0405331017496667
+	Sorted
+	First Sorted Distance: 0.0378924078794735
+	Clustering Elements
+Cluster Count: 33	Start Value: 0.03789241	End Value: 0.03889241
+Cluster Count: 140	Start Value: 0.03889241	End Value: 0.03989241
+Cluster Count: 458	Start Value: 0.03989241	End Value: 0.04089241
+Cluster Count: 101	Start Value: 0.04089241	End Value: 0.04189241
+Cluster Count: 251	Start Value: 0.04189241	End Value: 0.04289241
+Cluster Count: 17	Start Value: 0.04289241	End Value: 0.04389241
+d72 number of elements:  1000
+	First Element: 0.0487443132551057
+	Sorted
+	First Sorted Distance: 0.0439786092075715
+	Clustering Elements
+Cluster Count: 8	Start Value: 0.04397861	End Value: 0.04497861
+Cluster Count: 27	Start Value: 0.04497861	End Value: 0.04597861
+Cluster Count: 137	Start Value: 0.04597861	End Value: 0.04697861
+Cluster Count: 253	Start Value: 0.04697861	End Value: 0.04797861
+Cluster Count: 379	Start Value: 0.04797861	End Value: 0.04897861
+Cluster Count: 140	Start Value: 0.04897861	End Value: 0.04997861
+Cluster Count: 53	Start Value: 0.04997861	End Value: 0.05097861
+Cluster Count: 3	Start Value: 0.05097861	End Value: 0.05197861
+d73 number of elements:  1000
+	First Element: 0.0526654957503973
+	Sorted
+	First Sorted Distance: 0.0490508591823503
+	Clustering Elements
+Cluster Count: 34	Start Value: 0.04905086	End Value: 0.05005086
+Cluster Count: 91	Start Value: 0.05005086	End Value: 0.05105086
+Cluster Count: 366	Start Value: 0.05105086	End Value: 0.05205086
+Cluster Count: 295	Start Value: 0.05205086	End Value: 0.05305086
+Cluster Count: 188	Start Value: 0.05305086	End Value: 0.05405086
+Cluster Count: 26	Start Value: 0.05405086	End Value: 0.05505086
+d74 number of elements:  1000
+	First Element: 0.0463216078739499
+	Sorted
+	First Sorted Distance: 0.0429628482100303
+	Clustering Elements
+Cluster Count: 2	Start Value: 0.04296285	End Value: 0.04396285
+Cluster Count: 15	Start Value: 0.04396285	End Value: 0.04496285
+Cluster Count: 97	Start Value: 0.04496285	End Value: 0.04596285
+Cluster Count: 258	Start Value: 0.04596285	End Value: 0.04696285
+Cluster Count: 405	Start Value: 0.04696285	End Value: 0.04796285
+Cluster Count: 140	Start Value: 0.04796285	End Value: 0.04896285
+Cluster Count: 79	Start Value: 0.04896285	End Value: 0.04996285
+Cluster Count: 4	Start Value: 0.04996285	End Value: 0.05096285
+d75 number of elements:  1000
+	First Element: 0.0399302367034421
+	Sorted
+	First Sorted Distance: 0.036984348473763
+	Clustering Elements
+Cluster Count: 39	Start Value: 0.03698435	End Value: 0.03798435
+Cluster Count: 36	Start Value: 0.03798435	End Value: 0.03898435
+Cluster Count: 518	Start Value: 0.03898435	End Value: 0.03998435
+Cluster Count: 250	Start Value: 0.03998435	End Value: 0.04098435
+Cluster Count: 72	Start Value: 0.04098435	End Value: 0.04198435
+Cluster Count: 83	Start Value: 0.04198435	End Value: 0.04298435
+Cluster Count: 2	Start Value: 0.04298435	End Value: 0.04398435
+d76 number of elements:  1000
+	First Element: 0.0205260195040132
+	Sorted
+	First Sorted Distance: 0.0133433096083973
+	Clustering Elements
+Cluster Count: 6	Start Value: 0.01334331	End Value: 0.01434331
+Cluster Count: 11	Start Value: 0.01434331	End Value: 0.01534331
+Cluster Count: 77	Start Value: 0.01534331	End Value: 0.01634331
+Cluster Count: 131	Start Value: 0.01634331	End Value: 0.01734331
+Cluster Count: 235	Start Value: 0.01734331	End Value: 0.01834331
+Cluster Count: 216	Start Value: 0.01834331	End Value: 0.01934331
+Cluster Count: 168	Start Value: 0.01934331	End Value: 0.02034331
+Cluster Count: 89	Start Value: 0.02034331	End Value: 0.02134331
+Cluster Count: 47	Start Value: 0.02134331	End Value: 0.02234331
+Cluster Count: 16	Start Value: 0.02234331	End Value: 0.02334331
+Cluster Count: 3	Start Value: 0.02334331	End Value: 0.02434331
+Cluster Count: 1	Start Value: 0.02434331	End Value: 0.02534331
+d77 number of elements:  1000
+	First Element: 0.0219346529453509
+	Sorted
+	First Sorted Distance: 0.0119625871560142
+	Clustering Elements
+Cluster Count: 2	Start Value: 0.01196259	End Value: 0.01296259
+Cluster Count: 2	Start Value: 0.01296259	End Value: 0.01396259
+Cluster Count: 20	Start Value: 0.01396259	End Value: 0.01496259
+Cluster Count: 37	Start Value: 0.01496259	End Value: 0.01596259
+Cluster Count: 70	Start Value: 0.01596259	End Value: 0.01696259
+Cluster Count: 175	Start Value: 0.01696259	End Value: 0.01796259
+Cluster Count: 182	Start Value: 0.01796259	End Value: 0.01896259
+Cluster Count: 222	Start Value: 0.01896259	End Value: 0.01996259
+Cluster Count: 162	Start Value: 0.01996259	End Value: 0.02096259
+Cluster Count: 82	Start Value: 0.02096259	End Value: 0.02196259
+Cluster Count: 35	Start Value: 0.02196259	End Value: 0.02296259
+Cluster Count: 7	Start Value: 0.02296259	End Value: 0.02396259
+Cluster Count: 2	Start Value: 0.02396259	End Value: 0.02496259
+Cluster Count: 2	Start Value: 0.02496259	End Value: 0.02596259
+d78 number of elements:  1000
+	First Element: 0.0210700939864913
+	Sorted
+	First Sorted Distance: 0.0183939511652588
+	Clustering Elements
+Cluster Count: 10	Start Value: 0.01839395	End Value: 0.01939395
+Cluster Count: 0	Start Value: 0.01939395	End Value: 0.02039395
+Cluster Count: 657	Start Value: 0.02039395	End Value: 0.02139395
+Cluster Count: 199	Start Value: 0.02139395	End Value: 0.02239395
+Cluster Count: 78	Start Value: 0.02239395	End Value: 0.02339395
+Cluster Count: 52	Start Value: 0.02339395	End Value: 0.02439395
+Cluster Count: 4	Start Value: 0.02439395	End Value: 0.02539395
