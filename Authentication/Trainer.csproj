@@ -291,6 +291,7 @@
     </Content>
     <None Include="data\kirk.dwt" />
     <None Include="data\kirk2.dwt" />
+    <None Include="data\kirk3.dwt" />
     <None Include="data\zac.fml" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
