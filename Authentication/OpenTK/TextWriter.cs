@@ -6,7 +6,7 @@
   using System.Drawing.Imaging;
 
   public class TextWriter {
-    private readonly Font TextFont = new Font(FontFamily.GenericSansSerif, 12);
+    private readonly Font TextFont = new Font(FontFamily.GenericMonospace, 12);
     private readonly Bitmap TextBitmap;
     private List<PointF> _positions;
     private List<string> _lines;
