@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="PointCloudWindow.cs" />
     <Compile Include="RecognizeFace.cs" />
+    <Compile Include="Tolerance.cs" />
     <Page Include="BasicAuth.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
