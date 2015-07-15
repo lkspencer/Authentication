@@ -4,12 +4,8 @@
         Title="Authentication" Height="599" Width="1415.833" ResizeMode="CanMinimize" ScrollViewer.CanContentScroll="True">
   <Grid>
     <Image HorizontalAlignment="Left" Height="538" Margin="10,10,0,0" VerticalAlignment="Top" Width="956" Name="ImageViewer" Source="{Binding ImageSource}" />
-        <Label x:Name="trainedPersonLabel" Content="Person Identified" FontSize="20" HorizontalAlignment="Center" Margin="1051,26,10,0" VerticalAlignment="Top" Height="31" Width="349" Padding="5,0"/>
+        <Label x:Name="trainedPersonLabel" Content="Person Identified" HorizontalAlignment="Left" Margin="1051,62,0,0" VerticalAlignment="Top" Height="20" Width="349" Padding="5,0"/>
         <Label x:Name="TrainedPerson" Content="" HorizontalAlignment="Left" Margin="1051,37,0,0" VerticalAlignment="Top" Height="20" Width="349" Padding="5,0,69,0"/>
-    <Image x:Name="person" HorizontalAlignment="Left" Height="313" Margin="971,136,0,0" VerticalAlignment="Top" Width="429" Source="{Binding ThreeDSource}" />
-      
-    <Canvas x:Name="canvas" Width="512" Height="424" Margin="454,136,444,10"/>
-
-
-  </Grid>
+        <Image x:Name="person" HorizontalAlignment="Left" Height="313" Margin="971,87,0,0" VerticalAlignment="Top" Width="429" Source="{Binding ThreeDSource}" />
+    </Grid>
 </Window>

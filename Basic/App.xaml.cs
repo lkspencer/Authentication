@@ -1,4 +1,4 @@
-﻿namespace Trainer {
+﻿namespace Basic {
   using System.Windows;
   using Microsoft.ProjectOxford.Face;
 
@@ -8,13 +8,9 @@
     private static FaceServiceClient instance;
     private static int callCount = 0;
 
-
-
     public static void Initialize(string subscriptionKey) {
       instance = new FaceServiceClient(subscriptionKey);
     }
-
-
 
     public static FaceServiceClient Instance {
       get {

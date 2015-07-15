@@ -155,6 +155,7 @@
     <Content Include="haarcascade\haarcascade_frontalface_default.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="key.txt" />
     <Content Include="libs\OpenTK.Compatibility.dll" />
     <Content Include="libs\OpenTK.dll" />
     <Content Include="libs\OpenTK.GLControl.dll" />
