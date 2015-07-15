@@ -13,12 +13,17 @@ namespace Basic
 
     public partial class SimpleAuth : Window
     {
+        private ColorFrameReader colorFrameReader = null;
+
         KinectSensor _sensor;
-        MultiSourceFrameReader _reader;
+        ColorFrameReader _reader;
         PixelFormat format = PixelFormats.Bgr32;
         Image<Bgr, Byte> imageForCV;
-        Rectangle[] rectArray;
         bool authenticating = false;
+        Bitmap p;
+        Bitmap bm;
+        Rectangle[] rectArray;
+        Rectangle r;
 
         public SimpleAuth()
         {
@@ -29,45 +34,90 @@ namespace Basic
             {
                 _sensor.Open();
             }
-            _reader = _sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Color);
-            _reader.MultiSourceFrameArrived += Reader_MultiSourceFrameArrived;
+            _reader = this._sensor.ColorFrameSource.OpenReader();
+            _reader.FrameArrived += this.Reader_ColorFrameArrived;
+            //Reader_ColorFrameArrived
+
+            //_reader = _sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Color);
+            //_reader.MultiSourceFrameArrived += Reader_MultiSourceFrameArrived;
 
         }
 
-        void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
-        {
 
+
+        private void Reader_ColorFrameArrived(object sender, ColorFrameArrivedEventArgs e)
+        {
             var reference = e.FrameReference.AcquireFrame();
-            using (var frame = reference.ColorFrameReference.AcquireFrame())
+            using (var frame = e.FrameReference.AcquireFrame())
             {
                 if (frame == null)
                 {
                     return;
                 }
-                Bitmap p = BitmapFromSource(ToBitmap(frame));
+                p = BitmapFromSource(ToBitmap(frame));
                 Photo.Source = ToImageSource(frame);
 
                 if (!authenticating)
                 {
-                    
+
                     imageForCV = ToImage(frame);
 
-                    Rectangle[] rectArray;
+
                     rectArray = DetectFace.Detect(imageForCV.Mat, @"haarcascade\haarcascade_eye.xml", @"haarcascade\haarcascade_frontalface_default.xml");
 
                     if (rectArray.Length > 0)
                     {
                         authenticating = true;
-                        Rectangle r = rectArray[0];
+                        r = rectArray[0];
 
-                        Bitmap bm = CropBitmap(p, r.X, r.Y, r.Width, r.Height);
-                        Face.Source = loadBitmap(bm);
+                        Mat roi = new Mat(imageForCV.Mat, r);
+                        Bitmap roiBitmap = roi.Bitmap;
+                        Face.Source = loadBitmap(roiBitmap);
+
+                        //bm = CropBitmap(p, r.X, r.Y, r.Width, r.Height);
+                        //Face.Source = loadBitmap(bm);
                         //authenticating = false;
 
                     }
                 }
             }
         }
+
+
+        //void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
+        //{
+
+        //    var reference = e.FrameReference.AcquireFrame();
+        //    using (var frame = reference.ColorFrameReference.AcquireFrame())
+        //    {
+        //        if (frame == null)
+        //        {
+        //            return;
+        //        }
+        //        p = BitmapFromSource(ToBitmap(frame));
+        //        Photo.Source = ToImageSource(frame);
+
+        //        if (!authenticating)
+        //        {
+
+        //            imageForCV = ToImage(frame);
+
+
+        //            rectArray = DetectFace.Detect(imageForCV.Mat, @"haarcascade\haarcascade_eye.xml", @"haarcascade\haarcascade_frontalface_default.xml");
+
+        //            if (rectArray.Length > 0)
+        //            {
+        //                authenticating = true;
+        //                Rectangle r = rectArray[0];
+
+        //                Bitmap bm = CropBitmap(p, r.X, r.Y, r.Width, r.Height);
+        //                Face.Source = loadBitmap(bm);
+        //                //authenticating = false;
+
+        //            }
+        //        }
+        //    }
+        //}
 
         public static BitmapSource loadBitmap(System.Drawing.Bitmap source)
         {
@@ -160,6 +210,64 @@ namespace Basic
             }
             return bitmap;
         }
+
+
+        //private void ProcessFrame(object sender, EventArgs arg)
+        //{
+        //    Image<Bgr, Byte> frame = _capture.QueryFrame();
+        //    Image<Gray, Byte> gray = frame.Convert<Gray, Byte>(); //Convert it to Grayscale
+
+        //    //normalizes brightness and increases contrast of the image
+        //    gray._EqualizeHist();
+
+        //    //Read the HaarCascade objects
+        //    HaarCascade face = new HaarCascade("haarcascade_frontalface_alt_tree.xml");
+        //    HaarCascade eye = new HaarCascade("haarcascade_eye.xml");
+
+        //    //Detect the faces  from the gray scale image and store the locations as rectangle
+        //    //The first dimensional is the channel
+        //    //The second dimension is the index of the rectangle in the specific channel
+        //    MCvAvgComp[][] facesDetected = gray.DetectHaarCascade(
+        //       face,
+        //       1.1,
+        //       10,
+        //       Emgu.CV.CvEnum.HAAR_DETECTION_TYPE.DO_ROUGH_SEARCH,
+        //       new Size(20, 20));
+
+        //    foreach (MCvAvgComp f in facesDetected[0])
+        //    {
+        //        //draw the face detected in the 0th (gray) channel with blue color
+        //        frame.Draw(f.rect, new Bgr(Color.Blue), 2);
+        //        /*
+        //        //Set the region of interest on the faces
+        //        gray.ROI = f.rect;
+        //        MCvAvgComp[][] eyesDetected = gray.DetectHaarCascade(
+        //           eye,
+        //           1.1,
+        //           10,
+        //           Emgu.CV.CvEnum.HAAR_DETECTION_TYPE.DO_ROUGH_SEARCH,
+        //           new Size(20, 20));
+        //        gray.ROI = Rectangle.Empty;
+
+        //        foreach (MCvAvgComp e in eyesDetected[0])
+        //        {
+        //            Rectangle eyeRect = e.rect;
+        //            eyeRect.Offset(f.rect.X, f.rect.Y);
+        //            frame.Draw(eyeRect, new Bgr(Color.Red), 2);
+
+        //        }*/
+        //    }
+
+        //    pictureBox1.Image = frame.ToBitmap(); Application.DoEvents();
+        //}
+
+
+
+
+
+
+
+
     }
 }
 
