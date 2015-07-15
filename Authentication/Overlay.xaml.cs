@@ -549,7 +549,7 @@
 
         var jss = new JavaScriptSerializer();
         var data = jss.Serialize(dwt);
-        using (var file = new System.IO.StreamWriter(@"data\kirk.dwt")) {
+        using (var file = new System.IO.StreamWriter(@"data\kirk2.dwt")) {
           file.WriteLine(data);
         }
         var asdf = 0;
