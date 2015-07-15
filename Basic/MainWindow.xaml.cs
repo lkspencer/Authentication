@@ -13,7 +13,7 @@
     using System.Linq;
     using System.Drawing;
     using System.Windows.Media.Animation;
-
+    using System.Windows.Threading;
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private Storyboard sb;
@@ -69,7 +69,7 @@
             this.DataContext = this;
             InitializeComponent();
 
-            //this.trainedPersonLabel.Loaded += this.blink;
+            this.trainedPersonLabel.Loaded += this.blink;
             if (File.Exists("key.txt"))
             {
                 this.key = File.ReadAllText("key.txt");
@@ -85,17 +85,38 @@
                 return;
             }
             App.Initialize(this.key);
-
+            Window_Loaded();
+              
 
         }
 
-        //void blink(object sender, EventArgs e)
-        //{
-        //    sb = this.FindResource("FlashBlockTextStoryBoard") as Storyboard;
-        //    Storyboard.SetTargetName(sb, "trainedPersonLabel");
-        //    sb.Begin();
+            DispatcherTimer timer = new DispatcherTimer();
+        private void Window_Loaded()
+        {
+            timer.Tick += timer_Tick;
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+            timer.Start();
+        }
 
-        //}
+        private bool BlinkOn = false;
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            if (BlinkOn)
+            {
+                trainedPersonLabel.Foreground = new SolidColorBrush(Colors.Black);
+            }
+            else
+            {
+                trainedPersonLabel.Foreground = new SolidColorBrush(Colors.White);
+            }
+            BlinkOn = !BlinkOn;
+        }
+        void blink(object sender, EventArgs e)
+        {
+            sb = this.FindResource("FlashBlockTextStoryBoard") as Storyboard;
+            
+
+        }
         private async void Reader_ColorFrameArrived(object sender, ColorFrameArrivedEventArgs e)
         {
             // ColorFrame is IDisposable
@@ -241,6 +262,10 @@
 
         void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
+
+            timer.Stop();
+
+            trainedPersonLabel.Foreground = new SolidColorBrush(Colors.Black);
             trainedPersonLabel.Content = "Authenticating";
             status.Content = "";
             office.Content = "";
