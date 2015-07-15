@@ -310,11 +310,12 @@
       }
     }
 
-    private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors, int matched, int lineMatches) {
+    private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors, int matched, int lineMatches, string name) {
       if (!showMask) return;
       if (matched > 0) tw.Update(4, String.Format("Dot Match: {0}", matched));
       var length = cameraSpacePoints.Length;
       hdFaceColors = colors;
+      tw.Update(5, "Name: " + name);
       tw.Update(6, String.Format("Line Matches: {0}", lineMatches));
       // tip of the nose
       //hdFaceColors[18] = 0x00ffff;
