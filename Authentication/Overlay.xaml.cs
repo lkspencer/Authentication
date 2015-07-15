@@ -552,8 +552,9 @@
         using (var file = new System.IO.StreamWriter(@"data\kirk.dwt")) {
           file.WriteLine(data);
         }
+        var asdf = 0;
+        asdf++;
       }
-
       if (this.OnHdFaceUpdated != null) {
         this.OnHdFaceUpdated(
           hdFaceVertices,
