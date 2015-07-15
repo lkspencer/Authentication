@@ -16,7 +16,7 @@
 
   public partial class Overlay : Window, INotifyPropertyChanged {
     public delegate void VerticesUpdated(CameraSpacePoint[] vertices, int[] colors);
-    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched, double w, double x, double y, double z);
+    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched);
     public delegate void TwoDMatchFound(string name);
     public event VerticesUpdated OnVerticesUpdated;
     public event HdFaceUpdated OnHdFaceUpdated;
@@ -52,8 +52,8 @@
     private bool faceCaptured = false;
     // Depth Variables
     private DepthFrameReader depthFrameReader = null;
-    private ushort minDepth = 500;
-    private ushort maxDepth = 750;
+    private ushort minDepth = 750;
+    private ushort maxDepth = 1000;
     private double multiplier;
     private ushort[] depthData;
     private Image depthCanvasImage = new Image();
@@ -191,9 +191,12 @@
       var frame = e.FrameReference.AcquireFrame();
       if (frame != null && frame.FaceFrameResult != null && frame.FaceFrameResult.FaceBoundingBoxInColorSpace != null) {
         if (faceCaptured) return;
+
+        faceCaptured = true;
+        LoadSavedFaceMesh(@"data\kirk.fml");
+        /*
         using (var colorFrame = frame.ColorFrameReference.AcquireFrame()) {
           if (colorFrame == null) return;
-          faceCaptured = true;
           var left = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Left - 150;
           left = left < 0 ? 0 : left;
           var top = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Top - 150;
@@ -219,6 +222,7 @@
           SaveImage(left, top, width, height);
           Match2D(left, top, width, height).ConfigureAwait(continueOnCapturedContext: true);
         }
+        //*/
       }
 
     }
@@ -313,9 +317,19 @@
     }
 
     private Vector4 orientation;
-    Queue<double> d1 = new Queue<double>(100);
-    Queue<double> d2 = new Queue<double>(100);
-    Queue<double> d3 = new Queue<double>(100);
+    Queue<double> d1 = new Queue<double>(1000);
+    Queue<double> d2 = new Queue<double>(1000);
+    Queue<double> d3 = new Queue<double>(1000);
+    Queue<double> d4 = new Queue<double>(1000);
+    Queue<double> d5 = new Queue<double>(1000);
+    Queue<double> d6 = new Queue<double>(1000);
+    Queue<double> d7 = new Queue<double>(1000);
+    Queue<double> d8 = new Queue<double>(1000);
+    Queue<double> d9 = new Queue<double>(1000);
+    Queue<double> d10 = new Queue<double>(1000);
+    Queue<double> d11 = new Queue<double>(1000);
+    Queue<double> d12 = new Queue<double>(1000);
+    DistanceWeightTolerance[] dwt = new DistanceWeightTolerance[12000];
     private void UpdateFacePoints() {
       if (highDefinitionFaceModel == null) return;
 
@@ -415,23 +429,136 @@
       //HighDetailFacePoints_NoseTopleft = 151,
       //HighDetailFacePoints_NoseTopright = 772,
 
-      d1.Enqueue(GetMaskPointDistance(18, 24));
+      d1.Enqueue(GetMaskPointDistance(18, 210));
       d2.Enqueue(GetMaskPointDistance(18, 469));
-      d3.Enqueue(GetMaskPointDistance(24, 469));
-      if (d1.Count > 100) {
+      d3.Enqueue(GetMaskPointDistance(18, 843));
+      d4.Enqueue(GetMaskPointDistance(18, 1117));
+      d5.Enqueue(GetMaskPointDistance(18, 140));
+      d6.Enqueue(GetMaskPointDistance(18, 758));
+      d7.Enqueue(GetMaskPointDistance(18, 14));
+      d8.Enqueue(GetMaskPointDistance(18, 156));
+      d9.Enqueue(GetMaskPointDistance(18, 783));
+      d10.Enqueue(GetMaskPointDistance(18, 24));
+      d11.Enqueue(GetMaskPointDistance(18, 151));
+      d12.Enqueue(GetMaskPointDistance(18, 772));
+      if (d1.Count > 1000) {
         d1.Dequeue();
         d2.Dequeue();
         d3.Dequeue();
+        d4.Dequeue();
+        d5.Dequeue();
+        d6.Dequeue();
+        d7.Dequeue();
+        d8.Dequeue();
+        d9.Dequeue();
+        d10.Dequeue();
+        d11.Dequeue();
+        d12.Dequeue();
       }
+      if (dwt[0] == null) {
+        for (int i = 0; i < 12000; i++) {
+          dwt[i] = new DistanceWeightTolerance();
+        }
+      }
+      if (d1.Count == 1000) {
+        int index = 0;
+        for (int i = 0; i < 12; i++) {
+          for (int j = 0; j < 1000; j++) {
+            switch (i) {
+              case 0:
+                dwt[index].Distance = d1.ElementAt(j);
+                break;
+              case 1:
+                dwt[index].Distance = d2.ElementAt(j);
+                break;
+              case 2:
+                dwt[index].Distance = d3.ElementAt(j);
+                break;
+              case 3:
+                dwt[index].Distance = d4.ElementAt(j);
+                break;
+              case 4:
+                dwt[index].Distance = d5.ElementAt(j);
+                break;
+              case 5:
+                dwt[index].Distance = d6.ElementAt(j);
+                break;
+              case 6:
+                dwt[index].Distance = d7.ElementAt(j);
+                break;
+              case 7:
+                dwt[index].Distance = d8.ElementAt(j);
+                break;
+              case 8:
+                dwt[index].Distance = d9.ElementAt(j);
+                break;
+              case 9:
+                dwt[index].Distance = d10.ElementAt(j);
+                break;
+              case 10:
+                dwt[index].Distance = d11.ElementAt(j);
+                break;
+              case 11:
+                dwt[index].Distance = d12.ElementAt(j);
+                break;
+            }
+            index++;
+          }
+        }
+
+        /*
+        dwt[0].Min = d1.Min();
+        dwt[1].Min = d2.Min();
+        dwt[2].Min = d3.Min();
+        dwt[3].Min = d4.Min();
+        dwt[4].Min = d5.Min();
+        dwt[5].Min = d6.Min();
+        dwt[6].Min = d7.Min();
+        dwt[7].Min = d8.Min();
+        dwt[8].Min = d9.Min();
+        dwt[9].Min = d10.Min();
+        dwt[10].Min = d11.Min();
+        dwt[11].Min = d12.Min();
+
+        dwt[0].Max = d1.Max();
+        dwt[1].Max = d2.Max();
+        dwt[2].Max = d3.Max();
+        dwt[3].Max = d4.Max();
+        dwt[4].Max = d5.Max();
+        dwt[5].Max = d6.Max();
+        dwt[6].Max = d7.Max();
+        dwt[7].Max = d8.Max();
+        dwt[8].Max = d9.Max();
+        dwt[9].Max = d10.Max();
+        dwt[10].Max = d11.Max();
+        dwt[11].Max = d12.Max();
+
+        dwt[0].Distance = d1.OrderBy(d => d).ElementAt(499);
+        dwt[1].Distance = d2.OrderBy(d => d).ElementAt(499);
+        dwt[2].Distance = d3.OrderBy(d => d).ElementAt(499);
+        dwt[3].Distance = d4.OrderBy(d => d).ElementAt(499);
+        dwt[4].Distance = d5.OrderBy(d => d).ElementAt(499);
+        dwt[5].Distance = d6.OrderBy(d => d).ElementAt(499);
+        dwt[6].Distance = d7.OrderBy(d => d).ElementAt(499);
+        dwt[7].Distance = d8.OrderBy(d => d).ElementAt(499);
+        dwt[8].Distance = d9.OrderBy(d => d).ElementAt(499);
+        dwt[9].Distance = d10.OrderBy(d => d).ElementAt(499);
+        dwt[10].Distance = d11.OrderBy(d => d).ElementAt(499);
+        dwt[11].Distance = d12.OrderBy(d => d).ElementAt(499);
+        //*/
+
+        var jss = new JavaScriptSerializer();
+        var data = jss.Serialize(dwt);
+        using (var file = new System.IO.StreamWriter(@"data\kirk.dwt")) {
+          file.WriteLine(data);
+        }
+      }
+
       if (this.OnHdFaceUpdated != null) {
         this.OnHdFaceUpdated(
           hdFaceVertices,
           hdFaceColors,
-          matched,
-          d1.Average(),
-          d2.Average(),
-          d3.Average(),
-          highdefinitionFaceAlignment.FaceOrientation.Z);
+          matched);
       }
     }
 
@@ -453,7 +580,7 @@
       int depthIndex2 = (int)((Math.Round(p2.Y) * depthWidth) + Math.Round(p2.X));
 
       if (goodFrame) {
-        return Math.Floor(VectorDistance(depthVertices[depthIndex1], depthVertices[depthIndex2]) * 10000) / 10000;
+        return VectorDistance(depthVertices[depthIndex1], depthVertices[depthIndex2]);
       }
 
       return 0;
@@ -635,6 +762,7 @@
             OnTwoDMatchFound(name);
             var fileName = String.Format(@"data\{0}.fml", name);
             if (File.Exists(fileName)) {
+              faceCaptured = true;
               LoadSavedFaceMesh(fileName);
             } else {
               matchName.Content = String.Format("No saved mesh for {0}.", name);
