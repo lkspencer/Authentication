@@ -53,13 +53,14 @@
       overlay.OnTwoDMatchFound += Overlay_OnTwoDMatchFound;
 
       // setup on screen text
-      tw = new TextWriter(new Size(1024, 768), new Size(500, 160));
+      tw = new TextWriter(new Size(1024, 768), new Size(500, 190));
       tw.AddLine("Camera Angle", new System.Drawing.PointF(10.0f, 10.0f), Brushes.White);
       tw.AddLine("facing, pitch", new System.Drawing.PointF(10.0f, 30.0f), Brushes.White);
       tw.AddLine("Camera Location", new System.Drawing.PointF(10.0f, 60.0f), Brushes.White);
       tw.AddLine("X: Y: Z", new System.Drawing.PointF(10.0f, 80.0f), Brushes.White);
       tw.AddLine("Dot Match:", new System.Drawing.PointF(10.0f, 110.0f), Brushes.White);
       tw.AddLine("Name:", new System.Drawing.PointF(10.0f, 140.0f), Brushes.White);
+      tw.AddLine("Line Matches:", new System.Drawing.PointF(10.0f, 170.0f), Brushes.White);
     }
 
 
@@ -309,11 +310,12 @@
       }
     }
 
-    private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors, int matched) {
+    private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors, int matched, int lineMatches) {
       if (!showMask) return;
       if (matched > 0) tw.Update(4, String.Format("Dot Match: {0}", matched));
       var length = cameraSpacePoints.Length;
       hdFaceColors = colors;
+      tw.Update(6, String.Format("Line Matches: {0}", lineMatches));
       // tip of the nose
       //hdFaceColors[18] = 0x00ffff;
       // top of the nose

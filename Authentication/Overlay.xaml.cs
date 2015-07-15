@@ -16,7 +16,7 @@
 
   public partial class Overlay : Window, INotifyPropertyChanged {
     public delegate void VerticesUpdated(CameraSpacePoint[] vertices, int[] colors);
-    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched);
+    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched, int lineMatches);
     public delegate void TwoDMatchFound(string name);
     public event VerticesUpdated OnVerticesUpdated;
     public event HdFaceUpdated OnHdFaceUpdated;
@@ -44,8 +44,9 @@
     private bool isColor = false;
     int[] imageIntColors;
     // Saved HD Face Variables
-    private List<System.Windows.Shapes.Ellipse> savedDots = new List<System.Windows.Shapes.Ellipse>();
-    private CameraSpacePoint[] savedVertices = null;
+    //private List<System.Windows.Shapes.Ellipse> savedDots = new List<System.Windows.Shapes.Ellipse>();
+    //private CameraSpacePoint[] savedVertices = null;
+    private FaceModelLayout fml = null;
     // Face Frame Variables
     private FaceFrameSource faceFrameSource = null;
     private FaceFrameReader faceFrameReader = null;
@@ -426,9 +427,9 @@
         var count = defaultVertices.Count;
         for (int i = 0; i < count; i++) {
           // align saved vertice with live face
-          tempVertice.X = savedVertices[i].X - (defaultVertices[i].X - vertices[i].X);
-          tempVertice.Y = savedVertices[i].Y - (defaultVertices[i].Y - vertices[i].Y);
-          tempVertice.Z = savedVertices[i].Z - (defaultVertices[i].Z - vertices[i].Z);
+          tempVertice.X = fml.SavedVertices[i].X - (defaultVertices[i].X - vertices[i].X);
+          tempVertice.Y = fml.SavedVertices[i].Y - (defaultVertices[i].Y - vertices[i].Y);
+          tempVertice.Z = fml.SavedVertices[i].Z - (defaultVertices[i].Z - vertices[i].Z);
 
           hdFaceVertices[i].X = tempVertice.X;
           hdFaceVertices[i].Y = tempVertice.Y;
@@ -469,7 +470,17 @@
 
       for (int i = 0; i < 78; i++) {
         distances[i].Enqueue(GetMaskPointDistance(linePoints[i].Item1, linePoints[i].Item2));
-        if (distances[i].Count == 30) distances[i].Dequeue();
+        if (distances[i].Count == 31) distances[i].Dequeue();
+      }
+
+      int totalMatchCount = 0;
+      if (distances != null && distances.Count > 0 && distances[0].Count == 30) {
+        for (int i = 0; i < 78; i++) {
+          var median = distances[i].OrderBy(d => d).ElementAt(15);
+          if (median >= fml.Tolerances[i].Min && median <= fml.Tolerances[i].Max) {
+            totalMatchCount++;
+          }
+        }
       }
 
 
@@ -584,7 +595,8 @@
         this.OnHdFaceUpdated(
           hdFaceVertices,
           hdFaceColors,
-          matched);
+          matched,
+          totalMatchCount);
       }
     }
 
@@ -697,15 +709,16 @@
       // load in saved face mesh
       var jss = new JavaScriptSerializer();
       using (var file = new System.IO.StreamReader(path)) {
-        var data = file.ReadLine();
-        savedVertices = jss.Deserialize<CameraSpacePoint[]>(data);
+        var data = file.ReadToEnd();
+        fml = jss.Deserialize<FaceModelLayout>(data);
+        //savedVertices = jss.Deserialize<CameraSpacePoint[]>(data);
       }
 
       var averageModel = new FaceModel();
       var defaultAlignment = new FaceAlignment();
       defaultVertices = averageModel.CalculateVerticesForAlignment(defaultAlignment);
-
-      var length = savedVertices.Length;
+      /*
+      var length = fml.SavedVertices.Length;
       for (int i = 0; i < length; i++) {
         System.Windows.Shapes.Ellipse ellipse = null;
         ellipse = new System.Windows.Shapes.Ellipse {
@@ -718,6 +731,7 @@
       foreach (System.Windows.Shapes.Ellipse ellipse in savedDots) {
         canvas.Children.Add(ellipse);
       }
+      */
     }
 
     public static System.Drawing.Bitmap ScaleImage(System.Drawing.Bitmap image, int maxWidth, int maxHeight) {
