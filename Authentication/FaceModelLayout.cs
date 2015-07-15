@@ -5,7 +5,7 @@
 
   public class FaceModelLayout {
 
-    public List<Tuple<double, double>> Tolerances { get; set; }
+    public Tolerance[] Tolerances { get; set; }
     public CameraSpacePoint[] SavedVertices { get; set; }
 
   }

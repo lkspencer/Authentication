@@ -16,7 +16,7 @@
 
   public partial class Overlay : Window, INotifyPropertyChanged {
     public delegate void VerticesUpdated(CameraSpacePoint[] vertices, int[] colors);
-    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched);
+    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched, int lineMatches);
     public delegate void TwoDMatchFound(string name);
     public event VerticesUpdated OnVerticesUpdated;
     public event HdFaceUpdated OnHdFaceUpdated;
@@ -470,7 +470,17 @@
 
       for (int i = 0; i < 78; i++) {
         distances[i].Enqueue(GetMaskPointDistance(linePoints[i].Item1, linePoints[i].Item2));
-        if (distances[i].Count == 30) distances[i].Dequeue();
+        if (distances[i].Count == 31) distances[i].Dequeue();
+      }
+
+      int totalMatchCount = 0;
+      if (distances != null && distances.Count > 0 && distances[0].Count == 30) {
+        for (int i = 0; i < 78; i++) {
+          var median = distances[i].OrderBy(d => d).ElementAt(15);
+          if (median >= fml.Tolerances[i].Min && median <= fml.Tolerances[i].Max) {
+            totalMatchCount++;
+          }
+        }
       }
 
 
@@ -585,7 +595,8 @@
         this.OnHdFaceUpdated(
           hdFaceVertices,
           hdFaceColors,
-          matched);
+          matched,
+          totalMatchCount);
       }
     }
 
@@ -698,7 +709,7 @@
       // load in saved face mesh
       var jss = new JavaScriptSerializer();
       using (var file = new System.IO.StreamReader(path)) {
-        var data = file.ReadLine();
+        var data = file.ReadToEnd();
         fml = jss.Deserialize<FaceModelLayout>(data);
         //savedVertices = jss.Deserialize<CameraSpacePoint[]>(data);
       }
