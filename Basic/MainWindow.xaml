@@ -4,17 +4,11 @@
         Title="Authentication" Height="599" Width="1415.833" ResizeMode="CanMinimize" ScrollViewer.CanContentScroll="True">
   <Grid>
     <Image HorizontalAlignment="Left" Height="538" Margin="10,10,0,0" VerticalAlignment="Top" Width="956" Name="ImageViewer" Source="{Binding ImageSource}" />
-    <Button x:Name="Train" Content="Train" HorizontalAlignment="Left" Margin="971,37,0,0" VerticalAlignment="Top" Width="75" Click="Train_Click" RenderTransformOrigin="0.467,-1.55" IsEnabled="{Binding !IsTraining}" />
-    <TextBox x:Name="NameTextBox" HorizontalAlignment="Left" Height="23" Margin="971,9,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-    <ToggleButton x:Name="Predict" Content="Predict" HorizontalAlignment="Left" Margin="971,62,0,0" VerticalAlignment="Top" Width="75" Click="Predict_Click"/>
-    <Label x:Name="TrainMessage" Content="" HorizontalAlignment="Left" Margin="1051,37,0,0" VerticalAlignment="Top" Height="20" Width="349" Padding="5,0,69,0"/>
-    <Label x:Name="PredictMessage" Content="" HorizontalAlignment="Left" Margin="1051,62,0,0" VerticalAlignment="Top" Height="20" Width="349" Padding="5,0"/>
-    <Image x:Name="PointCloud" HorizontalAlignment="Left" Height="313" Margin="971,87,0,0" VerticalAlignment="Top" Width="429" Source="{Binding ThreeDSource}" />
+        <Label x:Name="trainedPersonLabel" Content="Person Identified" FontSize="20" HorizontalAlignment="Center" Margin="1051,26,10,0" VerticalAlignment="Top" Height="31" Width="349" Padding="5,0"/>
+        <Label x:Name="TrainedPerson" Content="" HorizontalAlignment="Left" Margin="1051,37,0,0" VerticalAlignment="Top" Height="20" Width="349" Padding="5,0,69,0"/>
+    <Image x:Name="person" HorizontalAlignment="Left" Height="313" Margin="971,136,0,0" VerticalAlignment="Top" Width="429" Source="{Binding ThreeDSource}" />
+      
     <Canvas x:Name="canvas" Width="512" Height="424" Margin="454,136,444,10"/>
-    <Label x:Name="Distance1Label" Content="Label" HorizontalAlignment="Left" Margin="971,405,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.746,0.5" Width="429"/>
-    <Label x:Name="Distance2Label" Content="Label" HorizontalAlignment="Left" Margin="971,436,0,0" VerticalAlignment="Top" Width="429"/>
-    <Label x:Name="Distance3Label" Content="Label" HorizontalAlignment="Left" Margin="971,467,0,0" VerticalAlignment="Top" Width="429"/>
-    <Label x:Name="label" Content="{Binding AverageFaceDepth}" HorizontalAlignment="Left" Margin="971,498,0,0" VerticalAlignment="Top" Width="429" />
 
 
   </Grid>

@@ -99,6 +99,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AnotherTest.xaml.cs">
+      <DependentUpon>AnotherTest.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ColorBitmapGenerator.cs" />
     <Compile Include="DetectFace.cs" />
     <Compile Include="Extensions\CameraSpacePointExtensions.cs" />
@@ -107,6 +110,10 @@
     <Compile Include="SimpleAuth.xaml.cs">
       <DependentUpon>SimpleAuth.xaml</DependentUpon>
     </Compile>
+    <Page Include="AnotherTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -359,6 +366,7 @@
     <Content Include="NuiDatabase\HDFaceTracker\WholeHeadModel\FullHeadMaskVertexCorrespondence.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="photos\kirk.jpg" />
     <Content Include="x64\cvextern.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
