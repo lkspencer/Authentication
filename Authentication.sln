@@ -11,10 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic", "Basic\Basic.csproj", "{F7D95780-1943-4718-A68E-42D5BF340725}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FaceAnalysis", "..\FaceAnalysis\FaceAnalysis\FaceAnalysis\FaceAnalysis.csproj", "{467D5435-EDDA-4116-8064-FCF1B5FB35BA}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -36,6 +35,10 @@ Global
 		{F7D95780-1943-4718-A68E-42D5BF340725}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7D95780-1943-4718-A68E-42D5BF340725}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7D95780-1943-4718-A68E-42D5BF340725}.Release|Any CPU.Build.0 = Release|Any CPU
+		{467D5435-EDDA-4116-8064-FCF1B5FB35BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{467D5435-EDDA-4116-8064-FCF1B5FB35BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{467D5435-EDDA-4116-8064-FCF1B5FB35BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{467D5435-EDDA-4116-8064-FCF1B5FB35BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
