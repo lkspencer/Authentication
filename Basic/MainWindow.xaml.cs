@@ -81,7 +81,7 @@
             }
             App.Initialize(this.key);
 
-            
+
         }
 
         private async void Reader_ColorFrameArrived(object sender, ColorFrameArrivedEventArgs e)
@@ -106,9 +106,6 @@
                                 ColorImageFormat.Bgra);
 
                             this.colorBitmap.AddDirtyRect(new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight));
-
-
-
                         }
 
                         this.colorBitmap.Unlock();
@@ -116,13 +113,47 @@
                         if (capturingFrame)
                         {
                             SaveImage(this.colorBitmap);
-                            faceBoxes = await SendToOxford(false);
+                            //faceBoxes = await SendToOxford(false);
+                            await SendToOxford();
                             capturingFrame = false;
                         }
                     }
                 }
             }
         }
+
+        private async Task SendToOxford()
+        {
+            if (!File.Exists("face.png")) return;
+            try
+            {
+                using (var fStream = File.OpenRead("face.png"))
+                {
+                    var faces = await App.Instance.DetectAsync(fStream);
+                    var faceIds = faces.Select(face => face.FaceId).ToArray();
+                    var results = await App.Instance.IdentifyAsync("19a8c628-343d-4df6-a751-a83d7381d122", faceIds, 1);
+
+                    //Console.WriteLine("Result of face: {0}", results[0].FaceId);
+                    if (results[0].Candidates.Length == 0)
+                        {
+                            TrainedPerson.Content = "No Match Found";
+                        }
+                        else
+                        {
+                            var candidateId = results[0].Candidates[0].PersonId;
+                            var person = await App.Instance.GetPersonAsync("19a8c628-343d-4df6-a751-a83d7381d122", candidateId);
+                            TrainedPerson.Content = "Identified as " + person.Name;
+                        }
+                }
+            }
+            catch (Exception e)
+            {
+                TrainedPerson.Content = e.InnerException + " " + e.Message;
+                return;
+            }
+        }
+
+
 
         private async Task<FaceRectangle[]> SendToOxford(bool training)
         {
@@ -135,6 +166,7 @@
 
                     var faceRects = faces.Select(face => face.FaceRectangle);
                     return faceRects.ToArray();
+
                 }
             }
 
