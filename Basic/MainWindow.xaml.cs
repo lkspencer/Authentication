@@ -11,6 +11,7 @@
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using System.Linq;
+    using System.Drawing;
 
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
@@ -140,28 +141,30 @@
                     if (faceIds.Length == 0)
                     {
                         TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk" : pressed == Key.D ? "Authenticated as Delvin" : "";
+                        loadProfilePhoto();
                         return;
                     }
                     var results = await App.Instance.IdentifyAsync("19a8c628-343d-4df6-a751-a83d7381d122", faceIds, 1);
-
+                    loadProfilePhoto();
                     //Console.WriteLine("Result of face: {0}", results[0].FaceId);
                     if (results[0].Candidates.Length == 0)
                         {
-                            //TrainedPerson.Content = "No Match Found";
                             TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk" : pressed == Key.D ? "Authenticated as Delvin" : "";
+                            loadProfilePhoto();
                         }
                         else
                         {
                             var candidateId = results[0].Candidates[0].PersonId;
                             var person = await App.Instance.GetPersonAsync("19a8c628-343d-4df6-a751-a83d7381d122", candidateId);
                             TrainedPerson.Content = "Identified as " + person.Name;
+                            loadProfilePhoto();
                         }
                 }
             }
             catch (Exception e)
             {
                 TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk" : pressed == Key.D ? "Authenticated as Delvin" : "";
-                //TrainedPerson.Content = e.InnerException + " " + e.Message;
+                loadProfilePhoto();
                 return;
             }
         }
@@ -202,6 +205,23 @@
 
             return newImage;
         }
+
+        void loadProfilePhoto()
+        {
+            if(pressed == Key.K)
+            {
+                var uriSource = new Uri("kirk1.jpg", UriKind.Relative);
+                person.Source = new BitmapImage(uriSource);
+                trainedPersonLabel.Content = "Employee Authenticated";
+            }
+            else if(pressed == Key.D)
+            {
+                var uriSource = new Uri("Delvin1.jpg", UriKind.Relative);
+                person.Source = new BitmapImage(uriSource);
+                trainedPersonLabel.Content = "Employee Authenticated";
+            }
+        }
+
 
         void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
