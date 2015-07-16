@@ -56,7 +56,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="data\CSVdata.csv" />
+    <None Include="data\kirk.dwt" />
+    <None Include="data\kirk2.dwt" />
+    <None Include="data\kirk3.dwt" />
+    <None Include="data\kirk4.dwt" />
+    <None Include="data\Tolerance.json" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="data\BulkClusterData.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

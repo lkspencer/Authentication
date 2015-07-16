@@ -1,19 +1,33 @@
 ﻿<Window x:Class="Basic.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Authentication" Height="599" Width="1500" ResizeMode="CanMinimize" ScrollViewer.CanContentScroll="True">
+        Title="Authentication" Height="700" Width="1500" ResizeMode="CanMinimize" ScrollViewer.CanContentScroll="True">
+    <Window.Resources>
+        <Storyboard x:Key="FlashBlockTextStoryBoard" Storyboard.TargetName="trainedPersonLabel" Storyboard.TargetProperty="Visability">
+            <ObjectAnimationUsingKeyFrames RepeatBehavior="Forever">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Hidden}" />
+                <DiscreteObjectKeyFrame KeyTime="0:0:1"   Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
 
-    <StackPanel Orientation="Horizontal">
-        <Image HorizontalAlignment="Left" Height="538" Margin="10,10,0,0" VerticalAlignment="Top" Width="950" Name="ImageViewer" Source="{Binding ImageSource}" />
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Width="530">
+        </Storyboard>
+    </Window.Resources>
+    <StackPanel Orientation="Vertical">
+        <Canvas Height="100">
+        <TextBlock Height="100" Canvas.Left="600" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="36" Padding="30,30,0,0">2D Authenticator</TextBlock>
+            <TextBlock Height="100" Canvas.Left="602" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="36" Padding="30,30,0,0" Foreground="#FFCC0717">
+                2D Authenticator</TextBlock>
+        </Canvas>
+        <StackPanel Orientation="Horizontal">
+            <Image HorizontalAlignment="Left" Height="538" Margin="10,10,0,0" VerticalAlignment="Top" Width="950" Name="ImageViewer" Source="{Binding ImageSource}" />
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Width="530">
 
-
-            <Label x:Name="trainedPersonLabel" Content="Waiting To Scan..." FontSize="30" HorizontalAlignment="center" VerticalAlignment="Top" Padding="5,0" Margin="0,20,0,0"/>
-            <Label x:Name="TrainedPerson" Content="" HorizontalAlignment="Center"  FontSize="25"  VerticalAlignment="Top"  Padding="5,0,0,0" Margin="0,10,0,0"/>
-            <Image x:Name="person" HorizontalAlignment="Center" Height="248" Width="300" VerticalAlignment="Top" Margin="0,20,0,0" OpacityMask="Gray" />
-            <Label x:Name="jobTitle" Content="" HorizontalAlignment="Center"  FontSize="20"  VerticalAlignment="Top"  Padding="5,0,0,0" Margin="0,10,0,0"/>
-            <Label x:Name="office" Content="" HorizontalAlignment="Center"  FontSize="20"  VerticalAlignment="Top"  Padding="5,0,0,0" Margin="0,10,0,0"/>
-            <Label x:Name="status" Content="" HorizontalAlignment="Center"  FontSize="20"  VerticalAlignment="Top"  Padding="5,0,0,0" Margin="0,10,0,0"/>
+                <Label x:Name="trainedPersonLabel" Content="Waiting To Scan..." FontSize="30" HorizontalAlignment="center" VerticalAlignment="Top" Padding="5,0" Margin="0,20,0,0"/>
+                <Label x:Name="TrainedPerson" Content="" HorizontalAlignment="Center"  FontSize="25"  VerticalAlignment="Top"  Padding="5,0,0,0" Margin="0,10,0,0"/>
+                <Image x:Name="person" HorizontalAlignment="Center" Height="248" Width="300" VerticalAlignment="Top" Margin="0,20,0,0" OpacityMask="Gray" />
+                <Label x:Name="jobTitle" Content="" HorizontalAlignment="Center"  FontSize="20"  VerticalAlignment="Top"  Padding="5,0,0,0" Margin="0,10,0,0"/>
+                <Label x:Name="office" Content="" HorizontalAlignment="Center"  FontSize="20"  VerticalAlignment="Top"  Padding="5,0,0,0" Margin="0,10,0,0"/>
+                <Label x:Name="status" Content="" HorizontalAlignment="Center"  FontSize="20"  VerticalAlignment="Top"  Padding="5,0,0,0" Margin="0,10,0,0"/>
+            </StackPanel>
         </StackPanel>
     </StackPanel>
 </Window>
