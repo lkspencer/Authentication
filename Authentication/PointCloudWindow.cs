@@ -39,6 +39,13 @@
     private bool showMask = true;
     private bool showPointCloud = true;
     private float hdDotSize = 3.0f;
+    private CameraSpacePoint[] hdFaceMask;
+    private float minx = 0;
+    private float maxx = 0;
+    private float miny = 0;
+    private float maxy = 0;
+    private float minz = 0;
+    private float maxz = 0;
 
 
 
@@ -255,13 +262,48 @@
 
     private void Overlay_OnVerticesUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors) {
       if (!showPointCloud) return;
+
+      minx = -10000;
+      maxx = 10000;
+      miny = -10000;
+      maxy = 10000;
+      minz = 10000;
+      maxz = 10000;
+      if (hdFaceMask != null) {
+        var masklength = hdFaceMask.Length;
+        for (int i = 0; i < masklength; i++) {
+          if (i == 0) {
+            minx = hdFaceMask[i].X;
+            maxx = hdFaceMask[i].X;
+            miny = hdFaceMask[i].Y;
+            maxy = hdFaceMask[i].Y;
+          }
+          if (hdFaceMask[i].X > maxx) maxx = hdFaceMask[i].X;
+          if (hdFaceMask[i].X < minx) minx = hdFaceMask[i].X;
+          if (hdFaceMask[i].Y > maxy) maxy = hdFaceMask[i].Y;
+          if (hdFaceMask[i].Y < miny) miny = hdFaceMask[i].Y;
+          if (hdFaceMask[i].Z > maxz) maxz = hdFaceMask[i].Z;
+          if (hdFaceMask[i].Z < minz) minz = hdFaceMask[i].Z;
+        }
+        maxy += 0.1f;
+        maxz -= 0.01f;
+        minz -= 0.01f;
+      }
+
+
       var length = cameraSpacePoints.Length;
       depthColors = colors;
       if (depthVectors == null) {
         depthVectors = new Vector3[length];
         depth_verticeCount = length;
         for (int i = 0; i < length; i++) {
+          if (cameraSpacePoints[i].X >= minx && cameraSpacePoints[i].X <= maxx
+            && cameraSpacePoints[i].Y >= miny && cameraSpacePoints[i].Y <= maxy
+            && cameraSpacePoints[i].Z >= minz && cameraSpacePoints[i].Z <= maxz) {
           depthVectors[i] = new Vector3(cameraSpacePoints[i].X, cameraSpacePoints[i].Y, cameraSpacePoints[i].Z);
+          } else {
+            depthVectors[i] = new Vector3(10000, 10000, 10000);
+          }
         }
 
         // start editing   vbo_depth   buffer
@@ -280,9 +322,18 @@
                       depthColors, BufferUsageHint.StaticDraw);
       } else {
         for (int i = 0; i < length; i++) {
-          depthVectors[i].X = cameraSpacePoints[i].X;
-          depthVectors[i].Y = cameraSpacePoints[i].Y;
-          depthVectors[i].Z = cameraSpacePoints[i].Z;
+          if (cameraSpacePoints[i].X >= minx && cameraSpacePoints[i].X <= maxx
+              && cameraSpacePoints[i].Y >= miny && cameraSpacePoints[i].Y <= maxy
+              && cameraSpacePoints[i].Z >= minz && cameraSpacePoints[i].Z <= maxz) {
+            depthVectors[i].X = cameraSpacePoints[i].X;
+            depthVectors[i].Y = cameraSpacePoints[i].Y;
+            depthVectors[i].Z = cameraSpacePoints[i].Z;
+          } else {
+            depthVectors[i].X = 10000;
+            depthVectors[i].Y = 10000;
+            depthVectors[i].Z = 10000;
+          }
+
         }
 
         // start editing   vbo_depth   buffer
@@ -311,6 +362,7 @@
     }
 
     private void Overlay_OnHdFaceUpdated(CameraSpacePoint[] cameraSpacePoints, int[] colors, int matched, int lineMatches, string name) {
+      hdFaceMask = cameraSpacePoints;
       if (!showMask) return;
       if (matched > 0) tw.Update(4, String.Format("Dot Match: {0}", matched));
       var length = cameraSpacePoints.Length;
