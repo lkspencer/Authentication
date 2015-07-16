@@ -4,8 +4,13 @@
         Title="Authentication" Height="599" Width="1415.833" ResizeMode="CanMinimize" ScrollViewer.CanContentScroll="True">
     <Grid>
         <Image HorizontalAlignment="Left" Height="538" Margin="10,10,0,0" VerticalAlignment="Top" Width="956" Name="ImageViewer" Source="{Binding ImageSource}" />
-        <Label x:Name="trainedPersonLabel" Content="Person Identified" FontSize="30" HorizontalAlignment="Left" Margin="1051,10,0,0" VerticalAlignment="Top" Height="55" Width="336" Padding="5,0"/>
-        <Label x:Name="TrainedPerson" Content="" HorizontalAlignment="Left" Margin="1051,80,0,0" VerticalAlignment="Top" Height="37" Width="349" Padding="5,0,69,0"/>
-        <Image x:Name="person" HorizontalAlignment="Left" Height="248" Margin="1012,152,0,0" VerticalAlignment="Top" Width="388" Source="{Binding ThreeDSource}" />
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+        <Label x:Name="trainedPersonLabel" Content="Waiting To Scan" FontSize="30" HorizontalAlignment="Center" Margin="971,10,12,0" VerticalAlignment="Top" Height="50" Width="427" Padding="5,0"/>
+        <Label x:Name="TrainedPerson" Content="" HorizontalAlignment="Center"  FontSize="25" Margin="971,60,5,0" VerticalAlignment="Top" Height="37" Width="434" Padding="5,0,69,0"/>
+        <Label x:Name="jobTitle" Content="" HorizontalAlignment="Center"  FontSize="25" Margin="971,60,5,0" VerticalAlignment="Top" Height="37" Width="434" Padding="5,0,69,0"/>
+        <Label x:Name="office" Content="" HorizontalAlignment="Center"  FontSize="25" Margin="971,60,5,0" VerticalAlignment="Top" Height="37" Width="434" Padding="5,0,69,0"/>
+        <Label x:Name="status" Content="" HorizontalAlignment="Center"  FontSize="25" Margin="971,60,5,0" VerticalAlignment="Top" Height="37" Width="434" Padding="5,0,69,0"/>
+        <Image x:Name="person" HorizontalAlignment="Left" Height="248" Margin="1124,152,0,0" VerticalAlignment="Top" Width="276"/>
+        </StackPanel>
     </Grid>
 </Window>

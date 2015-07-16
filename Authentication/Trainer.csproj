@@ -106,6 +106,7 @@
     <Compile Include="DetectFace.cs" />
     <Compile Include="DistanceWeightTolerance.cs" />
     <Compile Include="Extensions\CameraSpacePointExtensions.cs" />
+    <Compile Include="FaceModelLayout.cs" />
     <Compile Include="OpenTK\TextWriter.cs" />
     <Compile Include="Overlay.xaml.cs">
       <DependentUpon>Overlay.xaml</DependentUpon>
@@ -291,6 +292,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="data\kirk.dwt" />
+    <None Include="data\kirk.json" />
     <None Include="data\kirk2.dwt" />
     <None Include="data\kirk3.dwt" />
     <None Include="data\zac.fml" />
