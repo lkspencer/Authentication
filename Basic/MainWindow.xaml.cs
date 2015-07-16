@@ -86,11 +86,11 @@
             }
             App.Initialize(this.key);
             Window_Loaded();
-              
+
 
         }
 
-            DispatcherTimer timer = new DispatcherTimer();
+        DispatcherTimer timer = new DispatcherTimer();
         private void Window_Loaded()
         {
             timer.Tick += timer_Tick;
@@ -114,7 +114,7 @@
         void blink(object sender, EventArgs e)
         {
             sb = this.FindResource("FlashBlockTextStoryBoard") as Storyboard;
-            
+
 
         }
         private async void Reader_ColorFrameArrived(object sender, ColorFrameArrivedEventArgs e)
@@ -164,7 +164,7 @@
                     var faces = await App.Instance.DetectAsync(fStream);
                     var faceIds = faces.Select(face => face.FaceId).ToArray();
 
-                    if(faceIds.Length == 0)
+                    if (faceIds.Length == 0)
                     {
                         faces = await App.Instance.DetectAsync(fStream);
                         faceIds = faces.Select(face => face.FaceId).ToArray();
@@ -179,17 +179,17 @@
                     loadProfilePhoto();
                     //Console.WriteLine("Result of face: {0}", results[0].FaceId);
                     if (results[0].Candidates.Length == 0)
-                        {
-                            TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk Spencer" : pressed == Key.D ? "Authenticated as Delvin Hall" : "";
-                            loadProfilePhoto();
-                        }
-                        else
-                        {
-                            var candidateId = results[0].Candidates[0].PersonId;
-                            var person = await App.Instance.GetPersonAsync("19a8c628-343d-4df6-a751-a83d7381d122", candidateId);
-                            TrainedPerson.Content = person.Name == "Delvin" ? "Identified as Delvin Hall" : "Identified as Kirk Spencer";
-                            loadProfilePhoto();
-                        }
+                    {
+                        TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk Spencer" : pressed == Key.D ? "Authenticated as Delvin Hall" : "";
+                        loadProfilePhoto();
+                    }
+                    else
+                    {
+                        var candidateId = results[0].Candidates[0].PersonId;
+                        var person = await App.Instance.GetPersonAsync("19a8c628-343d-4df6-a751-a83d7381d122", candidateId);
+                        TrainedPerson.Content = person.Name == "Delvin" ? "Identified as Delvin Hall" : "Identified as Kirk Spencer";
+                        loadProfilePhoto();
+                    }
                 }
             }
             catch (Exception e)
@@ -239,7 +239,7 @@
 
         void loadProfilePhoto()
         {
-            if(pressed == Key.K)
+            if (pressed == Key.K)
             {
                 var uriSource = new Uri("kirk1.jpg", UriKind.Relative);
                 person.Source = new BitmapImage(uriSource);
@@ -248,7 +248,7 @@
                 office.Content = "Tempe Operation Center";
                 jobTitle.Content = "EUC Analyst";
             }
-            else if(pressed == Key.D)
+            else if (pressed == Key.D)
             {
                 var uriSource = new Uri("Delvin1.jpg", UriKind.Relative);
                 person.Source = new BitmapImage(uriSource);
@@ -270,8 +270,8 @@
             status.Content = "";
             office.Content = "";
             jobTitle.Content = "";
-            //Clear any text and images previously set
             TrainedPerson.Content = "";
+            person.Source = null;
 
             switch (e.Key)
             {
@@ -287,6 +287,16 @@
                     break;
                 case Key.C:
                     //Clear screen of any pre auth names
+                    trainedPersonLabel.Foreground = new SolidColorBrush(Colors.Black);
+                    trainedPersonLabel.Content = "Waiting to Scan...";
+                    status.Content = "";
+                    office.Content = "";
+                    jobTitle.Content = "";
+                    TrainedPerson.Content = "";
+                    person.Source = null;
+                    break;
+                default:
+                    e.Handled = true;
                     break;
             }
         }
