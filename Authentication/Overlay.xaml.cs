@@ -16,7 +16,7 @@
 
   public partial class Overlay : Window, INotifyPropertyChanged {
     public delegate void VerticesUpdated(CameraSpacePoint[] vertices, int[] colors);
-    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched, int lineMatches);
+    public delegate void HdFaceUpdated(CameraSpacePoint[] vertices, int[] colors, int matched, int lineMatches, string name);
     public delegate void TwoDMatchFound(string name);
     public event VerticesUpdated OnVerticesUpdated;
     public event HdFaceUpdated OnHdFaceUpdated;
@@ -409,6 +409,7 @@
     //List<List<DistanceWeightTolerance>> distances = new List<List<DistanceWeightTolerance>>();
     List<Queue<double>> distances = new List<Queue<double>>();
     private bool dwtSaved = false;
+    private string name = "";
     private void UpdateFacePoints() {
       if (highDefinitionFaceModel == null) return;
 
@@ -468,18 +469,22 @@
         }
       }
 
+      int bufferCount = 101;
       for (int i = 0; i < 78; i++) {
         distances[i].Enqueue(GetMaskPointDistance(linePoints[i].Item1, linePoints[i].Item2));
-        if (distances[i].Count == 31) distances[i].Dequeue();
+        if (distances[i].Count == (bufferCount + 1)) distances[i].Dequeue();
       }
 
       int totalMatchCount = 0;
-      if (distances != null && distances.Count > 0 && distances[0].Count == 30) {
+      if (distances != null && distances.Count > 0 && distances[0].Count == bufferCount) {
         for (int i = 0; i < 78; i++) {
-          var median = distances[i].OrderBy(d => d).ElementAt(15);
+          var median = distances[i].OrderBy(d => d).ElementAt((bufferCount - 1) / 2);
           if (median >= fml.Tolerances[i].Min && median <= fml.Tolerances[i].Max) {
             totalMatchCount++;
           }
+        }
+        if (totalMatchCount >= 62) {
+          name = "Kirk Spencer";
         }
       }
 
@@ -596,7 +601,8 @@
           hdFaceVertices,
           hdFaceColors,
           matched,
-          totalMatchCount);
+          totalMatchCount,
+          name);
       }
     }
 
