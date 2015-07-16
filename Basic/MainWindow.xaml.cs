@@ -231,6 +231,10 @@
 
         void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            trainedPersonLabel.Content = "Authenticating";
+            status.Content = "";
+            office.Content = "";
+            jobTitle.Content = "";
             //Clear any text and images previously set
             TrainedPerson.Content = "";
 
