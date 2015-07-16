@@ -9,10 +9,10 @@ using System.Web.Script.Serialization;
 
 namespace FaceAnalysis {
     class Program {
-        static int MAX = 1000;
-        static int DISTANCES = 12;
+        //static int MAX = 1000;
+        //static int DISTANCES = 12;
         static float FLOATRANGE = (float).001;
-        static string FILENAME = "kirk3.dwt";
+        
          
         static void Main(string[] args) {
             Console.WriteLine("Loading File");
@@ -33,7 +33,7 @@ namespace FaceAnalysis {
 
 
 
-            using (StreamWriter sw = new StreamWriter("BulkClusterData.csv"))
+            using (StreamWriter sw = new StreamWriter(@"data/BulkClusterData.txt"))
             {
                 for (int i = 0; i < pivotedDWTList.Count; i++)
                 {
@@ -55,7 +55,7 @@ namespace FaceAnalysis {
             }
             Console.WriteLine("Bulk File Written");
             var jss = new JavaScriptSerializer();
-            using (StreamWriter swto = new StreamWriter("Tolerance.json"))
+            using (StreamWriter swto = new StreamWriter(@"data/Tolerance.json"))
             {
                 for (int i = 0; i < pivotedDWTList.Count; i++)
                 {
@@ -121,7 +121,7 @@ namespace FaceAnalysis {
 
         static public List<List<DistanceWeightTolerance>> LoadDistanceWeightTolerance()
         {
-            using (StreamReader r = new StreamReader(FILENAME))
+            using (StreamReader r = new StreamReader(@"data\kirk3.dwt"))
             {
                 List<List<DistanceWeightTolerance>> results = new List<List<DistanceWeightTolerance>>();
 
