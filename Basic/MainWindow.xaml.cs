@@ -114,9 +114,8 @@
         void blink(object sender, EventArgs e)
         {
             sb = this.FindResource("FlashBlockTextStoryBoard") as Storyboard;
-
-
         }
+
         private async void Reader_ColorFrameArrived(object sender, ColorFrameArrivedEventArgs e)
         {
             // ColorFrame is IDisposable
@@ -265,23 +264,29 @@
 
             timer.Stop();
 
-            trainedPersonLabel.Foreground = new SolidColorBrush(Colors.Black);
-            trainedPersonLabel.Content = "Authenticating";
-            status.Content = "";
-            office.Content = "";
-            jobTitle.Content = "";
-            TrainedPerson.Content = "";
-            person.Source = null;
+            //trainedPersonLabel.Foreground = new SolidColorBrush(Colors.Black);
+            //trainedPersonLabel.Content = "Authenticating";
+            //status.Content = "";
+            //office.Content = "";
+            //jobTitle.Content = "";
+            //TrainedPerson.Content = "";
+            //person.Source = null;
 
             switch (e.Key)
             {
                 case Key.K:
                     //Capture photo for Kirk
+                    trainedPersonLabel.Foreground = new SolidColorBrush(Colors.Black);
+                    trainedPersonLabel.Content = "Authenticating";
+
                     capturingFrame = true;
                     pressed = Key.K;
                     break;
                 case Key.D:
                     //Captue photo for Delvin
+                    trainedPersonLabel.Foreground = new SolidColorBrush(Colors.Black);
+                    trainedPersonLabel.Content = "Authenticating";
+
                     capturingFrame = true;
                     pressed = Key.D;
                     break;
