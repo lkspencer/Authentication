@@ -13,9 +13,9 @@
     </Window.Resources>
     <StackPanel Orientation="Vertical">
         <Canvas Height="100">
-        <TextBlock Height="100" Canvas.Left="600" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="36" Padding="30,30,0,0">2D Authenticator</TextBlock>
+        <TextBlock Height="100" Canvas.Left="600" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="36" Padding="30,30,0,0">Facial Recognition</TextBlock>
             <TextBlock Height="100" Canvas.Left="602" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="36" Padding="30,30,0,0" Foreground="#FFCC0717">
-                2D Authenticator</TextBlock>
+               Facial Recognition</TextBlock>
         </Canvas>
         <StackPanel Orientation="Horizontal">
             <Image HorizontalAlignment="Left" Height="538" Margin="10,10,0,0" VerticalAlignment="Top" Width="950" Name="ImageViewer" Source="{Binding ImageSource}" />
