@@ -38,7 +38,6 @@
         private string key = "";
         public event PropertyChangedEventHandler PropertyChanged;
         bool capturingFrame = false;
-        FaceRectangle[] faceBoxes = null;
         Key pressed;
 
         // Constructors
@@ -140,7 +139,7 @@
                     }
                     if (faceIds.Length == 0)
                     {
-                        TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk" : pressed == Key.D ? "Authenticated as Delvin" : "";
+                        TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk Spencer" : pressed == Key.D ? "Authenticated as Delvin Hall" : "";
                         loadProfilePhoto();
                         return;
                     }
@@ -149,21 +148,21 @@
                     //Console.WriteLine("Result of face: {0}", results[0].FaceId);
                     if (results[0].Candidates.Length == 0)
                         {
-                            TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk" : pressed == Key.D ? "Authenticated as Delvin" : "";
+                            TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk Spencer" : pressed == Key.D ? "Authenticated as Delvin Hall" : "";
                             loadProfilePhoto();
                         }
                         else
                         {
                             var candidateId = results[0].Candidates[0].PersonId;
                             var person = await App.Instance.GetPersonAsync("19a8c628-343d-4df6-a751-a83d7381d122", candidateId);
-                            TrainedPerson.Content = "Identified as " + person.Name;
+                            TrainedPerson.Content = person.Name == "Delvin" ? "Identified as Delvin Hall" : "Identified as Kirk Spencer";
                             loadProfilePhoto();
                         }
                 }
             }
             catch (Exception e)
             {
-                TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk" : pressed == Key.D ? "Authenticated as Delvin" : "";
+                TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk Spencer" : pressed == Key.D ? "Authenticated as Delvin Hall" : "";
                 loadProfilePhoto();
                 return;
             }
@@ -210,20 +209,20 @@
         {
             if(pressed == Key.K)
             {
-                var uriSource = new Uri("kirk1.jpg", UriKind.Relative);
-                person.Source = new BitmapImage(uriSource);
+                //var uriSource = new Uri("kirk1.jpg", UriKind.Relative);
+                //person.Source = new BitmapImage(uriSource);
                 trainedPersonLabel.Content = "Employee Authenticated";
-                status.Content = "Employee";
-                office.Content = "Dallas";
+                status.Content = "Status: Employee";
+                office.Content = "Tempe Operation Center";
                 jobTitle.Content = "EUC Analyst";
             }
             else if(pressed == Key.D)
             {
-                var uriSource = new Uri("Delvin1.jpg", UriKind.Relative);
-                person.Source = new BitmapImage(uriSource);
+                //var uriSource = new Uri("Delvin1.jpg", UriKind.Relative);
+                //person.Source = new BitmapImage(uriSource);
                 trainedPersonLabel.Content = "Employee Authenticated";
-                status.Content = "Visitor";
-                office.Content = "Dallas";
+                status.Content = "Status: Visitor";
+                office.Content = "Dallas Operation Center";
                 jobTitle.Content = "EUC Analyst";
             }
         }
