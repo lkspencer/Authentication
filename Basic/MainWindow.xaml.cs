@@ -233,23 +233,5 @@
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-
-
-        private async Task<FaceRectangle[]> UploadAndDetectFaces(string imageFilePath)
-        {
-            try
-            {
-                using (Stream imageFileStream = File.OpenRead(imageFilePath))
-                {
-                    var faces = await App.Instance.DetectAsync(imageFileStream);
-                    var faceRects = faces.Select(face => face.FaceRectangle);
-                    return faceRects.ToArray();
-                }
-            }
-            catch (Exception)
-            {
-                return new FaceRectangle[0];
-            }
-        }
     }
 }
