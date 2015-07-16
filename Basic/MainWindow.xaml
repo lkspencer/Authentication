@@ -5,12 +5,12 @@
     <StackPanel Orientation="Horizontal">
         <Image HorizontalAlignment="Left" Height="538" Margin="10,10,0,0" VerticalAlignment="Top" Width="950" Name="ImageViewer" Source="{Binding ImageSource}" />
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Width="530">
-        <Label x:Name="trainedPersonLabel" Content="Waiting To Scan" FontSize="30" HorizontalAlignment="center" VerticalAlignment="Top" Padding="5,0"/>
-        <Label x:Name="TrainedPerson" Content="" HorizontalAlignment="Center"  FontSize="25"  VerticalAlignment="Top"  Padding="5,0,69,0"/>
-        <Label x:Name="jobTitle" Content="" HorizontalAlignment="Center"  FontSize="25"  VerticalAlignment="Top"  Padding="5,0,69,0"/>
-        <Label x:Name="office" Content="" HorizontalAlignment="Center"  FontSize="25"  VerticalAlignment="Top"  Padding="5,0,69,0"/>
-        <Label x:Name="status" Content="" HorizontalAlignment="Center"  FontSize="25"  VerticalAlignment="Top"  Padding="5,0,69,0"/>
-        <Image x:Name="person" HorizontalAlignment="Center" Height="248"  VerticalAlignment="Top" />
+            <Label x:Name="trainedPersonLabel" Content="Waiting To Scan" FontSize="30" HorizontalAlignment="center" VerticalAlignment="Top" Padding="5,0" Margin="0,20,0,0"/>
+            <Label x:Name="TrainedPerson" Content="" HorizontalAlignment="Center"  FontSize="25"  VerticalAlignment="Top"  Padding="5,0,69,0" Margin="0,20,0,0"/>
+            <Image x:Name="person" HorizontalAlignment="Center" Height="248"  VerticalAlignment="Top" Margin="0,20,0,0" />
+            <Label x:Name="jobTitle" Content="" HorizontalAlignment="Center"  FontSize="20"  VerticalAlignment="Top"  Padding="5,0,69,0" Margin="0,10,0,0"/>
+            <Label x:Name="office" Content="" HorizontalAlignment="Center"  FontSize="20"  VerticalAlignment="Top"  Padding="5,0,69,0" Margin="0,20,0,0"/>
+            <Label x:Name="status" Content="" HorizontalAlignment="Center"  FontSize="20"  VerticalAlignment="Top"  Padding="5,0,69,0" Margin="0,10,0,0"/>
         </StackPanel>
     </StackPanel>
 </Window>
