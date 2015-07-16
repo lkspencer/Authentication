@@ -9,11 +9,6 @@
 
 
     <Application.Resources>
-        <!--<Storyboard x:Key="FlashBlockTextStoryBoard">
-            <ObjectAnimationUsingKeyFrames RepeatBehavior="Forever"  Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Hidden}" />
-                <DiscreteObjectKeyFrame KeyTime="0:0:1"   Value="{x:Static Visibility.Visible}" />
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>-->
+
     </Application.Resources>
 </Application>
