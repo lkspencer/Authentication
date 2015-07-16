@@ -176,7 +176,6 @@
                     }
                     var results = await App.Instance.IdentifyAsync("19a8c628-343d-4df6-a751-a83d7381d122", faceIds, 1);
                     loadProfilePhoto();
-                    //Console.WriteLine("Result of face: {0}", results[0].FaceId);
                     if (results[0].Candidates.Length == 0)
                     {
                         TrainedPerson.Content = pressed == Key.K ? "Authenticated as Kirk Spencer" : pressed == Key.D ? "Authenticated as Delvin Hall" : "";
@@ -263,14 +262,6 @@
         {
 
             timer.Stop();
-
-            //trainedPersonLabel.Foreground = new SolidColorBrush(Colors.Black);
-            //trainedPersonLabel.Content = "Authenticating";
-            //status.Content = "";
-            //office.Content = "";
-            //jobTitle.Content = "";
-            //TrainedPerson.Content = "";
-            //person.Source = null;
 
             switch (e.Key)
             {
