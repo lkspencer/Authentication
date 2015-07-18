@@ -165,7 +165,7 @@
 
 
 
-      Emgu.CV.Capture capture = new Emgu.CV.Capture();
+      //Emgu.CV.Capture capture = new Emgu.CV.Capture();
       // get the kinectSensor object
       this.kinectSensor = KinectSensor.GetDefault();
 
@@ -281,9 +281,6 @@
       if (frame != null && frame.FaceFrameResult != null && frame.FaceFrameResult.FaceBoundingBoxInColorSpace != null) {
         if (faceCaptured) return;
 
-        faceCaptured = true;
-        LoadSavedFaceMesh(@"data\kirk.fml");
-        /*
         using (var colorFrame = frame.ColorFrameReference.AcquireFrame()) {
           if (colorFrame == null) return;
           var left = frame.FaceFrameResult.FaceBoundingBoxInColorSpace.Left - 150;
@@ -308,61 +305,17 @@
             }
             this.colorImage.Unlock();
           }
+          faceCaptured = true;
           SaveImage(left, top, width, height);
           Match2D(left, top, width, height).ConfigureAwait(continueOnCapturedContext: true);
         }
-        //*/
       }
 
     }
 
-    private void uiScaleSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-      //TransformGroup transformGroup = (TransformGroup)canvas.LayoutTransform;
-      //ScaleTransform transform = (ScaleTransform)transformGroup.Children[0];
-
-      //double zoom = e.NewValue;
-      //transform.ScaleX = zoom;
-      //transform.ScaleY = zoom;
-    }
-
-    private void canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-      canvas.ReleaseMouseCapture();
-    }
-
-    private void canvas_MouseMove(object sender, MouseEventArgs e) {
-      if (!canvas.IsMouseCaptured) return;
-      Point p = e.MouseDevice.GetPosition(border);
-
-      Matrix m = canvas.RenderTransform.Value;
-      m.OffsetX = mouseOrigin.X + (p.X - mouseStart.X);
-      m.OffsetY = mouseOrigin.Y + (p.Y - mouseStart.Y);
-
-      canvas.RenderTransform = new MatrixTransform(m);
-    }
-
-    private void canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-      if (canvas.IsMouseCaptured) return;
-
-      mouseStart = e.GetPosition(border);
-      mouseOrigin.X = canvas.RenderTransform.Value.OffsetX;
-      mouseOrigin.Y = canvas.RenderTransform.Value.OffsetY;
-      canvas.CaptureMouse();
-    }
-
-    private void Overlay_MouseWheel(object sender, MouseWheelEventArgs e) {
-      Point p = e.MouseDevice.GetPosition(canvas);
-
-      Matrix m = canvas.RenderTransform.Value;
-      if (e.Delta > 0)
-        m.ScaleAtPrepend(1.1, 1.1, p.X, p.Y);
-      else
-        m.ScaleAtPrepend(1 / 1.1, 1 / 1.1, p.X, p.Y);
-
-      canvas.RenderTransform = new MatrixTransform(m);
-    }
-
     private void WPFWindow_Loaded(object sender, RoutedEventArgs e) {
       PointCloudWindow.Start(this);
+      this.Close();
     }
 
 
@@ -457,7 +410,6 @@
             }
           }
         }
-        if (matched != 0) matchCount.Content = String.Format("Red Dots: {0}", matched);
         checkPointMatches = ++checkPointMatches % 15;
       }
 
@@ -469,7 +421,7 @@
         }
       }
 
-      int bufferCount = 101;
+      int bufferCount = 50;
       for (int i = 0; i < 78; i++) {
         distances[i].Enqueue(GetMaskPointDistance(linePoints[i].Item1, linePoints[i].Item2));
         if (distances[i].Count == (bufferCount + 1)) distances[i].Dequeue();
@@ -479,11 +431,11 @@
       if (distances != null && distances.Count > 0 && distances[0].Count == bufferCount) {
         for (int i = 0; i < 78; i++) {
           var median = distances[i].OrderBy(d => d).ElementAt((bufferCount - 1) / 2);
-          if (median >= fml.Tolerances[i].Min && median <= fml.Tolerances[i].Max) {
+          if (fml != null && median >= fml.Tolerances[i].Min && median <= fml.Tolerances[i].Max) {
             totalMatchCount++;
           }
         }
-        if (totalMatchCount >= 60) {
+        if (totalMatchCount >= 70) {
           name = "Kirk Spencer";
         }
       }
@@ -770,12 +722,16 @@
         bmp = bmp.Clone(new System.Drawing.Rectangle(left, top, width, height), System.Drawing.Imaging.PixelFormat.DontCare);
         // scale more to save on bandwidth at the cost of quality/precision
         bmp = ScaleImage(bmp, 256, 256);
-        bmp.Save(@"data\face.png");
+        var bmp2 = new System.Drawing.Bitmap(bmp);
+        bmp2.Save(@"data\face.png");
       }
     }
 
     private async Task Match2D(int left, int top, int width, int height) {
-      if (!File.Exists(@"data\face.png")) return;
+      if (!File.Exists(@"data\face.png")) {
+        faceCaptured = false;
+        return;
+      }
       using (var fStream = File.OpenRead(@"data\face.png")) {
         var groups = await App.Instance.GetPersonGroupsAsync();
         var group = groups.Where(g => g.Name == "First Test").FirstOrDefault();
@@ -785,7 +741,6 @@
         }
         var faces = await App.Instance.DetectAsync(fStream);
         if (faces == null || faces.Length == 0) {
-          matchName.Content = "No face found";
           faceCaptured = false;
           return;
         } else {
@@ -803,7 +758,6 @@
             }
           }
           if (found > 0) {
-            matchName.Content = String.Format("Name{0}: {1}", (found > 1 ? "s" : ""), names.Substring(0, names.Length - 2));
             var name = names.Split(new string[] { ", " }, StringSplitOptions.None).FirstOrDefault();
             OnTwoDMatchFound(name);
             var fileName = String.Format(@"data\{0}.fml", name);
@@ -811,11 +765,9 @@
               faceCaptured = true;
               LoadSavedFaceMesh(fileName);
             } else {
-              matchName.Content = String.Format("No saved mesh for {0}.", name);
               faceCaptured = false;
             }
           } else {
-            matchName.Content = "No match found for this person";
             faceCaptured = false;
           }
         }

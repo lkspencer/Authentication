@@ -8,21 +8,5 @@
         ResizeMode="CanResizeWithGrip"
         ScrollViewer.CanContentScroll="True" Loaded="WPFWindow_Loaded">
 
-  <Grid x:Name="LayoutRoot" >
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="*" />
-    </Grid.RowDefinitions>
-    <Grid Grid.Row="0">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="*" />
-      </Grid.ColumnDefinitions>
-      <Label x:Name="matchCount" Content="count" FontSize="14" Grid.Column="0" />
-      <Label x:Name="matchName" Content="name" FontSize="14" Grid.Column="1" />
-    </Grid>
-    <Border Name="border" ClipToBounds="True">
-      <Canvas Grid.Row="1" x:Name="canvas" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,10,10" Width="100" Height="310" />
-    </Border>
-  </Grid>
+  <Grid x:Name="LayoutRoot"></Grid>
 </Window>
